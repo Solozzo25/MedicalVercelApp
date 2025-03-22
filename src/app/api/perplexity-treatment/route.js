@@ -70,7 +70,7 @@ Interakcje z innymi lekami.
     const perplexityResponse = await axios.post(
       'https://api.perplexity.ai/chat/completions',
       {
-        model: "sonar-reasoning", // lub inny model Perplexity AI
+        model: "sonar-pro", // lub inny model Perplexity AI
         messages: [
           { role: "system", content: "Jesteś ekspertem w dziedzinie medycyny, specjalizującym się w leczeniu chorób na podstawie najnowszych wytycznych klinicznych." },
           { role: "user", content: prompt }
