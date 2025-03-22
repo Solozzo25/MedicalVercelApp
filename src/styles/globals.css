@@ -1,0 +1,22 @@
+:root {
+  --primary-color: #223030;
+  --primary-dark: #1a2525;
+  --secondary-color: #523D35;
+  --tertiary-color: #959D90;
+  --background-light: #EFEFE9;
+  --background-card: #E8D9CD;
+  --text-dark: #223030;
+  --text-light: #523D35;
+  --white: #EFEFE9;
+  --error: #a35252;
+  --warning: #c2a061;
+  --success: #6d8c7a;
+  --border-color: #BBA58F;
+  --shadow: 0 8px 15px -3px rgba(34, 48, 48, 0.1), 0 4px 6px -2px rgba(34, 48, 48, 0.05);
+  --deep-shadow: 0 10px 25px -5px rgba(34, 48, 48, 0.15), 0 5px 12px -3px rgba(34, 48, 48, 0.1);
+  --font-inter: var(--font-inter);
+  --font-montserrat: var(--font-montserrat);
+  --font-playfair: var(--font-playfair);
+}
+
+/* Reszta CSS z index.html */
