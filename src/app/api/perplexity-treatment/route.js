@@ -76,7 +76,7 @@ Interakcje z innymi lekami.
           { role: "user", content: prompt }
         ],
         temperature: 0.1, // Niska temperatura dla precyzyjnych odpowiedzi medycznych
-        max_tokens: 2000
+        max_tokens: 10000
       },
       {
         headers: {
