@@ -33,12 +33,13 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
     <form id="diagnosis-form" onSubmit={handleSubmit}>
       <div className="form-grid">
         <div className="form-group">
-          <label htmlFor="age" className="form-label">Wiek</label>
+          <label htmlFor="age" className="form-label">Wiek pacjenta</label>
           <input 
             type="number" 
             id="age" 
             name="age" 
             className="form-input" 
+            placeholder="Np. 45"
             value={formData.age}
             onChange={handleChange}
             required 
@@ -46,7 +47,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="sex" className="form-label">Płeć</label>
+          <label htmlFor="sex" className="form-label">Płeć pacjenta</label>
           <select 
             id="sex" 
             name="sex" 
@@ -69,7 +70,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
           id="symptoms" 
           name="symptoms" 
           className="form-textarea" 
-          placeholder="Opisz objawy zgłaszane przez pacjenta..."
+          placeholder="Opisz objawy zgłaszane przez pacjenta. Np. ból głowy, gorączka, kaszel..."
           value={formData.symptoms}
           onChange={handleChange}
           required
@@ -77,24 +78,24 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
       </div>
 
       <div className="form-group">
-        <label htmlFor="physicalExam" className="form-label">Badanie przedmiotowe (opcjonalnie)</label>
+        <label htmlFor="physicalExam" className="form-label">Badanie przedmiotowe</label>
         <textarea 
           id="physicalExam" 
           name="physicalExam" 
           className="form-textarea" 
-          placeholder="Wprowadź wyniki badania przedmiotowego..."
+          placeholder="Wyniki badania przedmiotowego. Np. osłuchowo trzeszczenia u podstawy płuc, temp. 38,2°C..."
           value={formData.physicalExam}
           onChange={handleChange}
         ></textarea>
       </div>
 
       <div className="form-group">
-        <label htmlFor="additionalTests" className="form-label">Wyniki badań (opcjonalnie)</label>
+        <label htmlFor="additionalTests" className="form-label">Wyniki badań</label>
         <textarea 
           id="additionalTests" 
           name="additionalTests" 
           className="form-textarea" 
-          placeholder="Wprowadź wyniki badań laboratoryjnych, obrazowych i innych..."
+          placeholder="Wyniki badań laboratoryjnych, obrazowych i innych. Np. CRP 24 mg/l, RTG klatki piersiowej..."
           value={formData.additionalTests}
           onChange={handleChange}
         ></textarea>
@@ -106,7 +107,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
           id="medicalHistory" 
           name="medicalHistory" 
           className="form-textarea" 
-          placeholder="Wprowadź istotne informacje z historii medycznej pacjenta..."
+          placeholder="Istotne informacje z historii medycznej pacjenta. Np. choroby przewlekłe, uczulenia..."
           value={formData.medicalHistory}
           onChange={handleChange}
         ></textarea>
@@ -118,7 +119,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
           className="btn btn-primary btn-lg btn-block" 
           disabled={isLoading}
         >
-          {isLoading ? 'Przetwarzanie...' : 'Przedstaw rekomendacje'}
+          <i className="fas fa-search-plus"></i> {isLoading ? 'Przetwarzanie...' : 'Przedstaw rekomendacje'}
         </button>
       </div>
     </form>
