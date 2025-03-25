@@ -1,63 +1,32 @@
-import { Inter, Montserrat, Playfair_Display } from 'next/font/google';
+import { Inter, Manrope } from 'next/font/google';
 import '../styles/globals.css';
 
 // Konfiguracja fontów
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const montserrat = Montserrat({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-montserrat'
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-inter'
 });
-const playfair = Playfair_Display({
+
+const manrope = Manrope({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-playfair'
+  variable: '--font-manrope'
 });
 
 export const metadata = {
-  title: 'MedDiagnosis - Narzędzie diagnostyczne dla lekarzy',
+  title: 'MedDiagnosis - Wsparcie diagnostyczne',
   description: 'Aplikacja wspomagająca lekarzy w procesie diagnozy i rekomendacji leczenia.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pl" className={`${inter.variable} ${montserrat.variable} ${playfair.variable}`}>
+    <html lang="pl" className={`${inter.variable} ${manrope.variable}`}>
+      <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      </head>
       <body>
-        <header className="header">
-          <div className="container">
-            <div className="header-content">
-              <div className="logo">
-                <span className="logo-icon">⚕️</span>
-                <span>MedDiagnosis</span>
-              </div>
-              <nav className="nav-links">
-                <a href="#" className="nav-link active">Diagnostyka</a>
-                <a href="#" className="nav-link">Historia</a>
-                <a href="#" className="nav-link">Baza wiedzy</a>
-                <a href="#" className="nav-link">Wsparcie</a>
-              </nav>
-            </div>
-          </div>
-        </header>
-
-        <main className="container">
-          {children}
-        </main>
-
-        <footer className="footer">
-          <div className="container">
-            <div className="footer-content">
-              <div className="footer-logo">
-                MedDiagnosis © 2025
-              </div>
-              <div className="footer-links">
-                <a href="#" className="footer-link">Polityka prywatności</a>
-                <a href="#" className="footer-link">Warunki użytkowania</a>
-                <a href="#" className="footer-link">Kontakt</a>
-              </div>
-            </div>
-          </div>
-        </footer>
+        {children}
       </body>
     </html>
   );
