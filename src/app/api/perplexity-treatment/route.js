@@ -9,17 +9,19 @@ export async function POST(request) {
     const reqData = await request.json();
     const { diagnosis, medicalSociety } = reqData;
     
-    console.log("📋 Dane otrzymane:", { 
-      diagnosis, 
-      medicalSociety
-    });
+    console.log("📋 Otrzymane dane:", { diagnosis, medicalSociety });
 
     // Sprawdzenie wymaganych pól
-    if (!diagnosis || !medicalSociety) {
-      console.log("❌ Błąd: Brakuje wymaganych pól");
+    if (!diagnosis) {
+      console.log("❌ Błąd: Brakująca diagnoza");
       return NextResponse.json({ 
-        error: 'Brakuje diagnozy lub towarzystwa medycznego do przygotowania rekomendacji leczenia' 
+        error: 'Brakujące pole: diagnoza' 
       }, { status: 400 });
+    }
+
+    if (!medicalSociety) {
+      console.log("⚠️ Ostrzeżenie: Brak towarzystwa medycznego");
+      // Kontynuujemy przetwarzanie, ale logujemy ostrzeżenie
     }
 
     // Klucz API z zmiennych środowiskowych
@@ -34,49 +36,59 @@ export async function POST(request) {
     
     console.log("🔑 Klucz API Perplexity znaleziony (pierwszych 5 znaków):", apiKey.substring(0, 5) + '...');
 
-    // Przygotowanie promptu do Perplexity
+    // Przygotowanie promptu dla Perplexity API
     const prompt = `
-      Dla następującej diagnozy: "${diagnosis}", chcę abyś znalazł w materiałach tylko i wyłącznie "${medicalSociety}" jakie są wytyczne oraz rekomendacje leczenia takiej choroby. Podziel odpowiedź na dwie sekcje - farmakologiczne i niefarmalogiczne. Wyszukaj charakterystykę kluczowego leku zalecanego w terapii, bazując na OFICJALNEJ, RZĄDOWEJ charakterystyce produktu leczniczego (np. z URPL, EMA lub innego oficjalnego źródła) oraz wyekstraktuj informacje dotyczące: Wskazań oraz przeciwskazań
-Interakcje z innymi lekami.
-     
-      Twoja odpowiedź musi zawierać:
-      1. Szczegółową farmakoterapię według oficjalnych wytycznych: nazwę produktu leczniczego, dawkowanie, czas leczenia
-      2. Zalecenia niefarmakologiczne rekomendowane przez towarzystwo
-      3. Charakterystykę kluczowego leku zalecanego w terapii, bazując na OFICJALNEJ, RZĄDOWEJ charakterystyce produktu leczniczego (np. z URPL, EMA lub innego oficjalnego źródła)
-         - Interakcje z innymi lekami (najważniejsze)
-         - Wskazania
-         - Przeciwwskazania
-     
-      Zwróć odpowiedź w formacie JSON:
+      Jesteś doświadczonym lekarzem medycznym z 20 letnim doświadczeniem. 
+      Na podstawie podanej diagnozy (${diagnosis}) i rekomendacji towarzystwa medycznego (${medicalSociety || "polskiego towarzystwa medycznego właściwego dla tej choroby"}), 
+      przygotuj szczegółowe rekomendacje leczenia.
+      
+      BARDZO WAŻNE: Musisz opierać swoją odpowiedź wyłącznie na oficjalnych wytycznych ${medicalSociety || "odpowiedniego polskiego towarzystwa medycznego"} lub innych uznanych polskich towarzystw medycznych czy instytucji opieki zdrowotnej. Nie twórz żadnych rekomendacji bez poparcia źródłami.
+      
+      Uwzględnij:
+      1. Farmakoterapię (leki, dawkowanie, czas stosowania)
+      2. Zalecenia niefarmakologiczne (dieta, rehabilitacja, styl życia itp.)
+      3. Charakterystykę kluczowego leku (nazwa, wskazania, przeciwwskazania, interakcje)
+      
+      Dla charakterystyki leku odwołuj się WYŁĄCZNIE do oficjalnych źródeł takich jak URPL (Urząd Rejestracji Produktów Leczniczych), Ministerstwo Zdrowia, ChPL (Charakterystyka Produktu Leczniczego) lub innych oficjalnych polskich źródeł rządowych.
+      
+      Format odpowiedzi powinien być w JSON i zawierać następujące sekcje:
       {
-        "Farmakoterapia": [lista leków wraz z dawkowaniem],
-        "Zalecenia_Niefarmakologiczne": [lista zaleceń],
+        "Farmakoterapia": [
+          "Zalecenie 1",
+          "Zalecenie 2"
+        ],
+        "Źródło_Farmakoterapii": "Pełny opis źródła z URL (np. wytyczne towarzystwa)",
+        "Zalecenia_Niefarmakologiczne": [
+          "Zalecenie 1",
+          "Zalecenie 2"
+        ],
+        "Źródło_Zaleceń_Niefarmakologicznych": "Pełny opis źródła z URL (np. wytyczne towarzystwa)",
         "Charakterystyka_Leku": {
-          "Nazwa": "nazwa leku",
-          "Wskazania": [lista wskazań z oficjalnego źródła],
-          "Przeciwwskazania": [lista przeciwwskazań z oficjalnego źródła],
-          "Interakcje": [lista interakcji z oficjalnego źródła]
+          "Nazwa": "Nazwa kluczowego leku",
+          "Wskazania": ["Wskazanie 1", "Wskazanie 2"],
+          "Przeciwwskazania": ["Przeciwwskazanie 1", "Przeciwwskazanie 2"],
+          "Interakcje": ["Interakcja 1", "Interakcja 2"],
+          "Źródło": "Pełny opis źródła z URL (np. ChPL, URPL)"
         }
       }
-     
-      Odpowiedź musi być w języku polskim, oparta WYŁĄCZNIE na oficjalnych, aktualnych wytycznych medycznych i charakterystykach produktów leczniczych. Podaj tylko dane w formacie JSON, bez dodatkowych komentarzy.
+      
+      Kompletność źródeł i wiarygodność rekomendacji są kluczowe. Koniecznie podaj pełne URL do źródeł.
     `;
 
     console.log("📤 Wysyłanie zapytania do Perplexity API...");
-    console.log("📝 Prompt - diagnoza:", diagnosis);
-    console.log("📝 Prompt - towarzystwo medyczne:", medicalSociety);
     
     // Konfiguracja zapytania do API Perplexity
     const perplexityResponse = await axios.post(
       'https://api.perplexity.ai/chat/completions',
       {
-        model: "sonar-pro", // lub inny model Perplexity AI
+        model: "llama-3-sonar-small-32k-online", // model z dostępem do internetu
         messages: [
-          { role: "system", content: "Jesteś ekspertem w dziedzinie medycyny, specjalizującym się w leczeniu chorób na podstawie najnowszych wytycznych klinicznych." },
+          { role: "system", content: "Jesteś doświadczonym lekarzem, który udziela rekomendacji leczenia w oparciu o najnowsze wytyczne medyczne. Zawsze podajesz źródła swoich rekomendacji." },
           { role: "user", content: prompt }
         ],
-        temperature: 0.1, // Niska temperatura dla precyzyjnych odpowiedzi medycznych
-        max_tokens: 10000
+        temperature: 0.1, // niska temperatura dla bardziej precyzyjnych, faktycznych odpowiedzi
+        max_tokens: 1500,
+        search_enable: true // włączenie wyszukiwania w internecie
       },
       {
         headers: {
@@ -87,76 +99,108 @@ Interakcje z innymi lekami.
     );
     
     console.log("✅ Odpowiedź od Perplexity otrzymana, status:", perplexityResponse.status);
-    if (perplexityResponse.data.usage) {
-      console.log("📊 Użycie tokenów:", {
-        prompt_tokens: perplexityResponse.data.usage.prompt_tokens,
-        completion_tokens: perplexityResponse.data.usage.completion_tokens,
-        total_tokens: perplexityResponse.data.usage.total_tokens
-      });
-    }
 
     // Parsowanie odpowiedzi od Perplexity
     const responseContent = perplexityResponse.data.choices[0].message.content;
-    console.log("📝 Surowa odpowiedź od Perplexity (pierwsze 300 znaków):", responseContent.substring(0, 300) + '...');
+    console.log("📝 Surowa odpowiedź od Perplexity:", responseContent);
     
     // Próba parsowania JSON z odpowiedzi
     let parsedResponse;
     try {
-      // Szukanie JSON w odpowiedzi tekstowej - czasem API zwraca dodatkowy tekst przed/po JSON
-      const jsonMatch = responseContent.match(/\{[\s\S]*\}/);
-      const jsonString = jsonMatch ? jsonMatch[0] : responseContent;
-      console.log("🔍 Próba parsowania JSON...");
-      parsedResponse = JSON.parse(jsonString);
-      console.log("✅ Pomyślnie sparsowano JSON z odpowiedzi");
+      parsedResponse = JSON.parse(responseContent);
+      console.log("✅ Pomyślnie sparsowano JSON z odpowiedzi Perplexity");
     } catch (e) {
       console.error("❌ Błąd parsowania JSON z odpowiedzi Perplexity:", e);
-      console.log("📝 Próbowany JSON:", jsonMatch ? jsonMatch[0].substring(0, 100) + '...' : 'Nie znaleziono');
       
-      // Jeśli nie udało się sparsować JSON, zwróć oryginalną odpowiedź jako tekst
-      return NextResponse.json({ 
-        error: "Odpowiedź nie jest poprawnym JSON. Pokazuję tekst oryginalny.", 
-        rawResponse: responseContent 
-      }, { status: 207 });
+      // Spróbujmy znaleźć JSON w odpowiedzi
+      const jsonMatch = responseContent.match(/\{[\s\S]*\}/);
+      
+      if (jsonMatch) {
+        try {
+          parsedResponse = JSON.parse(jsonMatch[0]);
+          console.log("✅ Udało się wyekstraktować i sparsować JSON");
+        } catch (extractError) {
+          console.error("❌ Nieudana ekstrakcja JSON:", extractError);
+          
+          // Zwracamy błąd z oryginalną odpowiedzią jako tekst
+          return NextResponse.json({ 
+            error: "Nie udało się przetworzyć odpowiedzi z API Perplexity. Spróbuj ponownie za chwilę.",
+            rawResponse: responseContent
+          }, { status: 500 });
+        }
+      } else {
+        // Zwracamy błąd z oryginalną odpowiedzią jako tekst
+        return NextResponse.json({ 
+          error: "Odpowiedź API nie zawiera poprawnego formatu JSON. Spróbuj ponownie za chwilę.",
+          rawResponse: responseContent
+        }, { status: 500 });
+      }
     }
 
-    // Sprawdzenie czy JSON zawiera wymagane pola
-    const requiredFields = ['Farmakoterapia', 'Zalecenia_Niefarmakologiczne', 'Charakterystyka_Leku'];
-    const missingFields = requiredFields.filter(field => !parsedResponse[field]);
+    // Sprawdzenie i czyszczenie odpowiedzi
+    const cleanedResponse = {
+      Farmakoterapia: Array.isArray(parsedResponse.Farmakoterapia) 
+        ? parsedResponse.Farmakoterapia 
+        : parsedResponse.Farmakoterapia 
+          ? [parsedResponse.Farmakoterapia] 
+          : [],
+          
+      Źródło_Farmakoterapii: parsedResponse.Źródło_Farmakoterapii || "",
+      
+      Zalecenia_Niefarmakologiczne: Array.isArray(parsedResponse.Zalecenia_Niefarmakologiczne) 
+        ? parsedResponse.Zalecenia_Niefarmakologiczne 
+        : parsedResponse.Zalecenia_Niefarmakologiczne 
+          ? [parsedResponse.Zalecenia_Niefarmakologiczne] 
+          : [],
+          
+      Źródło_Zaleceń_Niefarmakologicznych: parsedResponse.Źródło_Zaleceń_Niefarmakologicznych || "",
+      
+      Charakterystyka_Leku: {
+        Nazwa: parsedResponse.Charakterystyka_Leku?.Nazwa || "Brak danych",
+        
+        Wskazania: Array.isArray(parsedResponse.Charakterystyka_Leku?.Wskazania) 
+          ? parsedResponse.Charakterystyka_Leku.Wskazania 
+          : parsedResponse.Charakterystyka_Leku?.Wskazania 
+            ? [parsedResponse.Charakterystyka_Leku.Wskazania] 
+            : [],
+            
+        Przeciwwskazania: Array.isArray(parsedResponse.Charakterystyka_Leku?.Przeciwwskazania) 
+          ? parsedResponse.Charakterystyka_Leku.Przeciwwskazania 
+          : parsedResponse.Charakterystyka_Leku?.Przeciwwskazania 
+            ? [parsedResponse.Charakterystyka_Leku.Przeciwwskazania] 
+            : [],
+            
+        Interakcje: Array.isArray(parsedResponse.Charakterystyka_Leku?.Interakcje) 
+          ? parsedResponse.Charakterystyka_Leku.Interakcje 
+          : parsedResponse.Charakterystyka_Leku?.Interakcje 
+            ? [parsedResponse.Charakterystyka_Leku.Interakcje] 
+            : [],
+            
+        Źródło: parsedResponse.Charakterystyka_Leku?.Źródło || ""
+      }
+    };
     
-    if (missingFields.length > 0) {
-      console.log("⚠️ Niekompletna odpowiedź JSON, brakujące pola:", missingFields);
+    console.log("✅ Odpowiedź została oczyszczona i ustrukturyzowana");
+
+    // Zweryfikuj czy mamy przynajmniej podstawowe dane
+    if (cleanedResponse.Farmakoterapia.length === 0 && cleanedResponse.Zalecenia_Niefarmakologiczne.length === 0) {
+      console.log("⚠️ Ostrzeżenie: Brak zaleceń w odpowiedzi API");
       return NextResponse.json({ 
-        warning: `Niekompletna odpowiedź, brakuje wymaganych pól: ${missingFields.join(', ')}`, 
-        data: parsedResponse 
+        warning: "Otrzymano niekompletną odpowiedź z API. Brak zaleceń terapeutycznych.",
+        data: cleanedResponse
       }, { status: 207 });
     }
     
-    // Sprawdzenie czy charakterystyka leku zawiera wszystkie wymagane pola
-    const drugFields = ['Nazwa', 'Wskazania', 'Przeciwwskazania', 'Interakcje'];
-    const missingDrugFields = drugFields.filter(field => !parsedResponse.Charakterystyka_Leku[field]);
-    
-    if (missingDrugFields.length > 0) {
-      console.log("⚠️ Niekompletna charakterystyka leku, brakujące pola:", missingDrugFields);
-      return NextResponse.json({ 
-        warning: `Niekompletna charakterystyka leku, brakuje pól: ${missingDrugFields.join(', ')}`, 
-        data: parsedResponse 
-      }, { status: 207 });
-    }
-    
-    console.log("✅ Wszystkie wymagane pola są obecne, zwracanie odpowiedzi");
-    console.log("📋 Lek główny:", parsedResponse.Charakterystyka_Leku.Nazwa);
-    
-    // Zwróć odpowiedź do klienta
-    return NextResponse.json(parsedResponse, { status: 200 });
+    console.log("✅ Zwracanie odpowiedzi");
+    return NextResponse.json(cleanedResponse, { status: 200 });
 
   } catch (error) {
-    console.error("❌ Błąd podczas komunikacji z API Perplexity:", error);
+    console.error("❌ Błąd podczas komunikacji z API:", error);
     
     let errorMessage = 'Wystąpił błąd podczas przetwarzania zapytania';
     let errorDetails = {};
     
     if (error.response) {
-      // Błąd po stronie API Perplexity
       console.error("❌ Odpowiedź z błędem od API:", {
         status: error.response.status,
         data: error.response.data
@@ -169,11 +213,9 @@ Interakcje z innymi lekami.
         type: error.response.data.error?.type
       };
     } else if (error.request) {
-      // Brak odpowiedzi od API
-      console.error("❌ Brak odpowiedzi od serwera API Perplexity");
+      console.error("❌ Brak odpowiedzi od serwera API");
       errorMessage = 'Brak odpowiedzi od serwera API';
     } else {
-      // Inny błąd
       console.error("❌ Nieoczekiwany błąd:", error.message);
       errorDetails = { message: error.message };
     }
