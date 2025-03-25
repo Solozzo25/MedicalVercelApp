@@ -81,7 +81,7 @@ export async function POST(request) {
     const perplexityResponse = await axios.post(
       'https://api.perplexity.ai/chat/completions',
       {
-        model: "llama-3-sonar-small-32k-online", // model z dostępem do internetu
+        model: "sonar-pro", // model z dostępem do internetu
         messages: [
           { role: "system", content: "Jesteś doświadczonym lekarzem, który udziela rekomendacji leczenia w oparciu o najnowsze wytyczne medyczne. Zawsze podajesz źródła swoich rekomendacji." },
           { role: "user", content: prompt }
