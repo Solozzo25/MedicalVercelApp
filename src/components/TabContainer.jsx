@@ -26,7 +26,8 @@ export default function TabContainer() {
     setPatientData(formData);
 
     try {
-      // Pobierz diagnozę
+      // Krok 1: Pobierz diagnozę od OpenAI
+      console.log("Krok 1: Wysyłanie danych do API diagnozy");
       const diagnosisResponse = await fetch('/api/gpt-diagnosis', {
         method: 'POST',
         headers: {
@@ -35,22 +36,26 @@ export default function TabContainer() {
         body: JSON.stringify(formData)
       });
 
-      const diagnosisResult = await diagnosisResponse.json();
-
       if (!diagnosisResponse.ok) {
-        throw new Error(diagnosisResult.error || `Błąd serwera: ${diagnosisResponse.status}`);
+        const errorData = await diagnosisResponse.json();
+        throw new Error(errorData.error || `Błąd serwera diagnozy: ${diagnosisResponse.status}`);
       }
 
+      const diagnosisResult = await diagnosisResponse.json();
+      console.log("Otrzymano odpowiedź z API diagnozy:", diagnosisResult);
+      
       // Zapisz dane diagnozy
       setDiagnosisData(diagnosisResult);
 
-      // Przygotuj dane dla API rekomendacji leczenia
+      // Krok 2: Przygotuj dane dla API rekomendacji leczenia
+      console.log("Krok 2: Przygotowanie danych dla API rekomendacji leczenia");
       const treatmentRequestData = {
         diagnosis: diagnosisResult.Diagnoza_Główna,
         medicalSociety: diagnosisResult.Towarzystwo_Medyczne
       };
 
-      // Pobierz rekomendacje leczenia
+      // Krok 3: Pobierz rekomendacje leczenia od Perplexity API
+      console.log("Krok 3: Wysyłanie danych do API rekomendacji leczenia");
       const treatmentResponse = await fetch('/api/perplexity-treatment', {
         method: 'POST',
         headers: {
@@ -59,11 +64,13 @@ export default function TabContainer() {
         body: JSON.stringify(treatmentRequestData)
       });
 
-      const treatmentResult = await treatmentResponse.json();
-
       if (!treatmentResponse.ok) {
-        throw new Error(treatmentResult.error || `Błąd serwera: ${treatmentResponse.status}`);
+        const errorData = await treatmentResponse.json();
+        throw new Error(errorData.error || `Błąd serwera rekomendacji: ${treatmentResponse.status}`);
       }
+
+      const treatmentResult = await treatmentResponse.json();
+      console.log("Otrzymano odpowiedź z API rekomendacji:", treatmentResult);
 
       // Zapisz dane rekomendacji
       setTreatmentData(treatmentResult);
@@ -81,8 +88,14 @@ export default function TabContainer() {
   return (
     <div className="card">
       <div className="card-header">
-        <h2 className="card-title">Diagnoza pacjenta</h2>
-        <p className="card-subtitle">Wprowadź dane pacjenta, aby otrzymać propozycję diagnozy, diagnostykę różnicową oraz rekomendacje leczenia.</p>
+        <div className="card-title">
+          <i className="fas fa-user-md"></i> Diagnoza i leczenie
+        </div>
+        <div className="card-actions">
+          <button className="action-btn" title="Odśwież" onClick={() => window.location.reload()}>
+            <i className="fas fa-sync-alt"></i>
+          </button>
+        </div>
       </div>
 
       <div className="tabs">
@@ -96,7 +109,7 @@ export default function TabContainer() {
           className={`tab ${activeTab === 'results' ? 'active' : ''}`} 
           onClick={() => handleTabClick('results')}
         >
-          Wyniki
+          Wyniki diagnozy
         </div>
       </div>
 
