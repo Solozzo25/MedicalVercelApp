@@ -42,7 +42,7 @@ export async function POST(request) {
       Na podstawie podanej diagnozy (${diagnosis}) i rekomendacji towarzystwa medycznego (${medicalSociety || "polskiego towarzystwa medycznego właściwego dla tej choroby"}), 
       przygotuj szczegółowe rekomendacje leczenia.
       
-      BARDZO WAŻNE: Musisz opierać swoją odpowiedź wyłącznie na oficjalnych wytycznych ${medicalSociety || "odpowiedniego polskiego towarzystwa medycznego"} lub innych uznanych polskich towarzystw medycznych czy instytucji opieki zdrowotnej. Nie twórz żadnych rekomendacji bez poparcia źródłami.
+      BARDZO WAŻNE: Musisz opierać swoją odpowiedź wyłącznie na oficjalnych wytycznych ${medicalSociety || "odpowiedniego polskiego towarzystwa medycznego"} lub danych od redakcji medycy praktycznej oraz książek medycznych dostępnych w internecie.  Nie twórz żadnych rekomendacji bez poparcia źródłami.
       
       Uwzględnij:
       1. Farmakoterapię (leki, dawkowanie, czas stosowania)
