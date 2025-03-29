@@ -43,24 +43,33 @@ export async function POST(request) {
     
     // Przygotowanie promptu do GPT
     const userPrompt = `
-      Twoim zadaniem jest postawienie precyzyjnej diagnozy na podstawie podanych danych pacjenta oraz badań. Diagnoza powinna być oparta o wiedzę medyczną w ksiażkach dostęnych w internecie oraz na artykułach redakcji czasopism medycznych. Upewnij się, że bierzesz pod uwagę wszystkie otrzymane dane pacjenta, jego objawy. Dostosuj wynik diagnozy do danej grupy wiekowej i płci.  Do diagnozy przedstaw zwięzłe kilku zdaniowe uzasadnienie, dlaczego taką diagnozę wybrałeś. Dodatkowo chciałbym, abyś postawił również diagnozę różnicową również z kilku zdaniowym uzasadnieniem. Ostatnim zadaniem będzie wskazanie, do jakiego medycznego towarzystwa naukowego skierowałbyś się po zalecenia po zindentyfikowaniu chorob/schorzenia. Masz jedynie podać nazwę np. Polskie Towarzystwko Kardologiczne. Interesują mnie tylko polskie organizacje.
-      
-      Dane pacjenta:
-      - Wiek: ${age}
-      - Płeć: ${sex}
-      - Wyniki podmiotowe (wywiad lekarski): ${symptoms}
-      - Wyniki przedmiotowe (badania przeprowadzone przez lekarza): ${physicalExam || 'Brak danych'}
-      - Wyniki laboratoryjne: ${additionalTests || 'Brak danych'}
-      ${medicalHistory ? `- Historia medyczna: ${medicalHistory}` : ''}
-      
-      Format odpowiedzi ma być formatem JSON powinien zawierać 5 sekcji, jak w pożniszym formacie, bez żadnych dodatkowych komentarzy ani modyfikacji nagłówków.
-      {
-          "Diagnoza_Główna": "Tutaj podaj najprawdopodobniejszą diagnozę na podstawie podanych danych. To pole ma zawierać tylko jedną nazwę choroby/schorzenia",
-          "Uzasadnienie_Diagnozy": "Tutaj podaj krótkie i zwięzłe uzasdanienie postawionej diagnozy",
-          "Diagnoza_Różnicowa": "Tutaj przedstaw najbardziej prawdopodobną diagnozę różnicowa. To pole ma zawierać tylko jedną nazwę choroby/schorzenia",
-          "Uzasadnienie_Różnicowe": "Tutaj podaj krótkie i zwięzłe uzasdanienie postawionej diagnozy rożnicowej",
-          "Towarzystwo_Medyczne": "Tylko nazwa stowarzyszenia"
-      }`;
+      Twoim zadaniem jest postawienie precyzyjnej diagnozy na podstawie pełnych danych pacjenta, włączając: wiek, płeć, wyniki wywiadu lekarskiego, wyniki badań przeprowadzonych przez lekarza, wyniki badań laboratoryjnych oraz (jeśli dostępne) historię medyczną. Każda podana informacja ma kluczowe znaczenie i nie może być pominięta przy formułowaniu diagnozy.
+
+Wymagania:
+1. **Analiza wszystkich danych:** Uwzględnij wiek, płeć, objawy, wyniki badań przedmiotowych, wyniki badań laboratoryjnych oraz historię medyczną. Jeśli któryś z elementów nie został podany, przyjmij, że wynik jest prawidłowy i mieści się w normie.
+2. **Bez sprzeczności z wynikami badań:** Jeśli konkretne wyniki (np. poziom leukocytów) są podane jako w normie, diagnoza nie może sugerować patologii związanej z odchyleniem tych wartości. Jeżeli model napotka brak danych, przyjmij, że wyniki są prawidłowe.
+3. **Wykorzystanie najnowszej wiedzy medycznej:** Opieraj się na aktualnych wytycznych, artykułach oraz wiarygodnych źródłach dostępnych online.
+4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozę i diagnozę różnicową do wieku oraz płci pacjenta.
+5. **Rozróżnienie diagnozy głównej i różnicowej:** Podaj najprawdopodobniejszą diagnozę główną wraz z krótkim, zwięzłym uzasadnieniem, a następnie podaj diagnozę różnicową z analogicznym uzasadnieniem.
+6. **Wskazanie organizacji medycznej:** Na końcu podaj wyłącznie nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia.
+
+Dane pacjenta:
+- Wiek: ${age}
+- Płeć: ${sex}
+- Wyniki podmiotowe (wywiad lekarski): ${symptoms}
+- Wyniki przedmiotowe (badania przeprowadzone przez lekarza): ${physicalExam || 'Brak danych'}
+- Wyniki laboratoryjne: ${additionalTests || 'Brak danych'}
+${medicalHistory ? `- Historia medyczna: ${medicalHistory}` : ''}
+
+Odpowiedź musi być w formacie JSON, zawierając dokładnie pięć sekcji, bez dodatkowych komentarzy lub modyfikacji nagłówków:
+{
+    "Diagnoza_Główna": "Podaj tylko jedną nazwę najprawdopodobniejszej diagnozy",
+    "Uzasadnienie_Diagnozy": "Krótkie, zwięzłe uzasadnienie wyboru diagnozy głównej, z uwzględnieniem wieku, płci oraz wyników badań (pamiętaj, aby wyniki w normie nie wpływały na wybór diagnozy)",
+    "Diagnoza_Różnicowa": "Podaj tylko jedną nazwę najprawdopodobniejszej diagnozy różnicowej",
+    "Uzasadnienie_Różnicowe": "Krótkie, zwięzłe uzasadnienie wyboru diagnozy różnicowej",
+    "Towarzystwo_Medyczne": "Podaj wyłącznie nazwę polskiego towarzystwa medycznego (np. Polskie Towarzystwo Kardiologiczne)"
+}
+      `;
 
     console.log("📤 Wysyłanie zapytania do OpenAI API...");
     
