@@ -41,54 +41,35 @@ export async function POST(request) {
     // Przygotowanie systmowego i użytkownika promptu
     const systemPrompt = "Jesteś doświadczonym lekarzem medycznym z 20 letnim doświadczeniem w medycynie chorób wewnętrznych, który korzysta z najnowszych wytycznych medycznych.";
     
-    // Przygotowanie promptu do GPT z nowymi wymaganiami
+    // Przygotowanie promptu do GPT
     const userPrompt = `
       Twoim zadaniem jest postawienie precyzyjnej diagnozy na podstawie pełnych danych pacjenta, włączając: wiek, płeć, wyniki wywiadu lekarskiego, wyniki badań przeprowadzonych przez lekarza, wyniki badań laboratoryjnych oraz (jeśli dostępne) historię medyczną. Każda podana informacja ma kluczowe znaczenie i nie może być pominięta przy formułowaniu diagnozy.
 
-      Wymagania:
-      1. **Analiza wszystkich danych:** Uwzględnij wiek, płeć, objawy, wyniki badań przedmiotowych, wyniki badań laboratoryjnych oraz historię medyczną. Jeśli któryś z elementów nie został podany, przyjmij, że wynik jest prawidłowy i mieści się w normie.
-      2. **Bez sprzeczności z wynikami badań:** Jeśli konkretne wyniki (np. poziom leukocytów) są podane jako w normie, diagnoza nie może sugerować patologii związanej z odchyleniem tych wartości. Jeżeli model napotka brak danych, przyjmij, że wyniki są prawidłowe.
-      3. **Wykorzystanie najnowszej wiedzy medycznej:** Opieraj się na aktualnych wytycznych, artykułach oraz wiarygodnych źródłach dostępnych online.
-      4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozę i diagnozę różnicową do wieku oraz płci pacjenta.
-      5. **Przedstawienie kilku możliwych diagnoz:** Podaj 3-5 najbardziej prawdopodobnych diagnoz wraz z procentowym prawdopodobieństwem, krótkim uzasadnieniem, rekomendowanymi badaniami potwierdzającymi oraz wskazaniem odpowiedniego polskiego towarzystwa medycznego dla każdej diagnozy.
+Wymagania:
+1. **Analiza wszystkich danych:** Uwzględnij wiek, płeć, objawy, wyniki badań przedmiotowych, wyniki badań laboratoryjnych oraz historię medyczną. Jeśli któryś z elementów nie został podany, przyjmij, że wynik jest prawidłowy i mieści się w normie.
+2. **Bez sprzeczności z wynikami badań:** Jeśli konkretne wyniki (np. poziom leukocytów) są podane jako w normie, diagnoza nie może sugerować patologii związanej z odchyleniem tych wartości. Jeżeli model napotka brak danych, przyjmij, że wyniki są prawidłowe.
+3. **Wykorzystanie najnowszej wiedzy medycznej:** Opieraj się na aktualnych wytycznych, artykułach oraz wiarygodnych źródłach dostępnych online.
+4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozę i diagnozę różnicową do wieku oraz płci pacjenta.
+5. **Rozróżnienie diagnozy głównej i różnicowej:** Podaj najprawdopodobniejszą diagnozę główną wraz z krótkim, zwięzłym uzasadnieniem, a następnie podaj diagnozę różnicową z analogicznym uzasadnieniem.
+6. **Wskazanie organizacji medycznej:** Na końcu podaj wyłącznie nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia.
 
-      Dane pacjenta:
-      - Wiek: ${age}
-      - Płeć: ${sex}
-      - Wyniki podmiotowe (wywiad lekarski): ${symptoms}
-      - Wyniki przedmiotowe (badania przeprowadzone przez lekarza): ${physicalExam || 'Brak danych'}
-      - Wyniki laboratoryjne: ${additionalTests || 'Brak danych'}
-      ${medicalHistory ? `- Historia medyczna: ${medicalHistory}` : ''}
+Dane pacjenta:
+- Wiek: ${age}
+- Płeć: ${sex}
+- Wyniki podmiotowe (wywiad lekarski): ${symptoms}
+- Wyniki przedmiotowe (badania przeprowadzone przez lekarza): ${physicalExam || 'Brak danych'}
+- Wyniki laboratoryjne: ${additionalTests || 'Brak danych'}
+${medicalHistory ? `- Historia medyczna: ${medicalHistory}` : ''}
 
-      Format odpowiedzi musi być w JSON:
-      {
-        "diagnozy": [
-          {
-            "nazwa": "Nazwa pierwszej diagnozy",
-            "prawdopodobienstwo": 80,
-            "uzasadnienie": "Krótkie uzasadnienie wyboru tej diagnozy",
-            "badania_potwierdzające": ["Badanie 1", "Badanie 2", "Badanie 3"],
-            "towarzystwo_medyczne": "Nazwa polskiego towarzystwa medycznego"
-          },
-          {
-            "nazwa": "Nazwa drugiej diagnozy",
-            "prawdopodobienstwo": 65,
-            "uzasadnienie": "Krótkie uzasadnienie wyboru tej diagnozy",
-            "badania_potwierdzające": ["Badanie 1", "Badanie 2", "Badanie 3"],
-            "towarzystwo_medyczne": "Nazwa polskiego towarzystwa medycznego"
-          },
-          {
-            "nazwa": "Nazwa trzeciej diagnozy",
-            "prawdopodobienstwo": 40,
-            "uzasadnienie": "Krótkie uzasadnienie wyboru tej diagnozy",
-            "badania_potwierdzające": ["Badanie 1", "Badanie 2", "Badanie 3"],
-            "towarzystwo_medyczne": "Nazwa polskiego towarzystwa medycznego"
-          }
-        ]
-      }
-      
-      Diagnozy powinny być posortowane według prawdopodobieństwa od najwyższego do najniższego. Suma prawdopodobieństw nie musi wynosić 100%.
-      Badania potwierdzające powinny być konkretnymi testami medycznymi, które mogą potwierdzić daną diagnozę.`;
+Odpowiedź musi być w formacie JSON, zawierając dokładnie pięć sekcji, bez dodatkowych komentarzy lub modyfikacji nagłówków:
+{
+    "Diagnoza_Główna": "Podaj tylko jedną nazwę najprawdopodobniejszej diagnozy",
+    "Uzasadnienie_Diagnozy": "Krótkie, zwięzłe uzasadnienie wyboru diagnozy głównej, z uwzględnieniem wieku, płci oraz wyników badań (pamiętaj, aby wyniki w normie nie wpływały na wybór diagnozy)",
+    "Diagnoza_Różnicowa": "Podaj tylko jedną nazwę najprawdopodobniejszej diagnozy różnicowej",
+    "Uzasadnienie_Różnicowe": "Krótkie, zwięzłe uzasadnienie wyboru diagnozy różnicowej",
+    "Towarzystwo_Medyczne": "Podaj wyłącznie nazwę polskiego towarzystwa medycznego (np. Polskie Towarzystwo Kardiologiczne)"
+}
+      `;
 
     console.log("📤 Wysyłanie zapytania do OpenAI API...");
     
@@ -102,7 +83,7 @@ export async function POST(request) {
           { role: "user", content: userPrompt }
         ],
         temperature: 0.2, // Niska temperatura dla bardziej precyzyjnych odpowiedzi medycznych
-        max_tokens: 1500
+        max_tokens: 1000
       },
       {
         headers: {
@@ -156,39 +137,31 @@ export async function POST(request) {
     }
 
     // Sprawdzenie czy JSON zawiera wymagane pola
-    if (!parsedResponse.diagnozy || !Array.isArray(parsedResponse.diagnozy) || parsedResponse.diagnozy.length === 0) {
-      console.log("⚠️ Niekompletna odpowiedź JSON, brakuje pola 'diagnozy' lub jest puste");
+    if (!parsedResponse.Diagnoza_Główna || !parsedResponse.Uzasadnienie_Diagnozy || 
+        !parsedResponse.Diagnoza_Różnicowa || !parsedResponse.Uzasadnienie_Różnicowe || 
+        !parsedResponse.Towarzystwo_Medyczne) {
+      
+      console.log("⚠️ Niekompletna odpowiedź JSON, brakujące pola:", {
+        Diagnoza_Główna: !!parsedResponse.Diagnoza_Główna,
+        Uzasadnienie_Diagnozy: !!parsedResponse.Uzasadnienie_Diagnozy,
+        Diagnoza_Różnicowa: !!parsedResponse.Diagnoza_Różnicowa,
+        Uzasadnienie_Różnicowe: !!parsedResponse.Uzasadnienie_Różnicowe,
+        Towarzystwo_Medyczne: !!parsedResponse.Towarzystwo_Medyczne
+      });
       
       return NextResponse.json({ 
-        warning: "Niekompletna odpowiedź, brakuje wymaganych diagnoz", 
+        warning: "Niekompletna odpowiedź, brakuje wymaganych pól", 
         data: parsedResponse 
       }, { status: 207 });
     }
     
-    // Walidacja każdej diagnozy
-    const validatedDiagnozy = parsedResponse.diagnozy.map(diagnoza => {
-      return {
-        nazwa: diagnoza.nazwa || "Brak nazwy diagnozy",
-        prawdopodobienstwo: diagnoza.prawdopodobienstwo || 0,
-        uzasadnienie: diagnoza.uzasadnienie || "Brak uzasadnienia",
-        badania_potwierdzające: Array.isArray(diagnoza.badania_potwierdzające) 
-          ? diagnoza.badania_potwierdzające 
-          : diagnoza.badania_potwierdzające 
-            ? [diagnoza.badania_potwierdzające] 
-            : ["Brak rekomendowanych badań"],
-        towarzystwo_medyczne: diagnoza.towarzystwo_medyczne || "Brak wskazanego towarzystwa"
-      };
-    });
-    
-    // Zwróć odpowiedź do klienta z czystymi danymi
-    const cleanResponse = {
-      diagnozy: validatedDiagnozy
-    };
-    
-    console.log("✅ Wszystkie diagnozy zostały zwalidowane, zwracanie odpowiedzi");
-    console.log(`📋 Otrzymano ${validatedDiagnozy.length} diagnoz`);
+    console.log("✅ Wszystkie wymagane pola są obecne, zwracanie odpowiedzi");
+    console.log("📋 Diagnoza główna:", parsedResponse.Diagnoza_Główna);
+    console.log("📋 Diagnoza różnicowa:", parsedResponse.Diagnoza_Różnicowa);
+    console.log("📋 Towarzystwo medyczne:", parsedResponse.Towarzystwo_Medyczne);
 
-    return NextResponse.json(cleanResponse, { status: 200 });
+    // Zwróć odpowiedź do klienta
+    return NextResponse.json(parsedResponse, { status: 200 });
 
   } catch (error) {
     console.error("❌ Błąd podczas komunikacji z API:", error);
