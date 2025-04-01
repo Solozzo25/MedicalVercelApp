@@ -51,7 +51,7 @@ Wymagania:
 3. **Wykorzystanie najnowszej wiedzy medycznej:** Opieraj się na aktualnych wytycznych, artykułach oraz wiarygodnych źródłach dostępnych online.
 4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozę i diagnozę różnicową do wieku oraz płci pacjenta.
 5. **Rozróżnienie diagnozy głównej i różnicowej:** Podaj najprawdopodobniejszą diagnozę główną wraz z krótkim, zwięzłym uzasadnieniem, a następnie podaj diagnozę różnicową z analogicznym uzasadnieniem.
-6. **Wskazanie organizacji medycznej:** Na końcu podaj wyłącznie nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia.
+6. **Wskazanie organizacji medycznej:** Na końcu podaj wyłącznie nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia..
 
 Dane pacjenta:
 - Wiek: ${age}
