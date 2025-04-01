@@ -7,6 +7,7 @@ import Results from './Results';
 export default function TabContainer() {
   const [activeTab, setActiveTab] = useState('patient-data');
   const [isLoading, setIsLoading] = useState(false);
+  const [isTreatmentLoading, setIsTreatmentLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   
   // State dla danych
@@ -19,15 +20,16 @@ export default function TabContainer() {
     setActiveTab(tabName);
   };
 
-  // Obsługa formularza
+  // Obsługa formularza - teraz tylko pobiera diagnozy
   const handleFormSubmit = async (formData) => {
     setIsLoading(true);
     setErrorMessage('');
     setPatientData(formData);
+    setTreatmentData(null); // Reset danych leczenia
 
     try {
-      // Krok 1: Pobierz diagnozę od OpenAI
-      console.log("Krok 1: Wysyłanie danych do API diagnozy");
+      // Pobierz diagnozę od OpenAI
+      console.log("Wysyłanie danych do API diagnozy");
       const diagnosisResponse = await fetch('/api/gpt-diagnosis', {
         method: 'POST',
         headers: {
@@ -47,15 +49,36 @@ export default function TabContainer() {
       // Zapisz dane diagnozy
       setDiagnosisData(diagnosisResult);
 
-      // Krok 2: Przygotuj dane dla API rekomendacji leczenia
-      console.log("Krok 2: Przygotowanie danych dla API rekomendacji leczenia");
+      // Przełącz na zakładkę wyników
+      setActiveTab('results');
+    } catch (error) {
+      console.error('❌ Błąd podczas przetwarzania diagnozy:', error);
+      setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas przetwarzania zapytania o diagnozę.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Nowa funkcja do pobierania rekomendacji leczenia na podstawie wybranej diagnozy
+  const handleRequestTreatment = async (selectedDiagnosis) => {
+    if (!selectedDiagnosis) {
+      setErrorMessage('Najpierw wybierz diagnozę, aby uzyskać rekomendacje leczenia.');
+      return;
+    }
+
+    setIsTreatmentLoading(true);
+    setErrorMessage('');
+
+    try {
+      // Przygotuj dane dla API rekomendacji leczenia
+      console.log("Przygotowanie danych dla API rekomendacji leczenia");
       const treatmentRequestData = {
-        diagnosis: diagnosisResult.Diagnoza_Główna,
-        medicalSociety: diagnosisResult.Towarzystwo_Medyczne
+        diagnosis: selectedDiagnosis.nazwa,
+        medicalSociety: selectedDiagnosis.towarzystwo_medyczne
       };
 
-      // Krok 3: Pobierz rekomendacje leczenia od Perplexity API
-      console.log("Krok 3: Wysyłanie danych do API rekomendacji leczenia");
+      // Pobierz rekomendacje leczenia od Perplexity API
+      console.log("Wysyłanie danych do API rekomendacji leczenia");
       const treatmentResponse = await fetch('/api/perplexity-treatment', {
         method: 'POST',
         headers: {
@@ -74,14 +97,11 @@ export default function TabContainer() {
 
       // Zapisz dane rekomendacji
       setTreatmentData(treatmentResult);
-
-      // Przełącz na zakładkę wyników
-      setActiveTab('results');
     } catch (error) {
-      console.error('❌ Błąd podczas przetwarzania:', error);
-      setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas przetwarzania zapytania.');
+      console.error('❌ Błąd podczas pobierania rekomendacji leczenia:', error);
+      setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas pobierania rekomendacji leczenia.');
     } finally {
-      setIsLoading(false);
+      setIsTreatmentLoading(false);
     }
   };
 
@@ -123,7 +143,9 @@ export default function TabContainer() {
           treatmentData={treatmentData}
           patientData={patientData}
           isLoading={isLoading}
+          isTreatmentLoading={isTreatmentLoading}
           errorMessage={errorMessage}
+          onRequestTreatment={handleRequestTreatment}
         />
       </div>
     </div>
