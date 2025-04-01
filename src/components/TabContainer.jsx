@@ -14,16 +14,22 @@ export default function TabContainer() {
   const [diagnosisData, setDiagnosisData] = useState(null);
   const [treatmentData, setTreatmentData] = useState(null);
 
+  // Nowy stan dla wyboru diagnozy
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState('');
+  const [diagnosisConfirmed, setDiagnosisConfirmed] = useState(false);
+
   // Obsługa przełączania zakładek
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
   };
 
-  // Obsługa formularza
+  // Obsługa formularza - teraz tylko pobiera diagnozę
   const handleFormSubmit = async (formData) => {
     setIsLoading(true);
     setErrorMessage('');
     setPatientData(formData);
+    setDiagnosisConfirmed(false); // Resetuj stan potwierdzenia przy nowym zapytaniu
+    setSelectedDiagnosis(''); // Resetuj wybór diagnozy
 
     try {
       // Krok 1: Pobierz diagnozę od OpenAI
@@ -46,16 +52,37 @@ export default function TabContainer() {
       
       // Zapisz dane diagnozy
       setDiagnosisData(diagnosisResult);
-
-      // Krok 2: Przygotuj dane dla API rekomendacji leczenia
-      console.log("Krok 2: Przygotowanie danych dla API rekomendacji leczenia");
+      
+      // Przełącz na zakładkę wyników
+      setActiveTab('results');
+      
+    } catch (error) {
+      console.error('❌ Błąd podczas przetwarzania:', error);
+      setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas przetwarzania zapytania.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Nowa funkcja do obsługi potwierdzenia diagnozy
+  const handleDiagnosisConfirm = async () => {
+    if (!selectedDiagnosis) {
+      setErrorMessage('Proszę wybrać diagnozę przed kontynuacją.');
+      return;
+    }
+    
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    try {
+      // Przygotuj dane dla API rekomendacji leczenia
+      console.log("Wysyłanie danych do API rekomendacji leczenia");
       const treatmentRequestData = {
-        diagnosis: diagnosisResult.Diagnoza_Główna,
-        medicalSociety: diagnosisResult.Towarzystwo_Medyczne
+        diagnosis: selectedDiagnosis,
+        medicalSociety: diagnosisData.Towarzystwo_Medyczne
       };
 
-      // Krok 3: Pobierz rekomendacje leczenia od Perplexity API
-      console.log("Krok 3: Wysyłanie danych do API rekomendacji leczenia");
+      // Pobierz rekomendacje leczenia od Perplexity API
       const treatmentResponse = await fetch('/api/perplexity-treatment', {
         method: 'POST',
         headers: {
@@ -74,12 +101,11 @@ export default function TabContainer() {
 
       // Zapisz dane rekomendacji
       setTreatmentData(treatmentResult);
-
-      // Przełącz na zakładkę wyników
-      setActiveTab('results');
+      setDiagnosisConfirmed(true);
+      
     } catch (error) {
-      console.error('❌ Błąd podczas przetwarzania:', error);
-      setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas przetwarzania zapytania.');
+      console.error('❌ Błąd podczas przetwarzania rekomendacji:', error);
+      setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas pobierania rekomendacji leczenia.');
     } finally {
       setIsLoading(false);
     }
@@ -118,12 +144,73 @@ export default function TabContainer() {
       </div>
 
       <div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
+        {/* Potwierdzenie diagnozy - wyświetlane tylko jeśli mamy diagnozę, ale nie mamy jeszcze rekomendacji */}
+        {diagnosisData && !diagnosisConfirmed && (
+          <div className="diagnosis-confirmation">
+            <div className="alert alert-warning">
+              <i className="fas fa-info-circle"></i>
+              <div>Proszę wybrać diagnozę, dla której chcesz otrzymać rekomendacje leczenia:</div>
+            </div>
+            
+            <div className="form-group" style={{ marginTop: '16px' }}>
+              <div className="diagnosis-options">
+                <div className="form-check">
+                  <input 
+                    type="radio" 
+                    id="main-diagnosis" 
+                    name="diagnosis-type" 
+                    className="form-check-input" 
+                    checked={selectedDiagnosis === diagnosisData.Diagnoza_Główna}
+                    onChange={() => setSelectedDiagnosis(diagnosisData.Diagnoza_Główna)}
+                  />
+                  <label htmlFor="main-diagnosis" className="form-check-label">
+                    <strong>Diagnoza główna:</strong> {diagnosisData.Diagnoza_Główna}
+                  </label>
+                </div>
+                
+                <div className="form-check" style={{ marginTop: '8px' }}>
+                  <input 
+                    type="radio" 
+                    id="differential-diagnosis" 
+                    name="diagnosis-type" 
+                    className="form-check-input"
+                    checked={selectedDiagnosis === diagnosisData.Diagnoza_Różnicowa}
+                    onChange={() => setSelectedDiagnosis(diagnosisData.Diagnoza_Różnicowa)}
+                  />
+                  <label htmlFor="differential-diagnosis" className="form-check-label">
+                    <strong>Diagnoza różnicowa:</strong> {diagnosisData.Diagnoza_Różnicowa}
+                  </label>
+                </div>
+              </div>
+              
+              <button 
+                className="btn btn-primary" 
+                style={{ marginTop: '16px' }}
+                onClick={handleDiagnosisConfirm}
+                disabled={!selectedDiagnosis || isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i> Przetwarzanie...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-check-circle"></i> Potwierdź diagnozę i pobierz rekomendacje
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+        
         <Results 
           diagnosisData={diagnosisData}
           treatmentData={treatmentData}
           patientData={patientData}
           isLoading={isLoading}
           errorMessage={errorMessage}
+          selectedDiagnosis={selectedDiagnosis}
+          diagnosisConfirmed={diagnosisConfirmed}
         />
       </div>
     </div>
