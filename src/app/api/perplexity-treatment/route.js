@@ -36,43 +36,60 @@ export async function POST(request) {
     
     console.log("🔑 Klucz API Perplexity znaleziony (pierwszych 5 znaków):", apiKey.substring(0, 5) + '...');
 
-    // Przygotowanie promptu dla Perplexity API
+    // Przygotowanie promptu dla Perplexity API z nowymi wymaganiami
     const prompt = `
       Jesteś doświadczonym lekarzem medycznym z 20 letnim doświadczeniem. 
       Na podstawie podanej diagnozy (${diagnosis}) i rekomendacji towarzystwa medycznego (${medicalSociety || "polskiego towarzystwa medycznego właściwego dla tej choroby"}), 
       przygotuj szczegółowe rekomendacje leczenia.
       
-      BARDZO WAŻNE: Musisz opierać swoją odpowiedź wyłącznie na oficjalnych wytycznych ${medicalSociety || "odpowiedniego polskiego towarzystwa medycznego"} lub danych od redakcji medycy praktycznej oraz książek medycznych dostępnych w internecie.  Nie twórz żadnych rekomendacji bez poparcia źródłami.
+      BARDZO WAŻNE: Twoja odpowiedź powinna być dwuczęściowa:
+      1. Część pierwsza - rekomendacje oparte na ogólnej wiedzy medycznej i doświadczeniu klinicznym dla tej diagnozy, bez konieczności podawania źródeł.
+      2. Część druga - rekomendacje oparte na oficjalnych wytycznych ${medicalSociety || "odpowiedniego polskiego towarzystwa medycznego"} lub danych od redakcji Medycyny Praktycznej oraz książek medycznych dostępnych w internecie. Wszystkie zalecenia muszą być poparte źródłami.
       
-      Uwzględnij:
+      W każdej części uwzględnij:
       1. Farmakoterapię (leki, dawkowanie, czas stosowania)
       2. Zalecenia niefarmakologiczne (dieta, rehabilitacja, styl życia itp.)
-      3. Charakterystykę kluczowego leku (nazwa, wskazania, przeciwwskazania, interakcje)
       
-      Dla charakterystyki leku odwołuj się WYŁĄCZNIE do oficjalnych źródeł takich jak URPL (Urząd Rejestracji Produktów Leczniczych), Ministerstwo Zdrowia, ChPL (Charakterystyka Produktu Leczniczego) lub innych oficjalnych polskich źródeł rządowych.
+      Dodatkowo, przedstaw charakterystykę 2-4 kluczowych leków stosowanych w leczeniu tej diagnozy (zamiast tylko jednego), w tym: nazwa, wskazania, przeciwwskazania, interakcje.
+      
+      Dla charakterystyki leków odwołuj się WYŁĄCZNIE do oficjalnych źródeł takich jak URPL (Urząd Rejestracji Produktów Leczniczych), Ministerstwo Zdrowia, ChPL (Charakterystyka Produktu Leczniczego) lub innych oficjalnych polskich źródeł rządowych.
       
       Format odpowiedzi powinien być w JSON i zawierać następujące sekcje:
       {
-        "Farmakoterapia": [
-          "Zalecenie 1",
-          "Zalecenie 2"
-        ],
-        "Źródło_Farmakoterapii": "Pełny opis źródła z URL (np. wytyczne towarzystwa)",
-        "Zalecenia_Niefarmakologiczne": [
-          "Zalecenie 1",
-          "Zalecenie 2"
-        ],
-        "Źródło_Zaleceń_Niefarmakologicznych": "Pełny opis źródła z URL (np. wytyczne towarzystwa)",
-        "Charakterystyka_Leku": {
-          "Nazwa": "Nazwa kluczowego leku",
-          "Wskazania": ["Wskazanie 1", "Wskazanie 2"],
-          "Przeciwwskazania": ["Przeciwwskazanie 1", "Przeciwwskazanie 2"],
-          "Interakcje": ["Interakcja 1", "Interakcja 2"],
-          "Źródło": "Pełny opis źródła z URL (np. ChPL, URPL)"
-        }
+        "Rekomendacje_Ogólne": {
+          "Farmakoterapia": [
+            "Zalecenie 1",
+            "Zalecenie 2"
+          ],
+          "Zalecenia_Niefarmakologiczne": [
+            "Zalecenie 1",
+            "Zalecenie 2"
+          ]
+        },
+        "Rekomendacje_Oficjalne": {
+          "Farmakoterapia": [
+            "Zalecenie 1",
+            "Zalecenie 2"
+          ],
+          "Źródło_Farmakoterapii": "Pełny opis źródła z URL (np. wytyczne towarzystwa)",
+          "Zalecenia_Niefarmakologiczne": [
+            "Zalecenie 1",
+            "Zalecenie 2"
+          ],
+          "Źródło_Zaleceń_Niefarmakologicznych": "Pełny opis źródła z URL (np. wytyczne towarzystwa)"
+        },
+        "Charakterystyka_Leków": [
+          {
+            "Nazwa": "Nazwa leku 1",
+            "Wskazania": ["Wskazanie 1", "Wskazanie 2"],
+            "Przeciwwskazania": ["Przeciwwskazanie 1", "Przeciwwskazanie 2"],
+            "Interakcje": ["Interakcja 1", "Interakcja 2"],
+            "Źródło": "Pełny opis źródła z URL (np. ChPL, URPL)"
+          }
+        ]
       }
       
-      Kompletność źródeł i wiarygodność rekomendacji są kluczowe. Koniecznie podaj pełne URL do źródeł.
+      Kompletność źródeł w części oficjalnych rekomendacji i wiarygodność wszystkich rekomendacji są kluczowe. Podaj pełne URL do źródeł w części oficjalnej.
     `;
 
     console.log("📤 Wysyłanie zapytania do Perplexity API...");
@@ -81,13 +98,13 @@ export async function POST(request) {
     const perplexityResponse = await axios.post(
       'https://api.perplexity.ai/chat/completions',
       {
-        model: "sonar-pro", // model z dostępem do internetu
+        model: "llama-3-sonar-small-32k-online", // model z dostępem do internetu
         messages: [
           { role: "system", content: "Jesteś doświadczonym lekarzem, który udziela rekomendacji leczenia w oparciu o najnowsze wytyczne medyczne. Zawsze podajesz źródła swoich rekomendacji." },
           { role: "user", content: prompt }
         ],
         temperature: 0.1, // niska temperatura dla bardziej precyzyjnych, faktycznych odpowiedzi
-        max_tokens: 1500,
+        max_tokens: 2000,
         search_enable: true // włączenie wyszukiwania w internecie
       },
       {
@@ -139,51 +156,74 @@ export async function POST(request) {
 
     // Sprawdzenie i czyszczenie odpowiedzi
     const cleanedResponse = {
-      Farmakoterapia: Array.isArray(parsedResponse.Farmakoterapia) 
-        ? parsedResponse.Farmakoterapia 
-        : parsedResponse.Farmakoterapia 
-          ? [parsedResponse.Farmakoterapia] 
-          : [],
-          
-      Źródło_Farmakoterapii: parsedResponse.Źródło_Farmakoterapii || "",
+      Rekomendacje_Ogólne: {
+        Farmakoterapia: Array.isArray(parsedResponse.Rekomendacje_Ogólne?.Farmakoterapia) 
+          ? parsedResponse.Rekomendacje_Ogólne.Farmakoterapia 
+          : parsedResponse.Rekomendacje_Ogólne?.Farmakoterapia 
+            ? [parsedResponse.Rekomendacje_Ogólne.Farmakoterapia] 
+            : [],
+            
+        Zalecenia_Niefarmakologiczne: Array.isArray(parsedResponse.Rekomendacje_Ogólne?.Zalecenia_Niefarmakologiczne) 
+          ? parsedResponse.Rekomendacje_Ogólne.Zalecenia_Niefarmakologiczne 
+          : parsedResponse.Rekomendacje_Ogólne?.Zalecenia_Niefarmakologiczne 
+            ? [parsedResponse.Rekomendacje_Ogólne.Zalecenia_Niefarmakologiczne] 
+            : []
+      },
       
-      Zalecenia_Niefarmakologiczne: Array.isArray(parsedResponse.Zalecenia_Niefarmakologiczne) 
-        ? parsedResponse.Zalecenia_Niefarmakologiczne 
-        : parsedResponse.Zalecenia_Niefarmakologiczne 
-          ? [parsedResponse.Zalecenia_Niefarmakologiczne] 
-          : [],
-          
-      Źródło_Zaleceń_Niefarmakologicznych: parsedResponse.Źródło_Zaleceń_Niefarmakologicznych || "",
-      
-      Charakterystyka_Leku: {
-        Nazwa: parsedResponse.Charakterystyka_Leku?.Nazwa || "Brak danych",
+      Rekomendacje_Oficjalne: {
+        Farmakoterapia: Array.isArray(parsedResponse.Rekomendacje_Oficjalne?.Farmakoterapia) 
+          ? parsedResponse.Rekomendacje_Oficjalne.Farmakoterapia 
+          : parsedResponse.Rekomendacje_Oficjalne?.Farmakoterapia 
+            ? [parsedResponse.Rekomendacje_Oficjalne.Farmakoterapia] 
+            : [],
+            
+        Źródło_Farmakoterapii: parsedResponse.Rekomendacje_Oficjalne?.Źródło_Farmakoterapii || "",
         
-        Wskazania: Array.isArray(parsedResponse.Charakterystyka_Leku?.Wskazania) 
-          ? parsedResponse.Charakterystyka_Leku.Wskazania 
-          : parsedResponse.Charakterystyka_Leku?.Wskazania 
-            ? [parsedResponse.Charakterystyka_Leku.Wskazania] 
+        Zalecenia_Niefarmakologiczne: Array.isArray(parsedResponse.Rekomendacje_Oficjalne?.Zalecenia_Niefarmakologiczne) 
+          ? parsedResponse.Rekomendacje_Oficjalne.Zalecenia_Niefarmakologiczne 
+          : parsedResponse.Rekomendacje_Oficjalne?.Zalecenia_Niefarmakologiczne 
+            ? [parsedResponse.Rekomendacje_Oficjalne.Zalecenia_Niefarmakologiczne] 
             : [],
             
-        Przeciwwskazania: Array.isArray(parsedResponse.Charakterystyka_Leku?.Przeciwwskazania) 
-          ? parsedResponse.Charakterystyka_Leku.Przeciwwskazania 
-          : parsedResponse.Charakterystyka_Leku?.Przeciwwskazania 
-            ? [parsedResponse.Charakterystyka_Leku.Przeciwwskazania] 
-            : [],
+        Źródło_Zaleceń_Niefarmakologicznych: parsedResponse.Rekomendacje_Oficjalne?.Źródło_Zaleceń_Niefarmakologicznych || ""
+      },
+      
+      Charakterystyka_Leków: Array.isArray(parsedResponse.Charakterystyka_Leków) 
+        ? parsedResponse.Charakterystyka_Leków.map(lek => ({
+            Nazwa: lek.Nazwa || "Brak danych",
             
-        Interakcje: Array.isArray(parsedResponse.Charakterystyka_Leku?.Interakcje) 
-          ? parsedResponse.Charakterystyka_Leku.Interakcje 
-          : parsedResponse.Charakterystyka_Leku?.Interakcje 
-            ? [parsedResponse.Charakterystyka_Leku.Interakcje] 
-            : [],
-            
-        Źródło: parsedResponse.Charakterystyka_Leku?.Źródło || ""
-      }
+            Wskazania: Array.isArray(lek.Wskazania) 
+              ? lek.Wskazania 
+              : lek.Wskazania 
+                ? [lek.Wskazania] 
+                : [],
+                
+            Przeciwwskazania: Array.isArray(lek.Przeciwwskazania) 
+              ? lek.Przeciwwskazania 
+              : lek.Przeciwwskazania 
+                ? [lek.Przeciwwskazania] 
+                : [],
+                
+            Interakcje: Array.isArray(lek.Interakcje) 
+              ? lek.Interakcje 
+              : lek.Interakcje 
+                ? [lek.Interakcje] 
+                : [],
+                
+            Źródło: lek.Źródło || ""
+          }))
+        : parsedResponse.Charakterystyka_Leków
+          ? [parsedResponse.Charakterystyka_Leków]
+          : []
     };
     
     console.log("✅ Odpowiedź została oczyszczona i ustrukturyzowana");
 
     // Zweryfikuj czy mamy przynajmniej podstawowe dane
-    if (cleanedResponse.Farmakoterapia.length === 0 && cleanedResponse.Zalecenia_Niefarmakologiczne.length === 0) {
+    if (!cleanedResponse.Rekomendacje_Ogólne.Farmakoterapia.length && 
+        !cleanedResponse.Rekomendacje_Ogólne.Zalecenia_Niefarmakologiczne.length &&
+        !cleanedResponse.Rekomendacje_Oficjalne.Farmakoterapia.length && 
+        !cleanedResponse.Rekomendacje_Oficjalne.Zalecenia_Niefarmakologiczne.length) {
       console.log("⚠️ Ostrzeżenie: Brak zaleceń w odpowiedzi API");
       return NextResponse.json({ 
         warning: "Otrzymano niekompletną odpowiedź z API. Brak zaleceń terapeutycznych.",
@@ -225,4 +265,11 @@ export async function POST(request) {
       details: errorDetails
     }, { status: 500 });
   }
-}
+}Interakcje": ["Interakcja 1", "Interakcja 2"],
+            "Źródło": "Pełny opis źródła z URL (np. ChPL, URPL)"
+          },
+          {
+            "Nazwa": "Nazwa leku 2",
+            "Wskazania": ["Wskazanie 1", "Wskazanie 2"],
+            "Przeciwwskazania": ["Przeciwwskazanie 1", "Przeciwwskazanie 2"],
+            "
