@@ -10,31 +10,37 @@ export default function Results({
   isLoading, 
   isTreatmentLoading,
   errorMessage,
-  onRequestTreatment // New prop for requesting treatment
+  onRequestTreatment
 }) {
-  // State for tracking the selected diagnosis
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
+  const [currentDrugIndex, setCurrentDrugIndex] = useState(0);
 
-  // Funkcja do ekstrakcji linków URL z tekstu
   const extractUrl = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matches = text?.match(urlRegex);
     return matches ? matches[0] : null;
   };
 
-  // Handler for diagnosis selection
   const handleSelectDiagnosis = (diagnosis) => {
     setSelectedDiagnosis(diagnosis);
   };
 
-  // Handler for requesting treatment with selected diagnosis
   const handleRequestTreatment = () => {
     if (selectedDiagnosis) {
       onRequestTreatment(selectedDiagnosis);
     }
   };
 
-  // Funkcja do eksportu do PDF
+  const nextDrug = () => {
+    if (!treatmentData?.Charakterystyka_Leków?.length) return;
+    setCurrentDrugIndex((prev) => (prev + 1) % treatmentData.Charakterystyka_Leków.length);
+  };
+  
+  const prevDrug = () => {
+    if (!treatmentData?.Charakterystyka_Leków?.length) return;
+    setCurrentDrugIndex((prev) => (prev - 1 + treatmentData.Charakterystyka_Leków.length) % treatmentData.Charakterystyka_Leków.length);
+  };
+
   const handleExport = () => {
     if (!diagnosisData) {
       alert('Brak danych do eksportu. Najpierw uzyskaj diagnozę.');
@@ -44,25 +50,21 @@ export default function Results({
     try {
       const doc = new jsPDF();
       
-      // Tytuł dokumentu
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
       doc.text('Raport Diagnostyczny MedDiagnosis', 20, 20);
       
-      // Dane pacjenta
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
       doc.text(`Wiek pacjenta: ${patientData?.age || 'Nie podano'}`, 20, 35);
       doc.text(`Płeć pacjenta: ${patientData?.sex || 'Nie podano'}`, 20, 42);
       
-      // Diagnozy
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.text('Możliwe diagnozy:', 20, 55);
       
       let yPos = 60;
       
-      // Iteracja przez wszystkie diagnozy
       if (diagnosisData.diagnozy && diagnosisData.diagnozy.length > 0) {
         diagnosisData.diagnozy.forEach((diagnoza, index) => {
           doc.setFontSize(12);
@@ -71,13 +73,11 @@ export default function Results({
           doc.text(diagnozaText, 25, yPos);
           yPos += 8;
           
-          // Uzasadnienie
           doc.setFont('helvetica', 'normal');
           const uzasadnienieLines = doc.splitTextToSize(`Uzasadnienie: ${diagnoza.uzasadnienie}`, 160);
           doc.text(uzasadnienieLines, 30, yPos);
           yPos += uzasadnienieLines.length * 7;
           
-          // Badania potwierdzające
           doc.setFont('helvetica', 'italic');
           doc.text('Badania potwierdzające:', 30, yPos);
           yPos += 7;
@@ -92,14 +92,12 @@ export default function Results({
             yPos += 7;
           }
           
-          // Towarzystwo medyczne
           doc.setFont('helvetica', 'normal');
           doc.text(`Towarzystwo medyczne: ${diagnoza.towarzystwo_medyczne}`, 30, yPos);
-          yPos += 12; // Zwiększone odstępy między diagnozami
+          yPos += 12;
         });
       }
       
-      // Dodaj rekomendacje leczenia, jeśli są dostępne
       if (treatmentData) {
         doc.addPage();
         
@@ -107,20 +105,17 @@ export default function Results({
         doc.setFont('helvetica', 'bold');
         doc.text('Rekomendacje Leczenia', 20, 20);
         
-        // Wybrana diagnoza
         doc.setFontSize(14);
         doc.text(`Dla diagnozy: ${selectedDiagnosis.nazwa}`, 20, 30);
         
-        // Rekomendacje ogólne
+        let yPos = 45;
+        
         if (treatmentData.Rekomendacje_Ogólne) {
-          yPos = 45;
-          // Nagłówek rekomendacji ogólnych
           doc.setFontSize(14);
           doc.setFont('helvetica', 'bold');
           doc.text('Rekomendacje oparte na wiedzy medycznej:', 20, yPos);
           yPos += 10;
           
-          // Farmakoterapia ogólna
           doc.setFontSize(12);
           doc.setFont('helvetica', 'bold');
           doc.text('Farmakoterapia:', 25, yPos);
@@ -139,7 +134,6 @@ export default function Results({
             yPos += 7;
           }
           
-          // Zalecenia niefarmakologiczne ogólne
           yPos += 5;
           doc.setFontSize(12);
           doc.setFont('helvetica', 'bold');
@@ -160,9 +154,7 @@ export default function Results({
           }
         }
         
-        // Rekomendacje oficjalne
         if (treatmentData.Rekomendacje_Oficjalne) {
-          // Sprawdzenie czy trzeba dodać nową stronę
           if (yPos > 230) {
             doc.addPage();
             yPos = 20;
@@ -170,13 +162,11 @@ export default function Results({
             yPos += 15;
           }
           
-          // Nagłówek rekomendacji oficjalnych
           doc.setFontSize(14);
           doc.setFont('helvetica', 'bold');
           doc.text('Rekomendacje oficjalne:', 20, yPos);
           yPos += 10;
           
-          // Farmakoterapia oficjalna
           doc.setFontSize(12);
           doc.setFont('helvetica', 'bold');
           doc.text('Farmakoterapia:', 25, yPos);
@@ -195,7 +185,6 @@ export default function Results({
             yPos += 7;
           }
           
-          // Źródło farmakoterapii oficjalnej
           if (treatmentData.Rekomendacje_Oficjalne.Źródło_Farmakoterapii) {
             yPos += 3;
             doc.setFont('helvetica', 'italic');
@@ -204,7 +193,6 @@ export default function Results({
             yPos += zrodloLines.length * 6 + 3;
           }
           
-          // Zalecenia niefarmakologiczne oficjalne
           yPos += 5;
           doc.setFontSize(12);
           doc.setFont('helvetica', 'bold');
@@ -224,7 +212,6 @@ export default function Results({
             yPos += 7;
           }
           
-          // Źródło zaleceń niefarmakologicznych oficjalnych
           if (treatmentData.Rekomendacje_Oficjalne.Źródło_Zaleceń_Niefarmakologicznych) {
             yPos += 3;
             doc.setFont('helvetica', 'italic');
@@ -234,20 +221,16 @@ export default function Results({
           }
         }
         
-        // Charakterystyka leków
         if (treatmentData.Charakterystyka_Leków && treatmentData.Charakterystyka_Leków.length > 0) {
           treatmentData.Charakterystyka_Leków.forEach((lek, index) => {
-            // Dodaj nową stronę dla każdego leku
             doc.addPage();
             yPos = 20;
             
-            // Nagłówek charakterystyki leku
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
             doc.text(`Charakterystyka leku ${index + 1}/${treatmentData.Charakterystyka_Leków.length}: ${lek.Nazwa}`, 20, yPos);
             yPos += 10;
             
-            // Wskazania
             doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
             doc.text('Wskazania:', 25, yPos);
@@ -266,7 +249,6 @@ export default function Results({
               yPos += 7;
             }
             
-            // Przeciwwskazania
             yPos += 5;
             doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
@@ -286,7 +268,6 @@ export default function Results({
               yPos += 7;
             }
             
-            // Interakcje
             yPos += 5;
             doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
@@ -306,7 +287,6 @@ export default function Results({
               yPos += 7;
             }
             
-            // Źródło charakterystyki leku
             if (lek.Źródło) {
               yPos += 5;
               doc.setFont('helvetica', 'italic');
@@ -318,7 +298,6 @@ export default function Results({
         }
       }
       
-      // Zapisz PDF
       doc.save('MedDiagnosis-Raport.pdf');
     } catch (error) {
       console.error('Błąd podczas generowania PDF:', error);
@@ -326,7 +305,6 @@ export default function Results({
     }
   };
 
-  // Renderowanie błędów
   const renderError = () => {
     if (!errorMessage) return null;
     
@@ -350,7 +328,6 @@ export default function Results({
     );
   }
 
-  // Jeśli trwa ładowanie rekomendacji leczenia
   if (isTreatmentLoading) {
     return (
       <div className="loading" style={{ display: 'block' }}>
@@ -363,7 +340,6 @@ export default function Results({
     );
   }
 
-  // Jeśli nie ma danych diagnozy, zwróć komunikat
   if (!diagnosisData && !isLoading && !errorMessage) {
     return (
       <div className="alert alert-warning">
@@ -373,7 +349,6 @@ export default function Results({
     );
   }
 
-  // Funkcja do renderowania źródła z obsługą linków
   const renderSource = (sourceText) => {
     if (!sourceText) return null;
     
@@ -396,35 +371,12 @@ export default function Results({
     );
   };
 
-  // Funkcja do renderowania paska postępu dla prawdopodobieństwa diagnozy
-  const renderProbabilityBar = (probability) => {
-    const barColor = probability > 70 
-      ? 'var(--success)' 
-      : probability > 40 
-        ? 'var(--warning)' 
-        : 'var(--error)';
-    
-    return (
-      <div className="probability-bar-container">
-        <div 
-          className="probability-bar" 
-          style={{ 
-            width: `${probability}%`,
-            backgroundColor: barColor
-          }}
-        ></div>
-        <span className="probability-value">{probability}%</span>
-      </div>
-    );
-  };
-
   return (
     <div>
       {renderError()}
       
       {diagnosisData && (
         <div className="result-grid">
-          {/* Lista możliwych diagnoz */}
           {diagnosisData.diagnozy && diagnosisData.diagnozy.map((diagnoza, index) => (
             <div 
               key={index} 
@@ -447,7 +399,20 @@ export default function Results({
               </div>
               <div className="result-body">
                 <div className="result-section">
-                  {renderProbabilityBar(diagnoza.prawdopodobienstwo)}
+                  <div className="probability-bar-container">
+                    <div 
+                      className="probability-bar"
+                      style={{
+                        width: `${diagnoza.prawdopodobienstwo}%`,
+                        backgroundColor: diagnoza.prawdopodobienstwo > 70 
+                          ? 'var(--success)' 
+                          : diagnoza.prawdopodobienstwo > 40 
+                            ? 'var(--warning)' 
+                            : 'var(--error)'
+                      }}
+                    ></div>
+                    <span className="probability-value">{diagnoza.prawdopodobienstwo}%</span>
+                  </div>
                   <p className="list-item-desc">
                     <strong>Uzasadnienie:</strong> {diagnoza.uzasadnienie}
                   </p>
@@ -476,7 +441,6 @@ export default function Results({
             </div>
           ))}
           
-          {/* Przycisk do pobrania rekomendacji leczenia */}
           {diagnosisData && !treatmentData && selectedDiagnosis && (
             <div className="treatment-actions">
               <button 
@@ -489,10 +453,8 @@ export default function Results({
             </div>
           )}
 
-          {/* Karty rekomendacji leczenia - wyświetlane tylko jeśli są dostępne */}
           {treatmentData && (
             <>
-              {/* Rekomendacje ogólne */}
               {treatmentData.Rekomendacje_Ogólne && (
                 <div className="result-card treatment" style={{ gridColumn: '1/-1' }}>
                   <div className="result-header">
@@ -530,7 +492,6 @@ export default function Results({
                 </div>
               )}
 
-              {/* Rekomendacje oficjalne */}
               {treatmentData.Rekomendacje_Oficjalne && (
                 <div className="result-card treatment" style={{ gridColumn: '1/-1' }}>
                   <div className="result-header">
@@ -572,16 +533,87 @@ export default function Results({
                 </div>
               )}
 
-              {/* Karuzela leków */}
               {treatmentData.Charakterystyka_Leków && treatmentData.Charakterystyka_Leków.length > 0 && (
-                <DrugCarousel drugs={treatmentData.Charakterystyka_Leków} renderSource={renderSource} />
+                <div className="result-card drug" style={{ gridColumn: '1/-1' }}>
+                  <div className="result-header">
+                    <div className="result-title">
+                      <i className="fas fa-capsules"></i> Charakterystyka leku: {treatmentData.Charakterystyka_Leków[currentDrugIndex].Nazwa}
+                    </div>
+                    <div className="navigation-controls">
+                      <span className="navigation-indicator">Lek {currentDrugIndex + 1} z {treatmentData.Charakterystyka_Leków.length}</span>
+                      <div className="navigation-buttons">
+                        <button 
+                          className="action-btn" 
+                          onClick={prevDrug} 
+                          disabled={treatmentData.Charakterystyka_Leków.length <= 1}
+                          title="Poprzedni lek"
+                        >
+                          <i className="fas fa-chevron-left"></i>
+                        </button>
+                        <button 
+                          className="action-btn" 
+                          onClick={nextDrug}
+                          disabled={treatmentData.Charakterystyka_Leków.length <= 1}
+                          title="Następny lek"
+                        >
+                          <i className="fas fa-chevron-right"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="result-body">
+                    <div className="result-section">
+                      <h4 className="result-section-title">Wskazania</h4>
+                      <ul className="treatment-list drug">
+                        {treatmentData.Charakterystyka_Leków[currentDrugIndex].Wskazania && 
+                         treatmentData.Charakterystyka_Leków[currentDrugIndex].Wskazania.length > 0 
+                          ? treatmentData.Charakterystyka_Leków[currentDrugIndex].Wskazania.map((item, index) => (
+                              <li key={index}>{item}</li>
+                            ))
+                          : <li>Brak danych o wskazaniach</li>
+                        }
+                      </ul>
+                    </div>
+                    
+                    <div className="result-section">
+                      <h4 className="result-section-title">Przeciwwskazania</h4>
+                      <ul className="treatment-list drug">
+                        {treatmentData.Charakterystyka_Leków[currentDrugIndex].Przeciwwskazania && 
+                         treatmentData.Charakterystyka_Leków[currentDrugIndex].Przeciwwskazania.length > 0 
+                          ? treatmentData.Charakterystyka_Leków[currentDrugIndex].Przeciwwskazania.map((item, index) => (
+                              <li key={index}>{item}</li>
+                            ))
+                          : <li>Brak danych o przeciwwskazaniach</li>
+                        }
+                      </ul>
+                    </div>
+                    
+                    <div className="result-section">
+                      <h4 className="result-section-title">Interakcje</h4>
+                      <ul className="treatment-list drug">
+                        {treatmentData.Charakterystyka_Leków[currentDrugIndex].Interakcje && 
+                         treatmentData.Charakterystyka_Leków[currentDrugIndex].Interakcje.length > 0 
+                          ? treatmentData.Charakterystyka_Leków[currentDrugIndex].Interakcje.map((item, index) => (
+                              <li key={index}>{item}</li>
+                            ))
+                          : <li>Brak danych o interakcjach</li>
+                        }
+                      </ul>
+                    </div>
+                    
+                    {treatmentData.Charakterystyka_Leków[currentDrugIndex].Źródło && (
+                      <div className="result-section">
+                        {renderSource(treatmentData.Charakterystyka_Leków[currentDrugIndex].Źródło)}
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </>
           )}
         </div>
       )}
 
-      {/* Przycisk eksportu */}
       {diagnosisData && (
         <div style={{ textAlign: 'center', marginTop: '24px' }}>
           <button 
@@ -592,96 +624,6 @@ export default function Results({
           </button>
         </div>
       )}
-    </div>
-  );
-}
-
-// Komponent karuzeli leków
-function DrugCarousel({ drugs, renderSource }) {
-  const [currentDrugIndex, setCurrentDrugIndex] = useState(0);
-  const drugsCount = drugs.length;
-  
-  const nextDrug = () => {
-    setCurrentDrugIndex((prev) => (prev + 1) % drugsCount);
-  };
-  
-  const prevDrug = () => {
-    setCurrentDrugIndex((prev) => (prev - 1 + drugsCount) % drugsCount);
-  };
-  
-  const currentDrug = drugs[currentDrugIndex];
-  
-  return (
-    <div className="result-card drug" style={{ gridColumn: '1/-1' }}>
-      <div className="result-header">
-        <div className="result-title">
-          <i className="fas fa-capsules"></i> Charakterystyka leku: {currentDrug.Nazwa}
-        </div>
-        <div className="navigation-controls">
-          <span className="navigation-indicator">Lek {currentDrugIndex + 1} z {drugsCount}</span>
-          <div className="navigation-buttons">
-            <button 
-              className="action-btn" 
-              onClick={prevDrug} 
-              disabled={drugsCount <= 1}
-              title="Poprzedni lek"
-            >
-              <i className="fas fa-chevron-left"></i>
-            </button>
-            <button 
-              className="action-btn" 
-              onClick={nextDrug}
-              disabled={drugsCount <= 1}
-              title="Następny lek"
-            >
-              <i className="fas fa-chevron-right"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="result-body">
-        <div className="result-section">
-          <h4 className="result-section-title">Wskazania</h4>
-          <ul className="treatment-list drug">
-            {currentDrug.Wskazania && currentDrug.Wskazania.length > 0 
-              ? currentDrug.Wskazania.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))
-              : <li>Brak danych o wskazaniach</li>
-            }
-          </ul>
-        </div>
-        
-        <div className="result-section">
-          <h4 className="result-section-title">Przeciwwskazania</h4>
-          <ul className="treatment-list drug">
-            {currentDrug.Przeciwwskazania && currentDrug.Przeciwwskazania.length > 0 
-              ? currentDrug.Przeciwwskazania.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))
-              : <li>Brak danych o przeciwwskazaniach</li>
-            }
-          </ul>
-        </div>
-        
-        <div className="result-section">
-          <h4 className="result-section-title">Interakcje</h4>
-          <ul className="treatment-list drug">
-            {currentDrug.Interakcje && currentDrug.Interakcje.length > 0 
-              ? currentDrug.Interakcje.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))
-              : <li>Brak danych o interakcjach</li>
-            }
-          </ul>
-        </div>
-        
-        {currentDrug.Źródło && (
-          <div className="result-section">
-            {renderSource(currentDrug.Źródło)}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
