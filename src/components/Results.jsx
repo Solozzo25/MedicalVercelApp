@@ -8,7 +8,9 @@ export default function Results({
   treatmentData, 
   patientData, 
   isLoading, 
-  errorMessage 
+  errorMessage,
+  selectedDiagnosis, 
+  diagnosisConfirmed 
 }) {
   // Funkcja do ekstrakcji linków URL z tekstu
   const extractUrl = (text) => {
@@ -47,15 +49,23 @@ export default function Results({
       doc.setFont('helvetica', 'normal');
       doc.text(diagnosisData.Diagnoza_Główna || 'Brak danych', 25, 62);
       
+      // Zaznaczenie wybranej diagnozy
+      if (selectedDiagnosis === diagnosisData.Diagnoza_Główna) {
+        doc.setFont('helvetica', 'bold');
+        doc.text('* WYBRANA DO REKOMENDACJI LECZENIA *', 25, 69);
+        doc.setFont('helvetica', 'normal');
+      }
+      
       // Uzasadnienie diagnozy - dzielenie długiego tekstu na wiele linii
+      const startYPos = selectedDiagnosis === diagnosisData.Diagnoza_Główna ? 76 : 69;
       const uzasadnienieLines = doc.splitTextToSize(
         `Uzasadnienie: ${diagnosisData.Uzasadnienie_Diagnozy || 'Brak danych'}`, 
         170
       );
-      doc.text(uzasadnienieLines, 25, 69);
+      doc.text(uzasadnienieLines, 25, startYPos);
       
       // Pozycja Y dla następnej sekcji - dynamiczna w zależności od długości uzasadnienia
-      let yPos = 69 + (uzasadnienieLines.length * 7);
+      let yPos = startYPos + (uzasadnienieLines.length * 7);
       
       // Diagnoza różnicowa
       doc.setFontSize(14);
@@ -65,6 +75,14 @@ export default function Results({
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
       doc.text(diagnosisData.Diagnoza_Różnicowa || 'Brak danych', 25, yPos + 7);
+      
+      // Zaznaczenie wybranej diagnozy
+      if (selectedDiagnosis === diagnosisData.Diagnoza_Różnicowa) {
+        doc.setFont('helvetica', 'bold');
+        doc.text('* WYBRANA DO REKOMENDACJI LECZENIA *', 25, yPos + 14);
+        doc.setFont('helvetica', 'normal');
+        yPos += 7;
+      }
       
       // Uzasadnienie diagnozy różnicowej
       const uzasadnienieRoznicoweLines = doc.splitTextToSize(
@@ -92,14 +110,19 @@ export default function Results({
         doc.setFont('helvetica', 'bold');
         doc.text('Rekomendacje Leczenia', 20, 20);
         
+        // Dodaj informację o wybranej diagnozie
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'italic');
+        doc.text(`Rekomendacje dla diagnozy: ${selectedDiagnosis}`, 20, 30);
+        
         // Farmakoterapia
         doc.setFontSize(14);
         doc.setFont('helvetica', 'bold');
-        doc.text('Farmakoterapia:', 20, 35);
+        doc.text('Farmakoterapia:', 20, 40);
         
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
-        let currentY = 42;
+        let currentY = 47;
         
         if (treatmentData.Farmakoterapia && treatmentData.Farmakoterapia.length > 0) {
           treatmentData.Farmakoterapia.forEach(item => {
@@ -297,6 +320,12 @@ export default function Results({
     );
   }
 
+  // Jeśli mamy diagnozę, ale nie wybrano jeszcze której diagnozy użyć dla rekomendacji
+  // Pominięcie wyświetlania wyników, ponieważ sekcja wyboru diagnozy jest już w TabContainer
+  if (diagnosisData && !diagnosisConfirmed && !treatmentData) {
+    return null; // TabContainer wyświetli sekcję wyboru diagnozy
+  }
+
   // Jeśli nie ma danych diagnozy, zwróć komunikat
   if (!diagnosisData && !isLoading && !errorMessage) {
     return (
@@ -337,13 +366,14 @@ export default function Results({
       {diagnosisData && (
         <div className="result-grid">
           {/* Karta diagnozy głównej */}
-          <div className="result-card diagnosis">
+          <div className={`result-card diagnosis ${selectedDiagnosis === diagnosisData.Diagnoza_Główna ? 'selected-diagnosis' : ''}`}>
             <div className="result-header">
               <div className="result-title">
                 <i className="fas fa-search-plus"></i> Diagnoza główna
               </div>
-              <span className="badge badge-success">
-                <i className="fas fa-check-circle"></i> Główna diagnoza
+              <span className={`badge ${selectedDiagnosis === diagnosisData.Diagnoza_Główna ? 'badge-primary' : 'badge-success'}`}>
+                <i className={`fas ${selectedDiagnosis === diagnosisData.Diagnoza_Główna ? 'fa-check-double' : 'fa-check-circle'}`}></i> 
+                {selectedDiagnosis === diagnosisData.Diagnoza_Główna ? 'Wybrana do rekomendacji' : 'Główna diagnoza'}
               </span>
             </div>
             <div className="result-body">
@@ -357,13 +387,14 @@ export default function Results({
           </div>
 
           {/* Karta diagnozy różnicowej */}
-          <div className="result-card differential">
+          <div className={`result-card differential ${selectedDiagnosis === diagnosisData.Diagnoza_Różnicowa ? 'selected-diagnosis' : ''}`}>
             <div className="result-header">
               <div className="result-title">
                 <i className="fas fa-sitemap"></i> Diagnostyka różnicowa
               </div>
-              <span className="badge badge-warning">
-                <i className="fas fa-exclamation-triangle"></i> Diagnoza różnicowa
+              <span className={`badge ${selectedDiagnosis === diagnosisData.Diagnoza_Różnicowa ? 'badge-primary' : 'badge-warning'}`}>
+                <i className={`fas ${selectedDiagnosis === diagnosisData.Diagnoza_Różnicowa ? 'fa-check-double' : 'fa-exclamation-triangle'}`}></i> 
+                {selectedDiagnosis === diagnosisData.Diagnoza_Różnicowa ? 'Wybrana do rekomendacji' : 'Diagnoza różnicowa'}
               </span>
             </div>
             <div className="result-body">
@@ -393,8 +424,26 @@ export default function Results({
             </div>
           </div>
 
+          {/* Informacja o wybranej diagnozie dla rekomendacji */}
+          {selectedDiagnosis && diagnosisConfirmed && (
+            <div className="result-card info" style={{ gridColumn: '1/-1' }}>
+              <div className="result-header">
+                <div className="result-title">
+                  <i className="fas fa-info-circle"></i> Informacja o rekomendacjach
+                </div>
+              </div>
+              <div className="result-body">
+                <div className="result-section">
+                  <p className="list-item-desc">
+                    Poniższe rekomendacje leczenia zostały przygotowane dla diagnozy: <strong>{selectedDiagnosis}</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Karty rekomendacji leczenia - wyświetlane tylko jeśli są dostępne */}
-          {treatmentData && (
+          {treatmentData && diagnosisConfirmed && (
             <>
               {/* Karta farmakoterapii */}
               <div className="result-card treatment" style={{ gridColumn: '1/-1' }}>
@@ -508,4 +557,3 @@ export default function Results({
     </div>
   );
 }
-
