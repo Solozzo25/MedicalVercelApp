@@ -85,6 +85,13 @@ export async function POST(request) {
             "Przeciwwskazania": ["Przeciwwskazanie 1", "Przeciwwskazanie 2"],
             "Interakcje": ["Interakcja 1", "Interakcja 2"],
             "Źródło": "Pełny opis źródła z URL (np. ChPL, URPL)"
+          },
+          {
+            "Nazwa": "Nazwa leku 2",
+            "Wskazania": ["Wskazanie 1", "Wskazanie 2"],
+            "Przeciwwskazania": ["Przeciwwskazanie 1", "Przeciwwskazanie 2"],
+            "Interakcje": ["Interakcja 1", "Interakcja 2"],
+            "Źródło": "Pełny opis źródła z URL (np. ChPL, URPL)"
           }
         ]
       }
@@ -265,11 +272,4 @@ export async function POST(request) {
       details: errorDetails
     }, { status: 500 });
   }
-}Interakcje": ["Interakcja 1", "Interakcja 2"],
-            "Źródło": "Pełny opis źródła z URL (np. ChPL, URPL)"
-          },
-          {
-            "Nazwa": "Nazwa leku 2",
-            "Wskazania": ["Wskazanie 1", "Wskazanie 2"],
-            "Przeciwwskazania": ["Przeciwwskazanie 1", "Przeciwwskazanie 2"],
-            "
+}
