@@ -860,4 +860,23 @@ h1, h2, h3, h4, h5, h6 {
 .fa-spinner {
   animation: spin 1s linear infinite;
 }
+    /* Style dla paska postępu */
+.progress {
+  display: flex;
+  height: 0.75rem;
+  overflow: hidden;
+  font-size: .75rem;
+  background-color: var(--gray-200);
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--white);
+  text-align: center;
+  white-space: nowrap;
+  transition: width .6s ease;
+}
 }
