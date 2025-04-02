@@ -49,9 +49,10 @@ Wymagania:
 1. **Analiza wszystkich danych:** Uwzględnij wiek, płeć, objawy, wyniki badań przedmiotowych, wyniki badań laboratoryjnych oraz historię medyczną. Jeśli któryś z elementów nie został podany, przyjmij, że wynik jest prawidłowy i mieści się w normie.
 2. **Bez sprzeczności z wynikami badań:** Jeśli konkretne wyniki (np. poziom leukocytów) są podane jako w normie, diagnoza nie może sugerować patologii związanej z odchyleniem tych wartości. Jeżeli model napotka brak danych, przyjmij, że wyniki są prawidłowe.
 3. **Wykorzystanie najnowszej wiedzy medycznej:** Opieraj się na aktualnych wytycznych, artykułach oraz wiarygodnych źródłach dostępnych online.
-4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozę i diagnozę różnicową do wieku oraz płci pacjenta.
-5. **Rozróżnienie diagnozy głównej i różnicowej:** Podaj najprawdopodobniejszą diagnozę główną wraz z krótkim, zwięzłym uzasadnieniem, a następnie podaj diagnozę różnicową z analogicznym uzasadnieniem.
-6. **Wskazanie organizacji medycznej:** Na końcu podaj wyłącznie nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia..
+4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozy do wieku oraz płci pacjenta.
+5. **Zaproponowanie kilku możliwych diagnoz:** Podaj 3-5 najbardziej prawdopodobnych diagnoz, przypisując każdej szacunkowy procent prawdopodobieństwa trafności diagnozy na podstawie dostarczonych danych.
+6. **Uzasadnienie każdej diagnozy:** Dla każdej zaproponowanej diagnozy podaj krótkie, zwięzłe uzasadnienie.
+7. **Wskazanie organizacji medycznej:** Dla każdej diagnozy podaj nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia.
 
 Dane pacjenta:
 - Wiek: ${age}
@@ -61,13 +62,28 @@ Dane pacjenta:
 - Wyniki laboratoryjne: ${additionalTests || 'Brak danych'}
 ${medicalHistory ? `- Historia medyczna: ${medicalHistory}` : ''}
 
-Odpowiedź musi być w formacie JSON, zawierając dokładnie pięć sekcji, bez dodatkowych komentarzy lub modyfikacji nagłówków:
+Odpowiedź musi być w formacie JSON, zawierając następujące sekcje, bez dodatkowych komentarzy lub modyfikacji nagłówków:
 {
-    "Diagnoza_Główna": "Podaj tylko jedną nazwę najprawdopodobniejszej diagnozy",
-    "Uzasadnienie_Diagnozy": "Krótkie, zwięzłe uzasadnienie wyboru diagnozy głównej, z uwzględnieniem wieku, płci oraz wyników badań (pamiętaj, aby wyniki w normie nie wpływały na wybór diagnozy)",
-    "Diagnoza_Różnicowa": "Podaj tylko jedną nazwę najprawdopodobniejszej diagnozy różnicowej",
-    "Uzasadnienie_Różnicowe": "Krótkie, zwięzłe uzasadnienie wyboru diagnozy różnicowej",
-    "Towarzystwo_Medyczne": "Podaj wyłącznie nazwę polskiego towarzystwa medycznego (np. Polskie Towarzystwo Kardiologiczne)"
+    "Diagnozy": [
+        {
+            "Nazwa": "Nazwa pierwszej diagnozy",
+            "Prawdopodobieństwo": 85,
+            "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
+            "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
+        },
+        {
+            "Nazwa": "Nazwa drugiej diagnozy",
+            "Prawdopodobieństwo": 65,
+            "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
+            "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
+        },
+        {
+            "Nazwa": "Nazwa trzeciej diagnozy",
+            "Prawdopodobieństwo": 40,
+            "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
+            "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
+        }
+    ]
 }
       `;
 
@@ -137,16 +153,9 @@ Odpowiedź musi być w formacie JSON, zawierając dokładnie pięć sekcji, bez 
     }
 
     // Sprawdzenie czy JSON zawiera wymagane pola
-    if (!parsedResponse.Diagnoza_Główna || !parsedResponse.Uzasadnienie_Diagnozy || 
-        !parsedResponse.Diagnoza_Różnicowa || !parsedResponse.Uzasadnienie_Różnicowe || 
-        !parsedResponse.Towarzystwo_Medyczne) {
-      
+    if (!parsedResponse.Diagnozy || !Array.isArray(parsedResponse.Diagnozy) || parsedResponse.Diagnozy.length === 0) {
       console.log("⚠️ Niekompletna odpowiedź JSON, brakujące pola:", {
-        Diagnoza_Główna: !!parsedResponse.Diagnoza_Główna,
-        Uzasadnienie_Diagnozy: !!parsedResponse.Uzasadnienie_Diagnozy,
-        Diagnoza_Różnicowa: !!parsedResponse.Diagnoza_Różnicowa,
-        Uzasadnienie_Różnicowe: !!parsedResponse.Uzasadnienie_Różnicowe,
-        Towarzystwo_Medyczne: !!parsedResponse.Towarzystwo_Medyczne
+        Diagnozy: Array.isArray(parsedResponse.Diagnozy) && parsedResponse.Diagnozy.length > 0
       });
       
       return NextResponse.json({ 
@@ -155,10 +164,21 @@ Odpowiedź musi być w formacie JSON, zawierając dokładnie pięć sekcji, bez 
       }, { status: 207 });
     }
     
+    // Weryfikacja każdej diagnozy
+    for (const diagnoza of parsedResponse.Diagnozy) {
+      if (!diagnoza.Nazwa || typeof diagnoza.Prawdopodobieństwo !== 'number' || 
+          !diagnoza.Uzasadnienie || !diagnoza.Towarzystwo_Medyczne) {
+        console.log("⚠️ Niepełne dane dla diagnozy:", diagnoza);
+        return NextResponse.json({ 
+          warning: "Niepełne dane dla jednej z diagnoz", 
+          data: parsedResponse 
+        }, { status: 207 });
+      }
+    }
+    
     console.log("✅ Wszystkie wymagane pola są obecne, zwracanie odpowiedzi");
-    console.log("📋 Diagnoza główna:", parsedResponse.Diagnoza_Główna);
-    console.log("📋 Diagnoza różnicowa:", parsedResponse.Diagnoza_Różnicowa);
-    console.log("📋 Towarzystwo medyczne:", parsedResponse.Towarzystwo_Medyczne);
+    console.log("📋 Liczba diagnoz:", parsedResponse.Diagnozy.length);
+    console.log("📋 Przykładowa diagnoza:", parsedResponse.Diagnozy[0].Nazwa);
 
     // Zwróć odpowiedź do klienta
     return NextResponse.json(parsedResponse, { status: 200 });
