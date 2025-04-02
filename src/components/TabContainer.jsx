@@ -150,52 +150,86 @@ export default function TabContainer() {
       </div>
 
       <div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
-        {/* Potwierdzenie diagnozy - wyświetlane tylko jeśli mamy diagnozę, ale nie mamy jeszcze rekomendacji */}
-        {diagnosisData && !diagnosisConfirmed && (
-          <div className="diagnosis-confirmation">
-            <div className="alert alert-warning">
-              <i className="fas fa-info-circle"></i>
-              <div>Proszę wybrać diagnozę, dla której chcesz otrzymać rekomendacje leczenia:</div>
+      
+{/* Potwierdzenie diagnozy - wyświetlane jako karuzela kart */}
+{diagnosisData && !diagnosisConfirmed && (
+  <div className="diagnosis-confirmation">
+    <div className="alert alert-info">
+      <i className="fas fa-info-circle"></i>
+      <div>Wybierz diagnozę, dla której chcesz otrzymać rekomendacje leczenia:</div>
+    </div>
+    
+    <div className="result-grid">
+      {diagnosisData.Diagnozy && diagnosisData.Diagnozy.map((diagnoza, index) => (
+        <div 
+          key={index} 
+          className={`result-card diagnosis ${selectedDiagnosis === diagnoza.Nazwa ? 'selected-diagnosis' : ''}`}
+          onClick={() => setSelectedDiagnosis(diagnoza.Nazwa)}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="result-header">
+            <div className="result-title">
+              <i className="fas fa-search-plus"></i> Diagnoza {index + 1}
             </div>
-            
-            <div className="form-group" style={{ marginTop: '16px' }}>
-              <div className="diagnosis-options">
-                {diagnosisData.Diagnozy && diagnosisData.Diagnozy.map((diagnoza, index) => (
-                  <div className="form-check" key={index} style={{ marginTop: index > 0 ? '8px' : '0' }}>
-                    <input 
-                      type="radio" 
-                      id={`diagnosis-${index}`} 
-                      name="diagnosis-type" 
-                      className="form-check-input" 
-                      checked={selectedDiagnosis === diagnoza.Nazwa}
-                      onChange={() => setSelectedDiagnosis(diagnoza.Nazwa)}
-                    />
-                    <label htmlFor={`diagnosis-${index}`} className="form-check-label">
-                      <strong>{diagnoza.Nazwa}</strong> (Prawdopodobieństwo: {diagnoza.Prawdopodobieństwo}%)
-                    </label>
-                  </div>
-                ))}
+            {selectedDiagnosis === diagnoza.Nazwa ? (
+              <span className="badge badge-primary">
+                <i className="fas fa-check-double"></i> Wybrana do rekomendacji
+              </span>
+            ) : (
+              <span className={`badge ${diagnoza.Prawdopodobieństwo >= 70 ? 'badge-success' : 
+                                     diagnoza.Prawdopodobieństwo >= 40 ? 'badge-warning' : 'badge-danger'}`}>
+                <i className="fas fa-percentage"></i> {diagnoza.Prawdopodobieństwo}%
+              </span>
+            )}
+          </div>
+          <div className="result-body">
+            <div className="result-section">
+              <h3 className="list-item-title">{diagnoza.Nazwa}</h3>
+              <div className="progress" style={{ height: '10px', margin: '10px 0' }}>
+                <div 
+                  className="progress-bar" 
+                  role="progressbar" 
+                  style={{ 
+                    width: `${diagnoza.Prawdopodobieństwo}%`,
+                    backgroundColor: diagnoza.Prawdopodobieństwo >= 70 ? 'var(--success)' : 
+                                    diagnoza.Prawdopodobieństwo >= 40 ? 'var(--warning)' : 'var(--error)'
+                  }}
+                  aria-valuenow={diagnoza.Prawdopodobieństwo} 
+                  aria-valuemin="0" 
+                  aria-valuemax="100"
+                ></div>
               </div>
-              
-              <button 
-                className="btn btn-primary" 
-                style={{ marginTop: '16px' }}
-                onClick={handleDiagnosisConfirm}
-                disabled={!selectedDiagnosis || isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin"></i> Przetwarzanie...
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-check-circle"></i> Potwierdź diagnozę i pobierz rekomendacje
-                  </>
-                )}
-              </button>
+              <p className="list-item-desc">
+                <strong>Uzasadnienie:</strong> {diagnoza.Uzasadnienie}
+              </p>
+              <p className="list-item-desc">
+                <strong>Towarzystwo medyczne:</strong> {diagnoza.Towarzystwo_Medyczne}
+              </p>
             </div>
           </div>
+        </div>
+      ))}
+    </div>
+    
+    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+      <button 
+        className="btn btn-primary" 
+        onClick={handleDiagnosisConfirm}
+        disabled={!selectedDiagnosis || isLoading}
+      >
+        {isLoading ? (
+          <>
+            <i className="fas fa-spinner fa-spin"></i> Przetwarzanie...
+          </>
+        ) : (
+          <>
+            <i className="fas fa-check-circle"></i> Potwierdź diagnozę i pobierz rekomendacje
+          </>
         )}
+      </button>
+    </div>
+  </div>
+)}
         
         <Results 
           diagnosisData={diagnosisData}
