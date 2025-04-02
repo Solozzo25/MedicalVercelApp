@@ -14,8 +14,9 @@ export default function TabContainer() {
   const [diagnosisData, setDiagnosisData] = useState(null);
   const [treatmentData, setTreatmentData] = useState(null);
 
-  // Nowy stan dla wyboru diagnozy
+  // Stan dla wyboru diagnozy
   const [selectedDiagnosis, setSelectedDiagnosis] = useState('');
+  const [selectedDiagnosisObj, setSelectedDiagnosisObj] = useState(null);
   const [diagnosisConfirmed, setDiagnosisConfirmed] = useState(false);
 
   // Obsługa przełączania zakładek
@@ -30,6 +31,7 @@ export default function TabContainer() {
     setPatientData(formData);
     setDiagnosisConfirmed(false); // Resetuj stan potwierdzenia przy nowym zapytaniu
     setSelectedDiagnosis(''); // Resetuj wybór diagnozy
+    setSelectedDiagnosisObj(null);
 
     try {
       // Krok 1: Pobierz diagnozę od OpenAI
@@ -64,7 +66,7 @@ export default function TabContainer() {
     }
   };
   
-  // Nowa funkcja do obsługi potwierdzenia diagnozy
+  // Funkcja do obsługi potwierdzenia diagnozy
   const handleDiagnosisConfirm = async () => {
     if (!selectedDiagnosis) {
       setErrorMessage('Proszę wybrać diagnozę przed kontynuacją.');
@@ -79,7 +81,7 @@ export default function TabContainer() {
       console.log("Wysyłanie danych do API rekomendacji leczenia");
       const treatmentRequestData = {
         diagnosis: selectedDiagnosis,
-        medicalSociety: diagnosisData.Towarzystwo_Medyczne
+        medicalSociety: selectedDiagnosisObj?.Towarzystwo_Medyczne || ''
       };
 
       // Pobierz rekomendacje leczenia od Perplexity API
@@ -109,6 +111,12 @@ export default function TabContainer() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Funkcja obsługująca wybór diagnozy
+  const handleDiagnosisSelect = (diagnoza) => {
+    setSelectedDiagnosis(diagnoza.Nazwa);
+    setSelectedDiagnosisObj(diagnoza);
   };
 
   return (
@@ -154,33 +162,21 @@ export default function TabContainer() {
             
             <div className="form-group" style={{ marginTop: '16px' }}>
               <div className="diagnosis-options">
-                <div className="form-check">
-                  <input 
-                    type="radio" 
-                    id="main-diagnosis" 
-                    name="diagnosis-type" 
-                    className="form-check-input" 
-                    checked={selectedDiagnosis === diagnosisData.Diagnoza_Główna}
-                    onChange={() => setSelectedDiagnosis(diagnosisData.Diagnoza_Główna)}
-                  />
-                  <label htmlFor="main-diagnosis" className="form-check-label">
-                    <strong>Diagnoza główna:</strong> {diagnosisData.Diagnoza_Główna}
-                  </label>
-                </div>
-                
-                <div className="form-check" style={{ marginTop: '8px' }}>
-                  <input 
-                    type="radio" 
-                    id="differential-diagnosis" 
-                    name="diagnosis-type" 
-                    className="form-check-input"
-                    checked={selectedDiagnosis === diagnosisData.Diagnoza_Różnicowa}
-                    onChange={() => setSelectedDiagnosis(diagnosisData.Diagnoza_Różnicowa)}
-                  />
-                  <label htmlFor="differential-diagnosis" className="form-check-label">
-                    <strong>Diagnoza różnicowa:</strong> {diagnosisData.Diagnoza_Różnicowa}
-                  </label>
-                </div>
+                {diagnosisData.Diagnozy && diagnosisData.Diagnozy.map((diagnoza, index) => (
+                  <div className="form-check" key={index} style={{ marginTop: index > 0 ? '8px' : '0' }}>
+                    <input 
+                      type="radio" 
+                      id={`diagnosis-${index}`} 
+                      name="diagnosis-type" 
+                      className="form-check-input" 
+                      checked={selectedDiagnosis === diagnoza.Nazwa}
+                      onChange={() => handleDiagnosisSelect(diagnoza)}
+                    />
+                    <label htmlFor={`diagnosis-${index}`} className="form-check-label">
+                      <strong>{diagnoza.Nazwa}</strong> (Prawdopodobieństwo: {diagnoza.Prawdopodobieństwo}%)
+                    </label>
+                  </div>
+                ))}
               </div>
               
               <button 
