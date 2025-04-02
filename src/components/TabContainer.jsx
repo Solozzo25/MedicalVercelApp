@@ -205,8 +205,7 @@ export default function Results({
                       ? treatmentData.Zalecenia_Niefarmakologiczne.map((item, index) => (
                           <li key={index}>{item}</li>
                         ))
-                      : <li>
-                        <li>Brak danych o zaleceniach niefarmakologicznych</li>
+                      :   <li>Brak danych o zaleceniach niefarmakologicznych</li>
                     }
                   </ul>
                   {treatmentData.Źródło_Zaleceń_Niefarmakologicznych && renderSource(treatmentData.Źródło_Zaleceń_Niefarmakologicznych)}
