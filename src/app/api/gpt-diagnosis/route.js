@@ -50,9 +50,10 @@ Wymagania:
 2. **Diagnoza musi być zgodna z wynikami badań:** Jeśli konkretne wyniki (np. poziom leukocytów) są podane jako w normie (lub nie zostały podane - co oznacza, że są w normie), diagnoza nie może sugerować patologii związanej z odchyleniem tych wartości.
 3. **Wykorzystanie najnowszej wiedzy medycznej:** Opieraj się na aktualnych wytycznych, artykułach oraz wiarygodnych źródłach dostępnych online.
 4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozy do wieku oraz płci pacjenta.
-5. **Zaproponowanie kilku możliwych diagnoz:** Podaj przynajmniej 5 najbardziej prawdopodobnych diagnoz, przypisując każdej szacunkowy procent prawdopodobieństwa trafności diagnozy na podstawie dostarczonych danych.
-6. **Uzasadnienie każdej diagnozy:** Dla każdej zaproponowanej diagnozy podaj krótkie, zwięzłe uzasadnienie.
-7. **Wskazanie organizacji medycznej:** Dla każdej diagnozy podaj nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia.
+5. **Zaproponowanie kilku możliwych diagnoz:** Przedstaw 8 diagnoz, które będą spełniały powyższe wymagania, przypisując każdej szacunkowy procent prawdopodobieństwa trafności diagnozy na podstawie dostarczonych danych.
+6. **Uzasadnienie każdej diagnozy:** Dla każdej zaproponowanej diagnozy dodaj opis argumentujący tą diagnozę (3-4 zdania).
+7. **Badania potwierdzające diagnozę:** Wskaż jakie badania należy wykonać, aby potwierdzić lub wykluczyć daną diagnozę. 
+8. **Wskazanie organizacji medycznej:** Dla każdej diagnozy podaj nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia.
 
 Dane pacjenta:
 - Wiek: ${age}
@@ -69,18 +70,21 @@ Odpowiedź musi być w formacie JSON, zawierając następujące sekcje, bez doda
             "Nazwa": "Nazwa pierwszej diagnozy",
             "Prawdopodobieństwo": 85,
             "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
+            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąc pod uwagę",
             "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
         },
         {
             "Nazwa": "Nazwa drugiej diagnozy",
             "Prawdopodobieństwo": 65,
             "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
+            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąc pod uwagę",
             "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
         },
         {
             "Nazwa": "Nazwa trzeciej diagnozy",
             "Prawdopodobieństwo": 40,
             "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
+            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąc pod uwagę",
             "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
         }
     ]
