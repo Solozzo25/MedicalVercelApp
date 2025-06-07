@@ -144,6 +144,9 @@ export default function Results({
                     <strong>Uzasadnienie:</strong> {diagnoza.Uzasadnienie}
                   </p>
                   <p className="list-item-desc">
+                    <strong>Badania potwierdzające/wykluczające:</strong> {diagnoza["Badania potwierdzające/wykluczające"]}
+                  </p>
+                  <p className="list-item-desc">
                     <strong>Towarzystwo medyczne:</strong> {diagnoza.Towarzystwo_Medyczne}
                   </p>
                 </div>
