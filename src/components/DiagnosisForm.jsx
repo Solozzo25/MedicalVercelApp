@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export default function DiagnosisForm({ onFormSubmit, isLoading }) {
+export default function DiagnosisForm({ onFormSubmit }) {
   const [formData, setFormData] = useState({
     age: '',
     sex: '',
@@ -116,10 +116,9 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
       <div className="form-group">
         <button 
           type="submit" 
-          className="btn btn-primary btn-lg btn-block" 
-          disabled={isLoading}
+          className="btn btn-primary btn-lg btn-block"
         >
-          <i className="fas fa-search-plus"></i> {isLoading ? 'Przetwarzanie...' : 'Przedstaw rekomendacje'}
+          <i className="fas fa-search-plus"></i> Przedstaw rekomendacje
         </button>
       </div>
     </form>

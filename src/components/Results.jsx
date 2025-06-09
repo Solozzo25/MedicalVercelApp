@@ -7,7 +7,6 @@ export default function Results({
   diagnosisData, 
   treatmentData, 
   patientData, 
-  isLoading, 
   errorMessage,
   selectedDiagnosis, 
   diagnosisConfirmed 
@@ -37,18 +36,6 @@ export default function Results({
     );
   };
 
-  if (isLoading) {
-    return (
-      <div className="loading" style={{ display: 'block' }}>
-        <div className="loading-spinner">
-          <div></div>
-          <div></div>
-        </div>
-        <p className="loading-text">Przetwarzamy Twoje zapytanie...</p>
-      </div>
-    );
-  }
-
   // Jeśli mamy diagnozę, ale nie wybrano jeszcze której diagnozy użyć dla rekomendacji
   // Pominięcie wyświetlania wyników, ponieważ sekcja wyboru diagnozy jest już w TabContainer
   if (diagnosisData && !diagnosisConfirmed && !treatmentData) {
@@ -56,7 +43,7 @@ export default function Results({
   }
 
   // Jeśli nie ma danych diagnozy, zwróć komunikat
-  if (!diagnosisData && !isLoading && !errorMessage) {
+  if (!diagnosisData && !errorMessage) {
     return (
       <div className="alert alert-warning">
         <i className="fas fa-info-circle"></i>
