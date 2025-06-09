@@ -27,6 +27,7 @@ export default function TabContainer() {
   // Obsługa formularza
   const handleFormSubmit = async (formData) => {
     setIsLoading(true);
+	setLoadingMessage('Analizujemy dane pacjenta i przygotowujemy diagnozę...');
     setErrorMessage('');
     setPatientData(formData);
     setDiagnosisConfirmed(false); // Resetuj stan potwierdzenia przy nowym zapytaniu
@@ -74,6 +75,7 @@ export default function TabContainer() {
     }
     
     setIsLoading(true);
+	setLoadingMessage('Przygotowujemy rekomendacje leczenia dla wybranej diagnozy...');
     setErrorMessage('');
     
     try {
@@ -239,6 +241,7 @@ export default function TabContainer() {
           treatmentData={treatmentData}
           patientData={patientData}
           isLoading={isLoading}
+		  loadingMessage={loadingMessage}
           errorMessage={errorMessage}
           selectedDiagnosis={selectedDiagnosis}
           diagnosisConfirmed={diagnosisConfirmed}

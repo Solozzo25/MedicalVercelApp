@@ -44,7 +44,7 @@ export default function Results({
           <div></div>
           <div></div>
         </div>
-        <p className="loading-text">Analizujemy dane i przygotowujemy wyniki diagnozy...</p>
+        <p className="loading-text">{loadingMessage || 'Przetwarzamy Twoje zapytanie...'}</p>
       </div>
     );
   }
