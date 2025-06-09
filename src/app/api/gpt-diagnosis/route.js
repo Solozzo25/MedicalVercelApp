@@ -103,7 +103,7 @@ Odpowiedź musi być w formacie JSON, zawierając następujące sekcje, bez doda
           { role: "user", content: userPrompt }
         ],
         temperature: 0.2, // Niska temperatura dla bardziej precyzyjnych odpowiedzi medycznych
-        max_tokens: 2500
+        max_tokens: 3500
       },
       {
         headers: {
