@@ -1014,7 +1014,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--success);
 }
 
-/* Chip Input Styles */
+//* Chip Input Styles */
 .form-label {
   display: flex;
   justify-content: space-between;
@@ -1059,6 +1059,11 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-full);
   font-size: 13px;
   font-weight: 500;
+  /* Usunięta animacja z głównej klasy */
+}
+
+/* Animacja tylko dla nowo dodanych chipów */
+.chip-new {
   animation: chipFadeIn 0.2s ease-out;
 }
 

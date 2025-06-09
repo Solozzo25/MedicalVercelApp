@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function DiagnosisForm({ onFormSubmit }) {
   const [formData, setFormData] = useState({
@@ -16,6 +16,13 @@ export default function DiagnosisForm({ onFormSubmit }) {
   const [symptomChips, setSymptomChips] = useState([]);
   const [physicalExamChips, setPhysicalExamChips] = useState([]);
   const [additionalTestsChips, setAdditionalTestsChips] = useState([]);
+  
+  // Ref do śledzenia nowo dodanych chipów
+  const newChipsRef = useRef({
+    symptoms: new Set(),
+    physicalExam: new Set(),
+    additionalTests: new Set()
+  });
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -27,6 +34,17 @@ export default function DiagnosisForm({ onFormSubmit }) {
     if (e.key === 'Enter' && e.target.value.trim()) {
       e.preventDefault();
       const value = e.target.value.trim();
+      const newChipIndex = field === 'symptoms' ? symptomChips.length : 
+                          field === 'physicalExam' ? physicalExamChips.length : 
+                          additionalTestsChips.length;
+      
+      // Dodaj indeks nowego chipa do ref
+      newChipsRef.current[field].add(newChipIndex);
+      
+      // Usuń klasę po animacji
+      setTimeout(() => {
+        newChipsRef.current[field].delete(newChipIndex);
+      }, 200);
       
       switch(field) {
         case 'symptoms':
@@ -95,7 +113,10 @@ export default function DiagnosisForm({ onFormSubmit }) {
       {chips.length > 0 && (
         <div className="chip-container">
           {chips.map((chip, index) => (
-            <div key={index} className="chip">
+            <div 
+              key={`${field}-${index}-${chip}`} 
+              className={`chip ${newChipsRef.current[field].has(index) ? 'chip-new' : ''}`}
+            >
               <span>{chip}</span>
               <button
                 type="button"
