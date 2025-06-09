@@ -12,22 +12,105 @@ export default function DiagnosisForm({ onFormSubmit }) {
     medicalHistory: ''
   });
 
+  // State dla chipów
+  const [symptomChips, setSymptomChips] = useState([]);
+  const [physicalExamChips, setPhysicalExamChips] = useState([]);
+  const [additionalTestsChips, setAdditionalTestsChips] = useState([]);
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
+  // Funkcja do dodawania chipa
+  const handleChipAdd = (e, field) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      e.preventDefault();
+      const value = e.target.value.trim();
+      
+      switch(field) {
+        case 'symptoms':
+          setSymptomChips(prev => [...prev, value]);
+          setFormData(prev => ({ ...prev, symptoms: '' }));
+          break;
+        case 'physicalExam':
+          setPhysicalExamChips(prev => [...prev, value]);
+          setFormData(prev => ({ ...prev, physicalExam: '' }));
+          break;
+        case 'additionalTests':
+          setAdditionalTestsChips(prev => [...prev, value]);
+          setFormData(prev => ({ ...prev, additionalTests: '' }));
+          break;
+      }
+    }
+  };
+
+  // Funkcja do usuwania chipa
+  const handleChipRemove = (index, field) => {
+    switch(field) {
+      case 'symptoms':
+        setSymptomChips(prev => prev.filter((_, i) => i !== index));
+        break;
+      case 'physicalExam':
+        setPhysicalExamChips(prev => prev.filter((_, i) => i !== index));
+        break;
+      case 'additionalTests':
+        setAdditionalTestsChips(prev => prev.filter((_, i) => i !== index));
+        break;
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Scalanie chipów z wartościami tekstowymi
+    const mergedSymptoms = [
+      ...symptomChips,
+      formData.symptoms.trim()
+    ].filter(Boolean).join(', ');
+
+    const mergedPhysicalExam = [
+      ...physicalExamChips,
+      formData.physicalExam.trim()
+    ].filter(Boolean).join(', ');
+
+    const mergedAdditionalTests = [
+      ...additionalTestsChips,
+      formData.additionalTests.trim()
+    ].filter(Boolean).join(', ');
+
     onFormSubmit({
       age: formData.age,
       sex: formData.sex,
-      symptoms: formData.symptoms,
-      physicalExam: formData.physicalExam,
-      additionalTests: formData.additionalTests,
+      symptoms: mergedSymptoms,
+      physicalExam: mergedPhysicalExam,
+      additionalTests: mergedAdditionalTests,
       medicalHistory: formData.medicalHistory
     });
   };
+
+  // Komponent dla renderowania chipów
+  const ChipDisplay = ({ chips, field, placeholder }) => (
+    <>
+      {chips.length > 0 && (
+        <div className="chip-container">
+          {chips.map((chip, index) => (
+            <div key={index} className="chip">
+              <span>{chip}</span>
+              <button
+                type="button"
+                className="chip-remove"
+                onClick={() => handleChipRemove(index, field)}
+                aria-label="Usuń"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
 
   return (
     <form id="diagnosis-form" onSubmit={handleSubmit}>
@@ -65,39 +148,54 @@ export default function DiagnosisForm({ onFormSubmit }) {
       </div>
 
       <div className="form-group">
-        <label htmlFor="symptoms" className="form-label">Objawy podmiotowe</label>
+        <label htmlFor="symptoms" className="form-label">
+          Objawy podmiotowe
+          <span className="form-hint">Wciśnij Enter aby dodać objaw</span>
+        </label>
+        <ChipDisplay chips={symptomChips} field="symptoms" />
         <textarea 
           id="symptoms" 
           name="symptoms" 
-          className="form-textarea" 
-          placeholder="Opisz objawy zgłaszane przez pacjenta. Np. ból głowy, gorączka, kaszel..."
+          className="form-textarea form-textarea-small" 
+          placeholder="Opisz objaw i wciśnij Enter. Np. ból głowy, gorączka, kaszel..."
           value={formData.symptoms}
           onChange={handleChange}
-          required
+          onKeyDown={(e) => handleChipAdd(e, 'symptoms')}
+          required={symptomChips.length === 0}
         ></textarea>
       </div>
 
       <div className="form-group">
-        <label htmlFor="physicalExam" className="form-label">Badanie przedmiotowe</label>
+        <label htmlFor="physicalExam" className="form-label">
+          Badanie przedmiotowe
+          <span className="form-hint">Wciśnij Enter aby dodać wynik badania</span>
+        </label>
+        <ChipDisplay chips={physicalExamChips} field="physicalExam" />
         <textarea 
           id="physicalExam" 
           name="physicalExam" 
-          className="form-textarea" 
-          placeholder="Wyniki badania przedmiotowego. Np. osłuchowo trzeszczenia u podstawy płuc, temp. 38,2°C..."
+          className="form-textarea form-textarea-small" 
+          placeholder="Wynik badania i wciśnij Enter. Np. osłuchowo trzeszczenia u podstawy płuc..."
           value={formData.physicalExam}
           onChange={handleChange}
+          onKeyDown={(e) => handleChipAdd(e, 'physicalExam')}
         ></textarea>
       </div>
 
       <div className="form-group">
-        <label htmlFor="additionalTests" className="form-label">Wyniki badań</label>
+        <label htmlFor="additionalTests" className="form-label">
+          Wyniki badań
+          <span className="form-hint">Wciśnij Enter aby dodać wynik badania</span>
+        </label>
+        <ChipDisplay chips={additionalTestsChips} field="additionalTests" />
         <textarea 
           id="additionalTests" 
           name="additionalTests" 
-          className="form-textarea" 
-          placeholder="Wyniki badań laboratoryjnych, obrazowych i innych. Np. CRP 24 mg/l, RTG klatki piersiowej..."
+          className="form-textarea form-textarea-small" 
+          placeholder="Wynik badania i wciśnij Enter. Np. CRP 24 mg/l, RTG klatki piersiowej..."
           value={formData.additionalTests}
           onChange={handleChange}
+          onKeyDown={(e) => handleChipAdd(e, 'additionalTests')}
         ></textarea>
       </div>
 

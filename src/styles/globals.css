@@ -1014,6 +1014,121 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--success);
 }
 
+/* Chip Input Styles */
+.form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--gray-700);
+  font-size: 14px;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.form-textarea-small {
+  min-height: 60px;
+  max-height: 80px;
+}
+
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: var(--gray-50);
+  border-radius: var(--radius);
+  min-height: 40px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--primary);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  animation: chipFadeIn 0.2s ease-out;
+}
+
+@keyframes chipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 10px;
+}
+
+.chip-remove:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.chip-remove:active {
+  transform: scale(0.95);
+}
+
+/* Aktualizacja dla chip-container gdy jest pusty */
+.chip-container:empty {
+  display: none;
+}
+
+/* Dostosowanie dla ciemnego motywu chipów dla różnych kategorii */
+.form-group:has(#physicalExam) .chip {
+  background-color: var(--secondary);
+}
+
+.form-group:has(#additionalTests) .chip {
+  background-color: var(--accent);
+}
+
+/* Responsywność dla chipów */
+@media (max-width: 768px) {
+  .chip-container {
+    gap: 6px;
+    padding: 6px;
+  }
+  
+  .chip {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+  
+  .form-hint {
+    font-size: 11px;
+  }
+}
+
 /* Responsive Adjustments */
 @media (max-width: 992px) {
     .result-grid {
