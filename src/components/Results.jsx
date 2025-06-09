@@ -37,7 +37,7 @@ export default function Results({
     );
   };
 
-  if (is) {
+  if (isLoading) {
     return (
       <div className="loading" style={{ display: 'block' }}>
         <div className="loading-spinner">
