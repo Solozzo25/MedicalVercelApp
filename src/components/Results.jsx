@@ -37,14 +37,14 @@ export default function Results({
     );
   };
 
-  if (isLoading) {
+  if (is) {
     return (
       <div className="loading" style={{ display: 'block' }}>
         <div className="loading-spinner">
           <div></div>
           <div></div>
         </div>
-        <p className="loading-text">{loadingMessage || 'Przetwarzamy Twoje zapytanie...'}</p>
+        <p className="loading-text">Przetwarzamy Twoje zapytanie...</p>
       </div>
     );
   }
