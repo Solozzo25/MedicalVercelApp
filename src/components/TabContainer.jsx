@@ -3,11 +3,18 @@
 import { useState } from 'react';
 import DiagnosisForm from './DiagnosisForm';
 import Results from './Results';
+import ProcessingModal from './ProcessingModal';
 
 export default function TabContainer() {
   const [activeTab, setActiveTab] = useState('patient-data');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  
+  // Modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [processingStep, setProcessingStep] = useState('diagnosis');
+  const [processingMessage, setProcessingMessage] = useState('');
+  const [processingProgress, setProcessingProgress] = useState(0);
   
   // State dla danych
   const [patientData, setPatientData] = useState(null);
@@ -27,15 +34,29 @@ export default function TabContainer() {
   // Obsługa formularza
   const handleFormSubmit = async (formData) => {
     setIsLoading(true);
-	setLoadingMessage('Analizujemy dane pacjenta i przygotowujemy diagnozę...');
+    setModalVisible(true);
     setErrorMessage('');
     setPatientData(formData);
-    setDiagnosisConfirmed(false); // Resetuj stan potwierdzenia przy nowym zapytaniu
-    setSelectedDiagnosis(''); // Resetuj wybór diagnozy
+    setDiagnosisConfirmed(false);
+    setSelectedDiagnosis('');
     setSelectedDiagnosisObj(null);
 
     try {
-      // Krok 1: Pobierz diagnozę od OpenAI
+      // Step 1: Initialize
+      setProcessingStep('diagnosis');
+      setProcessingMessage('Analizuję dane pacjenta');
+      setProcessingProgress(10);
+
+      // Step 2: Send to diagnosis API
+      setProcessingMessage('Wysyłam dane do systemu diagnostycznego');
+      setProcessingProgress(25);
+      
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Small delay for UX
+
+      setProcessingStep('processing');
+      setProcessingMessage('Generuję propozycje diagnoz');
+      setProcessingProgress(50);
+
       console.log("Krok 1: Wysyłanie danych do API diagnozy");
       const diagnosisResponse = await fetch('/api/gpt-diagnosis', {
         method: 'POST',
@@ -50,9 +71,18 @@ export default function TabContainer() {
         throw new Error(errorData.error || `Błąd serwera diagnozy: ${diagnosisResponse.status}`);
       }
 
+      setProcessingMessage('Przetwarzam odpowiedź systemu');
+      setProcessingProgress(75);
+
       const diagnosisResult = await diagnosisResponse.json();
       console.log("Otrzymano odpowiedź z API diagnozy:", diagnosisResult);
       
+      setProcessingStep('complete');
+      setProcessingMessage('Finalizuję wyniki');
+      setProcessingProgress(100);
+
+      await new Promise(resolve => setTimeout(resolve, 800)); // Show completion
+
       // Zapisz dane diagnozy
       setDiagnosisData(diagnosisResult);
       
@@ -64,6 +94,8 @@ export default function TabContainer() {
       setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas przetwarzania zapytania.');
     } finally {
       setIsLoading(false);
+      setModalVisible(false);
+      setProcessingProgress(0);
     }
   };
   
@@ -75,20 +107,31 @@ export default function TabContainer() {
     }
     
     setIsLoading(true);
-	setLoadingMessage('Przygotowujemy rekomendacje leczenia dla wybranej diagnozy...');
+    setModalVisible(true);
     setErrorMessage('');
     
     try {
+      // Initialize treatment processing
+      setProcessingStep('treatment');
+      setProcessingMessage('Przygotowuję rekomendacje leczenia');
+      setProcessingProgress(20);
+
       // Znajdź obiekt diagnozy na podstawie wybranej nazwy
       const selectedDiag = diagnosisData.Diagnozy ? 
         diagnosisData.Diagnozy.find(d => d.Nazwa === selectedDiagnosis) : null;
       
+      setProcessingMessage('Analizuję wytyczne medyczne');
+      setProcessingProgress(40);
+
       // Przygotuj dane dla API rekomendacji leczenia
       console.log("Wysyłanie danych do API rekomendacji leczenia");
       const treatmentRequestData = {
         diagnosis: selectedDiagnosis,
         medicalSociety: selectedDiag?.Towarzystwo_Medyczne || ''
       };
+
+      setProcessingMessage('Pobieram aktualne protokoły leczenia');
+      setProcessingProgress(60);
 
       // Pobierz rekomendacje leczenia od Perplexity API
       const treatmentResponse = await fetch('/api/perplexity-treatment', {
@@ -104,8 +147,17 @@ export default function TabContainer() {
         throw new Error(errorData.error || `Błąd serwera rekomendacji: ${treatmentResponse.status}`);
       }
 
+      setProcessingMessage('Finalizuję rekomendacje');
+      setProcessingProgress(90);
+
       const treatmentResult = await treatmentResponse.json();
       console.log("Otrzymano odpowiedź z API rekomendacji:", treatmentResult);
+
+      setProcessingStep('complete');
+      setProcessingMessage('Rekomendacje gotowe');
+      setProcessingProgress(100);
+
+      await new Promise(resolve => setTimeout(resolve, 800));
 
       // Zapisz dane rekomendacji
       setTreatmentData(treatmentResult);
@@ -116,43 +168,53 @@ export default function TabContainer() {
       setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas pobierania rekomendacji leczenia.');
     } finally {
       setIsLoading(false);
+      setModalVisible(false);
+      setProcessingProgress(0);
     }
   };
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <div className="card-title">
-          <i className="fas fa-user-md"></i> Diagnoza i leczenie
-        </div>
-        <div className="card-actions">
-          <button className="action-btn" title="Odśwież" onClick={() => window.location.reload()}>
-            <i className="fas fa-sync-alt"></i>
-          </button>
-        </div>
-      </div>
-
-      <div className="tabs">
-        <div 
-          className={`tab ${activeTab === 'patient-data' ? 'active' : ''}`} 
-          onClick={() => handleTabClick('patient-data')}
-        >
-          Dane pacjenta
-        </div>
-        <div 
-          className={`tab ${activeTab === 'results' ? 'active' : ''}`} 
-          onClick={() => handleTabClick('results')}
-        >
-          Wyniki diagnozy
-        </div>
-      </div>
-
-      <div className={`tab-content ${activeTab === 'patient-data' ? 'active' : ''}`} id="patient-data">
-        <DiagnosisForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
-      </div>
-
-      <div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
+    <>
+      <ProcessingModal 
+        isVisible={modalVisible}
+        step={processingStep}
+        message={processingMessage}
+        progress={processingProgress}
+      />
       
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title">
+            <i className="fas fa-user-md"></i> Diagnoza i leczenie
+          </div>
+          <div className="card-actions">
+            <button className="action-btn" title="Odśwież" onClick={() => window.location.reload()}>
+              <i className="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+
+        <div className="tabs">
+          <div 
+            className={`tab ${activeTab === 'patient-data' ? 'active' : ''}`} 
+            onClick={() => handleTabClick('patient-data')}
+          >
+            Dane pacjenta
+          </div>
+          <div 
+            className={`tab ${activeTab === 'results' ? 'active' : ''}`} 
+            onClick={() => handleTabClick('results')}
+          >
+            Wyniki diagnozy
+          </div>
+        </div>
+
+        <div className={`tab-content ${activeTab === 'patient-data' ? 'active' : ''}`} id="patient-data">
+          <DiagnosisForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
+        </div>
+
+        <div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
+        
 {/* Potwierdzenie diagnozy - wyświetlane jako karuzela kart */}
 {diagnosisData && !diagnosisConfirmed && (
   <div className="diagnosis-confirmation">
@@ -202,14 +264,11 @@ export default function TabContainer() {
                 ></div>
               </div>
               <p className="list-item-desc">
-              <strong>Uzasadnienie:</strong> {diagnoza.Uzasadnienie}
-            </p>
-            <p className="list-item-desc">
-              <strong>Badania potwierdzające/wykluczające:</strong> {diagnoza["Badania potwierdzające/wykluczające"]}
-            </p>
-            <p className="list-item-desc">
-              <strong>Towarzystwo medyczne:</strong> {diagnoza.Towarzystwo_Medyczne}
-            </p>
+                <strong>Uzasadnienie:</strong> {diagnoza.Uzasadnienie}
+              </p>
+              <p className="list-item-desc">
+                <strong>Towarzystwo medyczne:</strong> {diagnoza.Towarzystwo_Medyczne}
+              </p>
             </div>
           </div>
         </div>
@@ -241,12 +300,12 @@ export default function TabContainer() {
           treatmentData={treatmentData}
           patientData={patientData}
           isLoading={isLoading}
-		  loadingMessage={loadingMessage}
           errorMessage={errorMessage}
           selectedDiagnosis={selectedDiagnosis}
           diagnosisConfirmed={diagnosisConfirmed}
         />
       </div>
     </div>
+    </>
   );
 }
