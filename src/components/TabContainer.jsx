@@ -241,7 +241,6 @@ export default function TabContainer() {
           treatmentData={treatmentData}
           patientData={patientData}
           isLoading={isLoading}
-		  loadingMessage={loadingMessage}
           errorMessage={errorMessage}
           selectedDiagnosis={selectedDiagnosis}
           diagnosisConfirmed={diagnosisConfirmed}
