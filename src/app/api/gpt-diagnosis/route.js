@@ -27,16 +27,16 @@ export async function POST(request) {
     }
 
     // Klucz API z zmiennych środowiskowych
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     
     if (!apiKey) {
-      console.log("❌ Błąd: Brak klucza API OpenAI w zmiennych środowiskowych");
+      console.log("❌ Błąd: Brak klucza API OpenRouter w zmiennych środowiskowych");
       return NextResponse.json({ 
-        error: 'Błąd konfiguracji API - brak klucza OpenAI' 
+        error: 'Błąd konfiguracji API - brak klucza OpenRouter' 
       }, { status: 500 });
     }
     
-    console.log("🔑 Klucz API OpenAI znaleziony (pierwszych 5 znaków):", apiKey.substring(0, 5) + '...');
+    console.log("🔑 Klucz API OpenRouter znaleziony (pierwszych 5 znaków):", apiKey.substring(0, 5) + '...');
 
     // Przygotowanie systmowego i użytkownika promptu
     const systemPrompt = "Jesteś doświadczonym lekarzem medycznym z 20 letnim doświadczeniem w medycynie chorób wewnętrznych, który korzysta z najnowszych wytycznych medycznych.";
@@ -70,58 +70,60 @@ Odpowiedź musi być w formacie JSON, zawierając następujące sekcje, bez doda
             "Nazwa": "Nazwa pierwszej diagnozy",
             "Prawdopodobieństwo": 85,
             "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
-            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąc pod uwagę",
+            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąć pod uwagę",
             "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
         },
         {
             "Nazwa": "Nazwa drugiej diagnozy",
             "Prawdopodobieństwo": 65,
             "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
-            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąc pod uwagę",
+            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąć pod uwagę",
             "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
         },
         {
             "Nazwa": "Nazwa trzeciej diagnozy",
             "Prawdopodobieństwo": 40,
             "Uzasadnienie": "Krótkie, zwięzłe uzasadnienie wyboru tej diagnozy",
-            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąc pod uwagę",
+            "Badania potwierdzające/wykluczające": "Rekomendacja badania wraz ze wskazaniem na konkretny czynnik, który trzeba wziąć pod uwagę",
             "Towarzystwo_Medyczne": "Nazwa polskiego towarzystwa medycznego właściwego dla tej diagnozy"
         }
     ]
 }
       `;
 
-    console.log("📤 Wysyłanie zapytania do OpenAI API...");
+    console.log("📤 Wysyłanie zapytania do OpenRouter API...");
     
-    // Konfiguracja zapytania do API OpenAI
-    const openAIResponse = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
+    // Konfiguracja zapytania do API OpenRouter
+    const openRouterResponse = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: "gpt-4-turbo", // lub inny model, który preferujesz
+        model: "openai/gpt-4o", // Możesz zmienić na inny model np. "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.1-8b-instruct:free"
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
         temperature: 0.2, // Niska temperatura dla bardziej precyzyjnych odpowiedzi medycznych
-        max_tokens: 3500
+        max_tokens: 2500
       },
       {
         headers: {
           'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'http://localhost:3000', // Opcjonalne - dla statystyk
+          'X-Title': 'MedDiagnosis App' // Opcjonalne - nazwa Twojej aplikacji
         }
       }
     );
     
-    console.log("✅ Odpowiedź od OpenAI otrzymana, status:", openAIResponse.status);
+    console.log("✅ Odpowiedź od OpenRouter otrzymana, status:", openRouterResponse.status);
     console.log("📊 Użycie tokenów:", {
-      prompt_tokens: openAIResponse.data.usage?.prompt_tokens,
-      completion_tokens: openAIResponse.data.usage?.completion_tokens,
-      total_tokens: openAIResponse.data.usage?.total_tokens
+      prompt_tokens: openRouterResponse.data.usage?.prompt_tokens,
+      completion_tokens: openRouterResponse.data.usage?.completion_tokens,
+      total_tokens: openRouterResponse.data.usage?.total_tokens
     });
 
     // Parsowanie odpowiedzi od GPT
-    const responseContent = openAIResponse.data.choices[0].message.content;
+    const responseContent = openRouterResponse.data.choices[0].message.content;
     console.log("📝 Surowa odpowiedź od GPT:", responseContent);
     
     // Próba parsowania JSON z odpowiedzi
@@ -194,7 +196,7 @@ Odpowiedź musi być w formacie JSON, zawierając następujące sekcje, bez doda
     let errorDetails = {};
     
     if (error.response) {
-      // Błąd po stronie API OpenAI
+      // Błąd po stronie API OpenRouter
       console.error("❌ Odpowiedź z błędem od API:", {
         status: error.response.status,
         data: error.response.data
