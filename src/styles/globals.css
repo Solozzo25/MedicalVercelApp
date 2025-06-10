@@ -372,6 +372,24 @@ h1, h2, h3, h4, h5, h6 {
     transition: all 0.2s ease;
     background-color: var(--white);
     box-shadow: var(--shadow-sm);
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    padding-right: 40px;
+}
+
+.form-textarea {
+    height: auto;
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
 }
 
 .form-input:focus,
@@ -1204,22 +1222,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Różne kolory akcentu dla różnych sekcji */
-/* Enhanced Form Labels */
-.form-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--primary-dark);  /* Ciemny niebieski dla wszystkich */
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--gray-200);
-}
-
-
-
+f
 /* Ostatni przycisk bez tła */
 .form-group:last-child {
   background-color: transparent;
