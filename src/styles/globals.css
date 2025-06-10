@@ -372,6 +372,24 @@ h1, h2, h3, h4, h5, h6 {
     transition: all 0.2s ease;
     background-color: var(--white);
     box-shadow: var(--shadow-sm);
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    padding-right: 40px;
+}
+
+.form-textarea {
+    height: auto;
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
 }
 
 .form-input:focus,
@@ -1012,6 +1030,226 @@ h1, h2, h3, h4, h5, h6 {
 
 .security-notice i {
   color: var(--success);
+}
+
+//* Chip Input Styles */
+.form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--gray-700);
+  font-size: 14px;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.form-textarea-small {
+  min-height: 60px;
+  max-height: 80px;
+}
+
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: var(--gray-50);
+  border-radius: var(--radius);
+  min-height: 40px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--primary);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  /* Usunięta animacja z głównej klasy */
+}
+
+/* Animacja tylko dla nowo dodanych chipów */
+.chip-new {
+  animation: chipFadeIn 0.2s ease-out;
+}
+
+@keyframes chipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 10px;
+}
+
+.chip-remove:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.chip-remove:active {
+  transform: scale(0.95);
+}
+
+/* Aktualizacja dla chip-container gdy jest pusty */
+.chip-container:empty {
+  display: none;
+}
+
+/* Dostosowanie dla ciemnego motywu chipów dla różnych kategorii */
+.form-group:has(#physicalExam) .chip {
+  background-color: var(--secondary);
+}
+
+.form-group:has(#additionalTests) .chip {
+  background-color: var(--accent);
+}
+
+/* Responsywność dla chipów */
+@media (max-width: 768px) {
+  .chip-container {
+    gap: 6px;
+    padding: 6px;
+  }
+  
+  .chip {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+  
+  .form-hint {
+    font-size: 11px;
+  }
+}
+
+/* Enhanced Form Labels */
+.form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.form-group {
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: rgba(59, 130, 246, 0.02);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-100);
+  transition: all 0.2s ease;
+}
+
+.form-group:hover {
+  background-color: rgba(59, 130, 246, 0.04);
+  border-color: var(--gray-200);
+}
+
+.form-group:focus-within {
+  background-color: rgba(59, 130, 246, 0.06);
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.05);
+}
+
+/* Grupowanie pól wiek/płeć */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: rgba(59, 130, 246, 0.02);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-100);
+}
+
+.form-grid .form-group {
+  margin-bottom: 0;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+}
+
+.form-grid .form-group:hover {
+  background-color: transparent;
+  border: none;
+}
+
+.form-grid .form-group .form-label {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 8px;
+}
+
+/* Responsywność dla form-grid */
+@media (max-width: 576px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+f
+/* Ostatni przycisk bez tła */
+.form-group:last-child {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin-top: 32px;
+}
+
+.form-group:last-child:hover {
+  background-color: transparent;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+  .form-label {
+    font-size: 15px;
+  }
+  
+  .form-group {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .form-grid {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
 }
 
 /* Responsive Adjustments */
