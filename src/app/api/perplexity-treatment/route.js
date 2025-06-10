@@ -167,7 +167,7 @@ Kompletność źródeł, wiarygodność rekomendacji i dokładność informacji 
          { role: "user", content: userPrompt }
        ],
        temperature: 0.1, // niska temperatura dla bardziej precyzyjnych, faktycznych odpowiedzi
-       max_tokens: 3000, // zwiększone z 1500
+       max_tokens: 5000, // zwiększone z 1500
        search_enable: true // włączenie wyszukiwania w internecie
      },
      {
