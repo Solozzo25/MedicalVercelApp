@@ -13,12 +13,39 @@ export default function Results({
  selectedDrugIndex,        // NOWE
  onDrugSelection          // NOWE
 }) {
- // Funkcja do ekstrakcji linków URL z tekstu
- const extractUrl = (text) => {
-   const urlRegex = /(https?:\/\/[^\s]+)/g;
-   const matches = text?.match(urlRegex);
-   return matches ? matches[0] : null;
- };
+
+// Funkcja do ekstrakcji linków URL z tekstu
+const extractUrl = (text) => {
+  if (!text) return null;
+  
+  // Bardziej precyzyjny regex dla URL
+  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
+  const matches = text.match(urlRegex);
+  
+  if (!matches) return null;
+  
+  // Sprawdź czy URL jest kompletny
+  const validUrl = matches.find(url => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  
+  return validUrl || null;
+};
+
+// Dodaj nową funkcję walidacji URL tuż po extractUrl
+const isValidUrl = (url) => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
 
  // Funkcja do eksportu do PDF
  const handleExport = () => {
@@ -72,28 +99,47 @@ export default function Results({
    );
  }
 
- // Funkcja do renderowania źródła z obsługą linków
- const renderSource = (sourceText) => {
-   if (!sourceText) return null;
-   
-   const url = extractUrl(sourceText);
-   
-   return (
-     <div className="source-info">
-       <i className="fas fa-book-medical"></i> Źródło:&nbsp;
-       {url ? (
-         <a href={url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="source-link">
-           {sourceText}
-         </a>
-       ) : (
-         <span>{sourceText}</span>
-       )}
-     </div>
-   );
- };
+// Funkcja do renderowania źródła z obsługą linków
+const renderSource = (sourceText) => {
+  if (!sourceText) return null;
+  
+  const url = extractUrl(sourceText);
+  const isUrlValid = url && isValidUrl(url);
+  
+  return (
+    <div className="source-info">
+      <i className="fas fa-book-medical"></i> Źródło:&nbsp;
+      {isUrlValid ? (
+        <>
+          <a href={url} 
+             target="_blank" 
+             rel="noopener noreferrer"
+             className="source-link"
+             onClick={(e) => {
+               // Dodaj tracking czy link działa
+               console.log('Otwieranie linku:', url);
+             }}>
+            {sourceText.replace(url, '').trim() || 'Przejdź do źródła'}
+          </a>
+          <button 
+            className="copy-url-btn"
+            onClick={() => navigator.clipboard.writeText(url)}
+            title="Skopiuj URL"
+          >
+            <i className="fas fa-copy"></i>
+          </button>
+        </>
+      ) : (
+        <span className="source-text">
+          {sourceText}
+          {url && !isUrlValid && (
+            <span className="invalid-url-notice"> (nieprawidłowy URL)</span>
+          )}
+        </span>
+      )}
+    </div>
+  );
+};
 
  // Funkcja określająca kolor na podstawie prawdopodobieństwa
  const getProbabilityColor = (probability) => {
