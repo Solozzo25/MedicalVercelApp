@@ -1195,6 +1195,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: rgba(59, 130, 246, 0.02);
   border-radius: var(--radius-md);
   border: 1px solid var(--gray-100);
+  align-items: start;
 }
 
 .form-grid .form-group {
