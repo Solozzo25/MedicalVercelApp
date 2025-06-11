@@ -136,25 +136,26 @@ Format wyjścia MUSI być ŚCISLE w JSON, bez dodatkowego tekstu przed/po:
    console.log("📤 Wysyłanie zapytania do Perplexity API...");
    
    // Konfiguracja zapytania do API Perplexity
-   const perplexityResponse = await axios.post(
-     'https://api.perplexity.ai/chat/completions',
-     {
-       model: "sonar-pro", // model z dostępem do internetu
-       messages: [
-         { role: "system", content: systemPrompt },
-         { role: "user", content: userPrompt }
-       ],
-       temperature: 0.2, // niska temperatura dla bardziej precyzyjnych, faktycznych odpowiedzi
-       max_tokens: 6000, // zwiększone z 1500
-       search_enable: true // włączenie wyszukiwania w internecie
-     },
-     {
-       headers: {
-         'Authorization': `Bearer ${apiKey}`,
-         'Content-Type': 'application/json'
-       }
-     }
-   );
+  const openRouterResponse = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: "openai/gpt-4o-mini-search-preview", // Możesz zmienić na inny model np. "anthropic/claude-3.5-sonnet", "meta-llama/llama-3.1-8b-instruct:free"
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature: 0.2, // Niska temperatura dla bardziej precyzyjnych odpowiedzi medycznych
+        max_tokens: 2500
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'http://localhost:3000', // Opcjonalne - dla statystyk
+          'X-Title': 'MedDiagnosis App' // Opcjonalne - nazwa Twojej aplikacji
+        }
+      }
+    );
    
    console.log("✅ Odpowiedź od Perplexity otrzymana, status:", perplexityResponse.status);
    console.log("📊 Użycie tokenów:", {
