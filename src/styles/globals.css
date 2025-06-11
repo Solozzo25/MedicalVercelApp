@@ -1351,4 +1351,464 @@ f
         height: 28px;
         font-size: 12px;
     }
+/* Style dla schematów leczenia */
+.schema-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.schema-tab {
+  padding: 12px 20px;
+  background-color: var(--gray-100);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.schema-tab:hover {
+  background-color: var(--gray-200);
+  border-color: var(--gray-300);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.schema-tab.active {
+  background-color: var(--primary);
+  color: var(--white);
+  border-color: var(--primary-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.schema-tab-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Wybrany schemat */
+.selected-schema {
+  margin-bottom: 32px;
+}
+
+.selected-schema h3 {
+  color: var(--primary);
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.schema-description {
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: var(--gray-50);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--primary);
+}
+
+/* Lista leków w schemacie */
+.schema-drugs {
+  margin-top: 24px;
+}
+
+.schema-drugs h4 {
+  color: var(--gray-800);
+  margin-bottom: 16px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drug-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.drug-item {
+  padding: 16px;
+  background-color: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.drug-item:hover {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.drug-item.selected {
+  border-color: var(--primary);
+  background-color: rgba(59, 130, 246, 0.05);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.drug-item.alternative {
+  background-color: var(--gray-50);
+  border-style: dashed;
+}
+
+.drug-item.alternative.selected {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-style: solid;
+}
+
+.drug-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.drug-name {
+  font-weight: 600;
+  color: var(--gray-900);
+  font-size: 15px;
+}
+
+.drug-type {
+  font-size: 12px;
+  color: var(--gray-600);
+  background-color: var(--gray-100);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.drug-dosage, .drug-differences {
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.5;
+}
+
+.alternative-label {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.alternative-badge {
+  font-size: 12px;
+  color: var(--accent);
+  margin-left: 8px;
+  padding: 2px 8px;
+  background-color: rgba(139, 92, 246, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+/* Sekcja szczegółów leku */
+.drug-details-section {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 2px solid var(--gray-200);
+}
+
+.drug-details-section .section-title {
+  color: var(--gray-800);
+  margin-bottom: 20px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drug-details-panel {
+  background-color: var(--gray-50);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--gray-200);
+}
+
+.drug-details-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+.drug-basic-info {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.drug-basic-info .drug-name {
+  color: var(--primary);
+  margin-bottom: 8px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drug-type-badge {
+  display: inline-block;
+  background-color: var(--primary);
+  color: var(--white);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* Panel niedostępnego leku */
+.drug-unavailable-panel {
+  background-color: rgba(239, 68, 68, 0.05);
+  border: 2px solid var(--error-light);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.unavailable-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--error);
+  margin-bottom: 16px;
+}
+
+.unavailable-header i {
+  font-size: 24px;
+}
+
+.unavailable-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.unavailable-content p {
+  margin-bottom: 12px;
+  color: var(--gray-700);
+}
+
+.alternatives-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--error-light);
+}
+
+.alternatives-section h4 {
+  color: var(--gray-800);
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.alternatives-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.alternatives-section li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.alternatives-section li:last-child {
+  border-bottom: none;
+}
+
+/* Style dla refundacji z nowej struktury */
+.refundation-section {
+  margin-top: 24px;
+  padding: 20px;
+  background-color: rgba(34, 197, 94, 0.05);
+  border-radius: var(--radius);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.refundation-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.copayment-info {
+  font-size: 14px;
+  color: var(--gray-700);
+  padding: 4px 12px;
+  background-color: var(--white);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-300);
+}
+
+.refundation-groups, .refundation-examples {
+  margin-top: 16px;
+}
+
+.refundation-groups strong, .refundation-examples strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gray-800);
+}
+
+.refundation-groups ul, .refundation-examples ul {
+  list-style: none;
+  padding-left: 20px;
+}
+
+.refundation-groups li, .refundation-examples li {
+  position: relative;
+  padding: 4px 0;
+  color: var(--gray-700);
+}
+
+.refundation-groups li::before, .refundation-examples li::before {
+  content: '•';
+  position: absolute;
+  left: -16px;
+  color: var(--success);
+  font-weight: bold;
+}
+
+/* Style dla charakterystyk leków */
+.contraindications li::before {
+  background-color: var(--error-light) !important;
+}
+
+.special-notes li::before {
+  background-color: var(--info-light) !important;
+}
+
+/* Style dla kart leczenia */
+.result-card.treatment-schemas {
+  border-top: 4px solid var(--primary);
+}
+
+.result-card.non-pharmacological {
+  border-top: 4px solid var(--secondary);
+}
+
+/* Responsywność dla nowych elementów */
+@media (max-width: 768px) {
+  .schema-tabs {
+    flex-direction: column;
+  }
+  
+  .schema-tab {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .drug-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .drug-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .drug-type {
+    margin-top: 4px;
+  }
+  
+  .drug-basic-info .drug-name {
+    font-size: 18px;
+  }
+  
+  .refundation-status {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Animacje dla płynnego przełączania */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.selected-schema, .drug-details-panel {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Dodatkowe style dla lepszej czytelności */
+.result-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray-800);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.result-section-title i {
+  color: var(--primary);
+}
+
+/* Style dla statusów refundacji */
+.badge-refunded {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+}
+
+.badge-partially-refunded {
+  background-color: rgba(234, 179, 8, 0.1);
+  color: var(--warning);
+}
+
+.badge-not-refunded {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
+/* Hover efekty dla interaktywnych elementów */
+.copy-url-btn:active {
+  transform: scale(0.95);
+}
+
+.drug-item:active {
+  transform: scale(0.98);
+}
+
+/* Wizualne rozróżnienie dla alternatyw */
+.drug-item.alternative::before {
+  content: '↳';
+  position: absolute;
+  left: -20px;
+  top: 20px;
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Dodatkowe style dla lepszego UX */
+.loading-skeleton {
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-300) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 }
