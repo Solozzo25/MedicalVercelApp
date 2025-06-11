@@ -118,12 +118,12 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
     const openRouterResponse = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: "openai/gpt-4o-mini", // Używamy zwykłego modelu dla Request 1
+        model: "openai/gpt-4o-mini-search-preview", // Używamy zwykłego modelu dla Request 1
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.3,
+        temperature: 0.2,
         max_tokens: 3000
       },
       {
