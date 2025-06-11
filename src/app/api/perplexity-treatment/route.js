@@ -36,7 +36,7 @@ export async function POST(request) {
    }
 
    // Klucz API z zmiennych środowiskowych
-   const apiKey = process.env.PERPLEXITY_API_KEY;
+   const apiKey = process.env.OPENROUTER_API_KEY;
    
    if (!apiKey) {
      console.log("❌ Błąd: Brak klucza API Perplexity w zmiennych środowiskowych");
