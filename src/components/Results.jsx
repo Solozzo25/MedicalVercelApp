@@ -79,6 +79,166 @@ export default function Results({
     return 'badge-secondary';
   };
 
+  // Funkcja do renderowania pełnych charakterystyk leku
+  const renderDrugCharacteristics = (drugName, isAlternative = false) => {
+    const characteristics = findDrugCharacteristics(drugName);
+    
+    if (!characteristics) {
+      return (
+        <div className="drug-card-section">
+          <div className="alert alert-warning">
+            <i className="fas fa-info-circle"></i>
+            <div>Brak szczegółowych danych o tym leku</div>
+          </div>
+        </div>
+      );
+    }
+
+    if (characteristics.status === 'niedostępny') {
+      return (
+        <div className="drug-card-section">
+          <div className="alert alert-error">
+            <i className="fas fa-exclamation-triangle"></i>
+            <div>
+              <strong>Lek niedostępny</strong>
+              <p>{characteristics.uwagi}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (characteristics.status === 'dostępny' && characteristics.chpl) {
+      return (
+        <>
+          {/* Substancja czynna */}
+          {characteristics.chpl.substancja_czynna && (
+            <div className="drug-card-section">
+              <h5 className="drug-section-title">
+                <i className="fas fa-flask"></i> Substancja czynna
+              </h5>
+              <p className="drug-section-content">{characteristics.chpl.substancja_czynna}</p>
+            </div>
+          )}
+
+          {/* Wskazania */}
+          {characteristics.chpl.wskazania && characteristics.chpl.wskazania.length > 0 && (
+            <div className="drug-card-section">
+              <h5 className="drug-section-title">
+                <i className="fas fa-check-circle"></i> Wskazania
+              </h5>
+              <ul className="drug-section-list">
+                {characteristics.chpl.wskazania.slice(0, 3).map((indication, idx) => (
+                  <li key={idx}>{indication}</li>
+                ))}
+                {characteristics.chpl.wskazania.length > 3 && (
+                  <li className="more-items">...i {characteristics.chpl.wskazania.length - 3} więcej</li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {/* Przeciwwskazania */}
+          {characteristics.chpl.przeciwwskazania && characteristics.chpl.przeciwwskazania.length > 0 && (
+            <div className="drug-card-section">
+              <h5 className="drug-section-title">
+                <i className="fas fa-exclamation-triangle"></i> Przeciwwskazania
+              </h5>
+              <ul className="drug-section-list">
+                {characteristics.chpl.przeciwwskazania.slice(0, 2).map((contraindication, idx) => (
+                  <li key={idx}>{contraindication}</li>
+                ))}
+                {characteristics.chpl.przeciwwskazania.length > 2 && (
+                  <li className="more-items">...i {characteristics.chpl.przeciwwskazania.length - 2} więcej</li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {/* Uwagi specjalne */}
+          {characteristics.chpl.uwagi_specjalne && characteristics.chpl.uwagi_specjalne.length > 0 && (
+            <div className="drug-card-section">
+              <h5 className="drug-section-title">
+                <i className="fas fa-exclamation-circle"></i> Uwagi specjalne
+              </h5>
+              <ul className="drug-section-list">
+                {characteristics.chpl.uwagi_specjalne.slice(0, 2).map((warning, idx) => (
+                  <li key={idx}>{warning}</li>
+                ))}
+                {characteristics.chpl.uwagi_specjalne.length > 2 && (
+                  <li className="more-items">...i {characteristics.chpl.uwagi_specjalne.length - 2} więcej</li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {/* Refundacja */}
+          {characteristics.refundacja && (
+            <div className="drug-card-section refundation-section">
+              <h5 className="drug-section-title">
+                <i className="fas fa-credit-card"></i> Refundacja NFZ
+              </h5>
+              
+              <div className="refundation-status">
+                <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
+                  <i className="fas fa-shield-alt"></i>
+                  {getRefundationStatusText(characteristics.refundacja.refundowany)}
+                </span>
+                
+                {characteristics.refundacja.odplatnosc && (
+                  <span className="copayment-badge">
+                    Odpłatność: {characteristics.refundacja.odplatnosc}
+                  </span>
+                )}
+              </div>
+
+              {/* Grupy pacjentów */}
+              {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
+                <div className="refundation-groups">
+                  <strong>Refundacja dla:</strong>
+                  <ul className="drug-section-list">
+                    {characteristics.refundacja.grupy_pacjentow.slice(0, 2).map((group, idx) => (
+                      <li key={idx}>{group}</li>
+                    ))}
+                    {characteristics.refundacja.grupy_pacjentow.length > 2 && (
+                      <li className="more-items">...i {characteristics.refundacja.grupy_pacjentow.length - 2} więcej grup</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              {/* Przykładowe preparaty */}
+              {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
+                <div className="refundation-groups">
+                  <strong>Przykładowe preparaty:</strong>
+                  <p className="drug-section-content">
+                    {characteristics.refundacja.przykladowy_preparat.join(', ')}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Footer z linkami */}
+          <div className="drug-card-footer">
+            {characteristics.chpl.link && (
+              <a href={characteristics.chpl.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                <i className="fas fa-file-medical"></i> ChPL
+              </a>
+            )}
+            {characteristics.refundacja && characteristics.refundacja.link && (
+              <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                <i className="fas fa-info-circle"></i> Refundacja
+              </a>
+            )}
+          </div>
+        </>
+      );
+    }
+
+    return null;
+  };
+
   // Renderowanie błędów
   const renderError = () => {
     if (!errorMessage) return null;
@@ -285,117 +445,11 @@ export default function Results({
                                   <p className="drug-section-content">{lek.dawkowanie}</p>
                                 </div>
 
-                                {/* Charakterystyka */}
-                                {(() => {
-                                  const characteristics = findDrugCharacteristics(lek.nazwa);
-                                  if (!characteristics) return (
-                                    <div className="drug-card-section">
-                                      <div className="alert alert-warning">
-                                        <i className="fas fa-info-circle"></i>
-                                        <div>Brak szczegółowych danych o tym leku</div>
-                                      </div>
-                                    </div>
-                                  );
-
-                                  if (characteristics.status === 'niedostępny') return (
-                                    <div className="drug-card-section">
-                                      <div className="alert alert-error">
-                                        <i className="fas fa-exclamation-triangle"></i>
-                                        <div>
-                                          <strong>Lek niedostępny</strong>
-                                          <p>{characteristics.uwagi}</p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-
-                                  if (characteristics.status === 'dostępny' && characteristics.chpl) return (
-                                    <>
-                                      {/* Substancja czynna */}
-                                      {characteristics.chpl.substancja_czynna && (
-                                        <div className="drug-card-section">
-                                          <h5 className="drug-section-title">
-                                            <i className="fas fa-flask"></i> Substancja czynna
-                                          </h5>
-                                          <p className="drug-section-content">{characteristics.chpl.substancja_czynna}</p>
-                                        </div>
-                                      )}
-
-                                      {/* Wskazania */}
-                                      {characteristics.chpl.wskazania && characteristics.chpl.wskazania.length > 0 && (
-                                        <div className="drug-card-section">
-                                          <h5 className="drug-section-title">
-                                            <i className="fas fa-check-circle"></i> Wskazania
-                                          </h5>
-                                          <ul className="drug-section-list">
-                                            {characteristics.chpl.wskazania.slice(0, 3).map((indication, idx) => (
-                                              <li key={idx}>{indication}</li>
-                                            ))}
-                                            {characteristics.chpl.wskazania.length > 3 && (
-                                              <li className="more-items">...i {characteristics.chpl.wskazania.length - 3} więcej</li>
-                                            )}
-                                          </ul>
-                                        </div>
-                                      )}
-
-                                      {/* Przeciwwskazania */}
-                                      {characteristics.chpl.przeciwwskazania && characteristics.chpl.przeciwwskazania.length > 0 && (
-                                        <div className="drug-card-section">
-                                          <h5 className="drug-section-title">
-                                            <i className="fas fa-exclamation-triangle"></i> Przeciwwskazania
-                                          </h5>
-                                          <ul className="drug-section-list">
-                                            {characteristics.chpl.przeciwwskazania.slice(0, 2).map((contraindication, idx) => (
-                                              <li key={idx}>{contraindication}</li>
-                                            ))}
-                                            {characteristics.chpl.przeciwwskazania.length > 2 && (
-                                              <li className="more-items">...i {characteristics.chpl.przeciwwskazania.length - 2} więcej</li>
-                                            )}
-                                          </ul>
-                                        </div>
-                                      )}
-
-                                      {/* Refundacja */}
-                                      {characteristics.refundacja && (
-                                        <div className="drug-card-section refundation-section">
-                                          <h5 className="drug-section-title">
-                                            <i className="fas fa-credit-card"></i> Refundacja NFZ
-                                          </h5>
-                                          
-                                          <div className="refundation-status">
-                                            <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
-                                              <i className="fas fa-shield-alt"></i>
-                                              {getRefundationStatusText(characteristics.refundacja.refundowany)}
-                                            </span>
-                                            
-                                            {characteristics.refundacja.odplatnosc && (
-                                              <span className="copayment-badge">
-                                                Odpłatność: {characteristics.refundacja.odplatnosc}
-                                              </span>
-                                            )}
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      {/* Footer z linkami */}
-                                      <div className="drug-card-footer">
-                                        {characteristics.chpl.link && (
-                                          <a href={characteristics.chpl.link} target="_blank" rel="noopener noreferrer" className="drug-link">
-                                            <i className="fas fa-file-medical"></i> ChPL
-                                          </a>
-                                        )}
-                                        {characteristics.refundacja && characteristics.refundacja.link && (
-                                          <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
-                                            <i className="fas fa-info-circle"></i> Refundacja
-                                          </a>
-                                        )}
-                                      </div>
-                                    </>
-                                  );
-                                })()}
+                                {/* Charakterystyka leku głównego */}
+                                {renderDrugCharacteristics(lek.nazwa, false)}
                               </div>
                               
-                              {/* Alternatywy */}
+                              {/* Alternatywy - teraz z pełnymi charakterystykami */}
                               {lek.alternatywy && lek.alternatywy.length > 0 && (
                                 <>
                                   {lek.alternatywy.map((alt, altIdx) => (
@@ -412,12 +466,16 @@ export default function Results({
                                         )}
                                       </div>
 
+                                      {/* Różnice - jako osobna sekcja */}
                                       <div className="drug-card-section">
                                         <h5 className="drug-section-title">
-                                          <i className="fas fa-pills"></i> Różnice
+                                          <i className="fas fa-exchange-alt"></i> Różnice w stosunku do {lek.nazwa}
                                         </h5>
                                         <p className="drug-section-content">{alt.różnice}</p>
                                       </div>
+
+                                      {/* Pełne charakterystyki dla alternatywy */}
+                                      {renderDrugCharacteristics(alt.nazwa, true)}
                                     </div>
                                   ))}
                                 </>
