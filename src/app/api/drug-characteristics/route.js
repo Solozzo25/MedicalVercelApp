@@ -5,7 +5,7 @@ import axios from 'axios';
 async function fetchSingleDrugCharacteristics(drugName, apiKey) {
   console.log(`🔍 Pobieranie charakterystyki dla: ${drugName}`);
   
-  const systemPrompt = `Jesteś ekspertem od wyszukiwania i przetwarzania danych o lekach z oficjalnych źródeł.
+  const systemPrompt = `Jesteś ekspertem od wyszukiwania i przetwarzania danych o lekach z oficjalnych źródeł
 
 Dla podanej substancji czynnej lub nazwy handlowej leku:
 
