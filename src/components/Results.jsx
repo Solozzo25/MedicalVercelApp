@@ -689,7 +689,6 @@ export default function Results({
     </p>
   </div>
 )}
-</div>  {/* Zamyka kontener przycisku eksportu */}
-</div>  {/* DODAJ TEN - zamyka główny <div> z początku funkcji */}
+</div>
 );
 }
