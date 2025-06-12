@@ -472,52 +472,59 @@ export default function Results({
                     <div className="schema-drugs">
                       <h4>Leki w tym schemacie:</h4>
                       <div className="drug-list">
-                        {(() => {
-                          const schema = treatmentData.rekomendacje_leczenia[selectedSchemaIndex];
-                          const drugItems = [];
-                          let drugIndex = 0;
+						{(() => {
+						  const schema = treatmentData.rekomendacje_leczenia[selectedSchemaIndex];
+						  let globalDrugIndex = 0;
 
-                          // Dodaj leki główne i alternatywy
-                          schema.leki.forEach((lek, lekIdx) => {
-                            // Lek główny
-                            drugItems.push(
-                              <div
-                                key={`main-${lekIdx}`}
-                                className={`drug-item ${selectedDrugIndex === drugIndex ? 'selected' : ''}`}
-                                onClick={() => onDrugSelection(drugIndex)}
-                              >
-                                <div className="drug-item-header">
-                                  <span className="drug-name">{lek.nazwa}</span>
-                                  <span className="drug-type">{lek.typ}</span>
-                                </div>
-                                <div className="drug-dosage">{lek.dawkowanie}</div>
-                              </div>
-                            );
-                            drugIndex++;
-
-                            // Alternatywy
-                            if (lek.alternatywy && lek.alternatywy.length > 0) {
-                              lek.alternatywy.forEach((alt, altIdx) => {
-                                drugItems.push(
-                                  <div
-                                    key={`alt-${lekIdx}-${altIdx}`}
-                                    className={`drug-item alternative ${selectedDrugIndex === drugIndex ? 'selected' : ''}`}
-                                    onClick={() => onDrugSelection(drugIndex)}
-                                  >
-                                    <div className="drug-item-header">
-                                      <span className="alternative-label">Alternatywa:</span>
-                                      <span className="drug-name">{alt.nazwa}</span>
-                                    </div>
-                                    <div className="drug-differences">{alt.różnice}</div>
-                                  </div>
-                                );
-                                drugIndex++;
-                              });
-                            }
-                          });
-
-                          return drugItems;
-                        })()}
+						  return schema.leki.map((lek, lekIdx) => {
+							const mainDrugIndex = globalDrugIndex;
+							globalDrugIndex++;
+							
+							return (
+							  <div key={`drug-group-${lekIdx}`} className="drug-group">
+								{/* Lek główny */}
+								<div
+								  className={`drug-item main-drug ${selectedDrugIndex === mainDrugIndex ? 'selected' : ''}`}
+								  onClick={() => onDrugSelection(mainDrugIndex)}
+								>
+								  <div className="drug-item-header">
+									<span className="drug-name">{lek.nazwa}</span>
+									<span className="drug-type">{lek.typ}</span>
+								  </div>
+								  <div className="drug-dosage">{lek.dawkowanie}</div>
+								</div>
+								
+								{/* Alternatywy dla tego leku */}
+								{lek.alternatywy && lek.alternatywy.length > 0 && (
+								  <div className="alternatives-container">
+									<div className="alternatives-header">
+									  <i className="fas fa-exchange-alt"></i>
+									  <span>Alternatywy dla {lek.nazwa}:</span>
+									</div>
+									{lek.alternatywy.map((alt, altIdx) => {
+									  const altDrugIndex = globalDrugIndex;
+									  globalDrugIndex++;
+									  
+									  return (
+										<div
+										  key={`alt-${lekIdx}-${altIdx}`}
+										  className={`drug-item alternative ${selectedDrugIndex === altDrugIndex ? 'selected' : ''}`}
+										  onClick={() => onDrugSelection(altDrugIndex)}
+										>
+										  <div className="drug-item-header">
+											<span className="alternative-label">Alternatywa:</span>
+											<span className="drug-name">{alt.nazwa}</span>
+										  </div>
+										  <div className="drug-differences">{alt.różnice}</div>
+										</div>
+									  );
+									})}
+								  </div>
+								)}
+							  </div>
+							);
+						  });
+						})()}
                       </div>
                     </div>
 
