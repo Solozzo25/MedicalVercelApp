@@ -436,7 +436,6 @@ export default function Results({
             </div>
           )}
 
-// ZAMIEŃ ten fragment w Results.jsx:
 
 {/* Schematy leczenia */}
 {treatmentData && diagnosisConfirmed && treatmentData.rekomendacje_leczenia && (
