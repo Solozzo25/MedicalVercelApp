@@ -1332,25 +1332,7 @@ f
         grid-template-columns: 1fr;
     }
 
-    /* Mobile responsiveness for modal */
-    .modal-content {
-        margin: 16px;
-        width: calc(100% - 32px);
-    }
-    
-    .processing-steps {
-        gap: 12px;
-    }
-    
-    .step-item {
-        padding: 10px 12px;
-    }
-    
-    .step-icon {
-        width: 28px;
-        height: 28px;
-        font-size: 12px;
-    }
+
 /* Style dla schematów leczenia */
 .schema-tabs {
   display: flex;
@@ -1811,4 +1793,24 @@ f
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+    /* Mobile responsiveness for modal */
+    .modal-content {
+        margin: 16px;
+        width: calc(100% - 32px);
+    }
+    
+    .processing-steps {
+        gap: 12px;
+    }
+    
+    .step-item {
+        padding: 10px 12px;
+    }
+    
+    .step-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
 }
