@@ -144,7 +144,15 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
     
     let parsedResponse;
     try {
-      parsedResponse = JSON.parse(responseContent);
+			  // Wyczyść markdown jeśli istnieje
+		let cleanedContent = responseContent;
+		if (responseContent.includes('```')) {
+		  cleanedContent = responseContent
+			.replace(/^```json\s*\n?/m, '')
+			.replace(/\n?```\s*$/m, '')
+			.trim();
+		}
+parsedResponse = JSON.parse(cleanedContent);
       console.log("✅ Pomyślnie sparsowano JSON");
     } catch (e) {
       console.error("❌ Błąd parsowania JSON:", e);
