@@ -13,7 +13,6 @@ export default function Results({
   diagnosisConfirmed,
   selectedSchemaIndex,
   onSchemaSelection
-  
 }) {
 
   // Funkcja do ekstrakcji linków URL z tekstu
@@ -675,21 +674,22 @@ export default function Results({
   </div>
 )}
 
-      {/* Przycisk eksportu */}
-      {diagnosisData && (
-        <div style={{ textAlign: 'center', marginTop: '24px' }}>
-          <button 
-            className="btn btn-secondary" 
-            onClick={handleExport}
-            disabled
-          >
-            <i className="fas fa-file-pdf"></i> Eksportuj raport
-          </button>
-          <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px' }}>
-            Funkcja eksportu do PDF jest tymczasowo niedostępna
-          </p>
-        </div>
-      )}
-    </div>
-  );
+{/* Przycisk eksportu */}
+{diagnosisData && (
+  <div style={{ textAlign: 'center', marginTop: '24px' }}>
+    <button 
+      className="btn btn-secondary" 
+      onClick={handleExport}
+      disabled
+    >
+      <i className="fas fa-file-pdf"></i> Eksportuj raport
+    </button>
+    <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px' }}>
+      Funkcja eksportu do PDF jest tymczasowo niedostępna
+    </p>
+  </div>
+)}
+</div>  {/* Zamyka kontener przycisku eksportu */}
+</div>  {/* DODAJ TEN - zamyka główny <div> z początku funkcji */}
+);
 }
