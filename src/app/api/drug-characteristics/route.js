@@ -34,7 +34,7 @@ B. Refundacja – https://lekinfo24.pl
 WAŻNE:
 - Nie twórz ani nie generuj linków samodzielnie – podawaj tylko **prawdziwe, otwarte linki**, szczególnie **do plików PDF**.
 - Jeśli to możliwe, preferuj wyszukiwanie dokumentów typu PDF dostępnych publicznie (np. poprzez Google cache, publiczne repozytoria lub linki kończące się na `.pdf`).
-- Jeśli nie możesz znaleźć działającego linku do dokumentu, nie podawaj go wcale.'
+- Jeśli nie możesz znaleźć działającego linku do dokumentu, nie podawaj go wcale.';
 
   const userPrompt = `Sprawdź charakterystykę i refundację dla leku: ${drugName}
 
