@@ -12,9 +12,8 @@ export default function Results({
   selectedDiagnosis, 
   diagnosisConfirmed,
   selectedSchemaIndex,
-  selectedDrugIndex,
-  onSchemaSelection,
-  onDrugSelection
+  onSchemaSelection
+  
 }) {
 
   // Funkcja do ekstrakcji linków URL z tekstu
@@ -438,134 +437,243 @@ export default function Results({
             </div>
           )}
 
-          {/* Schematy leczenia */}
-          {treatmentData && diagnosisConfirmed && treatmentData.rekomendacje_leczenia && (
-            <div className="result-card treatment-schemas" style={{ gridColumn: '1/-1' }}>
-              <div className="result-header">
-                <div className="result-title">
-                  <i className="fas fa-notes-medical"></i> Schematy leczenia
-                </div>
-              </div>
-              <div className="result-body">
-                {/* Tabs dla schematów */}
-                <div className="schema-tabs">
-                  {treatmentData.rekomendacje_leczenia.map((schema, idx) => (
-                    <button
-                      key={idx}
-                      className={`schema-tab ${selectedSchemaIndex === idx ? 'active' : ''}`}
-                      onClick={() => onSchemaSelection(idx)}
-                    >
-                      <div className="schema-tab-name">{schema.nazwa_schematu}</div>
-                    </button>
-                  ))}
-                </div>
+// ZAMIEŃ ten fragment w Results.jsx:
 
-                {/* Wybrany schemat */}
-                {treatmentData.rekomendacje_leczenia[selectedSchemaIndex] && (
-                  <div className="selected-schema">
-                    <h3>{treatmentData.rekomendacje_leczenia[selectedSchemaIndex].nazwa_schematu}</h3>
-                    <p className="schema-description">
-                      {treatmentData.rekomendacje_leczenia[selectedSchemaIndex].opis_schematu}
-                    </p>
-                    
-                    {/* Lista leków w schemacie */}
-                    <div className="schema-drugs">
-                      <h4>Leki w tym schemacie:</h4>
-                      <div className="drug-list">
-						{(() => {
-						  const schema = treatmentData.rekomendacje_leczenia[selectedSchemaIndex];
-						  let globalDrugIndex = 0;
+{/* Schematy leczenia */}
+{treatmentData && diagnosisConfirmed && treatmentData.rekomendacje_leczenia && (
+  <div className="result-card treatment treatment-schemas" style={{ gridColumn: '1/-1' }}>
+    <div className="result-header">
+      <div className="result-title">
+        <i className="fas fa-notes-medical"></i> Schematy leczenia
+      </div>
+    </div>
+    <div className="result-body">
+      {/* Tabs dla schematów */}
+      <div className="treatment-tabs">
+        {treatmentData.rekomendacje_leczenia.map((schema, idx) => (
+          <button
+            key={idx}
+            className={`treatment-tab ${selectedSchemaIndex === idx ? 'active' : ''}`}
+            onClick={() => onSchemaSelection(idx)}
+          >
+            <div className="treatment-tab-name">{schema.nazwa_schematu}</div>
+          </button>
+        ))}
+      </div>
 
-						  return schema.leki.map((lek, lekIdx) => {
-							const mainDrugIndex = globalDrugIndex;
-							globalDrugIndex++;
-							
-							return (
-							  <div key={`drug-group-${lekIdx}`} className="drug-group">
-								{/* Lek główny */}
-								<div
-								  className={`drug-item main-drug ${selectedDrugIndex === mainDrugIndex ? 'selected' : ''}`}
-								  onClick={() => onDrugSelection(mainDrugIndex)}
-								>
-								  <div className="drug-item-header">
-									<span className="drug-name">{lek.nazwa}</span>
-									<span className="drug-type">{lek.typ}</span>
-								  </div>
-								  <div className="drug-dosage">{lek.dawkowanie}</div>
-								</div>
-								
-								{/* Alternatywy dla tego leku */}
-								{lek.alternatywy && lek.alternatywy.length > 0 && (
-								  <div className="alternatives-container">
-									<div className="alternatives-header">
-									  <i className="fas fa-exchange-alt"></i>
-									  <span>Alternatywy dla {lek.nazwa}:</span>
-									</div>
-									{lek.alternatywy.map((alt, altIdx) => {
-									  const altDrugIndex = globalDrugIndex;
-									  globalDrugIndex++;
-									  
-									  return (
-										<div
-										  key={`alt-${lekIdx}-${altIdx}`}
-										  className={`drug-item alternative ${selectedDrugIndex === altDrugIndex ? 'selected' : ''}`}
-										  onClick={() => onDrugSelection(altDrugIndex)}
-										>
-										  <div className="drug-item-header">
-											<span className="alternative-label">Alternatywa:</span>
-											<span className="drug-name">{alt.nazwa}</span>
-										  </div>
-										  <div className="drug-differences">{alt.różnice}</div>
-										</div>
-									  );
-									})}
-								  </div>
-								)}
-							  </div>
-							);
-						  });
-						})()}
+      {/* Wybrany schemat */}
+      {treatmentData.rekomendacje_leczenia[selectedSchemaIndex] && (
+        <div className="selected-treatment-schema">
+          <div className="schema-header">
+            <h3>{treatmentData.rekomendacje_leczenia[selectedSchemaIndex].nazwa_schematu}</h3>
+            <p className="schema-description">
+              {treatmentData.rekomendacje_leczenia[selectedSchemaIndex].opis_schematu}
+            </p>
+          </div>
+          
+          {/* Sekcja farmakologii */}
+          <div className="pharmacology-section">
+            <h4 className="section-title">
+              <i className="fas fa-pills"></i> Farmakologia
+            </h4>
+            
+            {/* Kontener z przewijaniem poziomym */}
+            <div className="drugs-container">
+              <div className="drugs-scroll-area">
+                {treatmentData.rekomendacje_leczenia[selectedSchemaIndex].leki.map((lek, lekIdx) => (
+                  <div key={`drug-group-${lekIdx}`} className="drug-group">
+                    {/* Lek główny */}
+                    <div className="drug-card drug-card-main">
+                      <div className="drug-card-header">
+                        <div className="drug-card-title">
+                          <h4>{lek.nazwa}</h4>
+                        </div>
+                        {lek.typ && (
+                          <span className="drug-type-badge">{lek.typ}</span>
+                        )}
                       </div>
+
+                      {/* Dawkowanie */}
+                      <div className="drug-card-section">
+                        <h5 className="drug-section-title">
+                          <i className="fas fa-pills"></i> Dawkowanie
+                        </h5>
+                        <p className="drug-section-content">{lek.dawkowanie}</p>
+                      </div>
+
+                      {/* Charakterystyka */}
+                      {(() => {
+                        const characteristics = findDrugCharacteristics(lek.nazwa);
+                        if (!characteristics) return (
+                          <div className="drug-card-section">
+                            <div className="alert alert-warning">
+                              <i className="fas fa-info-circle"></i>
+                              <div>Brak szczegółowych danych o tym leku</div>
+                            </div>
+                          </div>
+                        );
+
+                        if (characteristics.status === 'niedostępny') return (
+                          <div className="drug-card-section">
+                            <div className="alert alert-error">
+                              <i className="fas fa-exclamation-triangle"></i>
+                              <div>
+                                <strong>Lek niedostępny</strong>
+                                <p>{characteristics.uwagi}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+
+                        if (characteristics.status === 'dostępny' && characteristics.chpl) return (
+                          <>
+                            {/* Substancja czynna */}
+                            {characteristics.chpl.substancja_czynna && (
+                              <div className="drug-card-section">
+                                <h5 className="drug-section-title">
+                                  <i className="fas fa-flask"></i> Substancja czynna
+                                </h5>
+                                <p className="drug-section-content">{characteristics.chpl.substancja_czynna}</p>
+                              </div>
+                            )}
+
+                            {/* Wskazania */}
+                            {characteristics.chpl.wskazania && characteristics.chpl.wskazania.length > 0 && (
+                              <div className="drug-card-section">
+                                <h5 className="drug-section-title">
+                                  <i className="fas fa-check-circle"></i> Wskazania
+                                </h5>
+                                <ul className="drug-section-list">
+                                  {characteristics.chpl.wskazania.slice(0, 3).map((indication, idx) => (
+                                    <li key={idx}>{indication}</li>
+                                  ))}
+                                  {characteristics.chpl.wskazania.length > 3 && (
+                                    <li className="more-items">...i {characteristics.chpl.wskazania.length - 3} więcej</li>
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Przeciwwskazania */}
+                            {characteristics.chpl.przeciwwskazania && characteristics.chpl.przeciwwskazania.length > 0 && (
+                              <div className="drug-card-section">
+                                <h5 className="drug-section-title">
+                                  <i className="fas fa-exclamation-triangle"></i> Przeciwwskazania
+                                </h5>
+                                <ul className="drug-section-list">
+                                  {characteristics.chpl.przeciwwskazania.slice(0, 2).map((contraindication, idx) => (
+                                    <li key={idx}>{contraindication}</li>
+                                  ))}
+                                  {characteristics.chpl.przeciwwskazania.length > 2 && (
+                                    <li className="more-items">...i {characteristics.chpl.przeciwwskazania.length - 2} więcej</li>
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Refundacja */}
+                            {characteristics.refundacja && (
+                              <div className="drug-card-section refundation-section">
+                                <h5 className="drug-section-title">
+                                  <i className="fas fa-credit-card"></i> Refundacja NFZ
+                                </h5>
+                                
+                                <div className="refundation-status">
+                                  <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
+                                    <i className="fas fa-shield-alt"></i>
+                                    {getRefundationStatusText(characteristics.refundacja.refundowany)}
+                                  </span>
+                                  
+                                  {characteristics.refundacja.odplatnosc && (
+                                    <span className="copayment-badge">
+                                      Odpłatność: {characteristics.refundacja.odplatnosc}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Footer z linkami */}
+                            <div className="drug-card-footer">
+                              {characteristics.chpl.link && (
+                                <a href={characteristics.chpl.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                                  <i className="fas fa-file-medical"></i> ChPL
+                                </a>
+                              )}
+                              {characteristics.refundacja && characteristics.refundacja.link && (
+                                <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                                  <i className="fas fa-info-circle"></i> Refundacja
+                                </a>
+                              )}
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
+                    
+                    {/* Alternatywy */}
+                    {lek.alternatywy && lek.alternatywy.length > 0 && (
+                      <>
+                        {lek.alternatywy.map((alt, altIdx) => (
+                          <div key={`alt-${lekIdx}-${altIdx}`} className="drug-card drug-card-alternative">
+                            <div className="drug-card-header">
+                              <div className="drug-card-title">
+                                <h4>{alt.nazwa}</h4>
+                                <span className="alternative-badge">
+                                  <i className="fas fa-exchange-alt"></i> Alternatywa
+                                </span>
+                              </div>
+                              {lek.typ && (
+                                <span className="drug-type-badge">{lek.typ}</span>
+                              )}
+                            </div>
 
-                    {/* Źródło schematu */}
-                    {treatmentData.rekomendacje_leczenia[selectedSchemaIndex].źródło && 
-                      renderSource(treatmentData.rekomendacje_leczenia[selectedSchemaIndex].źródło)}
+                            <div className="drug-card-section">
+                              <h5 className="drug-section-title">
+                                <i className="fas fa-pills"></i> Różnice
+                              </h5>
+                              <p className="drug-section-content">{alt.różnice}</p>
+                            </div>
+
+                            {/* Tu też można dodać charakterystyki dla alternatyw */}
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
-                )}
-
-                {/* Szczegóły wybranego leku */}
-                <div className="drug-details-section">
-                  <h4 className="section-title">
-                    <i className="fas fa-pills"></i> Szczegóły wybranego leku
-                  </h4>
-                  <DrugDetailsPanel drug={getCurrentDrug()} />
-                </div>
+                ))}
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Zalecenia niefarmakologiczne */}
-          {treatmentData && diagnosisConfirmed && treatmentData.leczenie_niefarmakologiczne && (
-            <div className="result-card non-pharmacological" style={{ gridColumn: '1/-1' }}>
-              <div className="result-header">
-                <div className="result-title">
-                  <i className="fas fa-heartbeat"></i> Zalecenia niefarmakologiczne
-                </div>
-              </div>
-              <div className="result-body">
-                <ul className="treatment-list">
-                  {treatmentData.leczenie_niefarmakologiczne.zalecenia.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-                {treatmentData.leczenie_niefarmakologiczne.źródło && 
-                  renderSource(treatmentData.leczenie_niefarmakologiczne.źródło)}
-              </div>
-            </div>
-          )}
+          {/* Źródło schematu */}
+          {treatmentData.rekomendacje_leczenia[selectedSchemaIndex].źródło && 
+            renderSource(treatmentData.rekomendacje_leczenia[selectedSchemaIndex].źródło)}
         </div>
       )}
+    </div>
+  </div>
+)}
+
+{/* Zalecenia niefarmakologiczne */}
+{treatmentData && diagnosisConfirmed && treatmentData.leczenie_niefarmakologiczne && (
+  <div className="result-card treatment non-pharmacological" style={{ gridColumn: '1/-1' }}>
+    <div className="result-header">
+      <div className="result-title">
+        <i className="fas fa-heartbeat"></i> Zalecenia niefarmakologiczne
+      </div>
+    </div>
+    <div className="result-body">
+      <ul className="treatment-list">
+        {treatmentData.leczenie_niefarmakologiczne.zalecenia.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+      {treatmentData.leczenie_niefarmakologiczne.źródło && 
+        renderSource(treatmentData.leczenie_niefarmakologiczne.źródło)}
+    </div>
+  </div>
+)}
 
       {/* Przycisk eksportu */}
       {diagnosisData && (
