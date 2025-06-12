@@ -673,7 +673,7 @@ export default function Results({
   </div>
 )}
 
-		{/* Przycisk eksportu */}
+{/* Przycisk eksportu */}
           {diagnosisData && (
             <div style={{ textAlign: 'center', marginTop: '24px' }}>
               <button 
