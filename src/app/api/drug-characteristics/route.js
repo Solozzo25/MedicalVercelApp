@@ -16,6 +16,8 @@ Dla podanej substancji czynnej lub nazwy handlowej leku:
 2. Jeśli lek jest dostępny, pobierz dane z dwóch serwisów:
 
 A. Rejestr Produktów Leczniczych – https://rejestrymedyczne.ezdrowie.gov.pl
+Znajdź bezpośredni otwarty link do pliku PDF z charakterystyką produktu leczniczego (ChPL) w Polsce
+Preferuj dokumenty z portalu rejestrymedyczne.ezdrowie.gov.pl lub urpl.gov.pl. Pomiń linki, które przekierowują na stronę główną. Podaj tylko link do działającego PDF.
    - substancję czynną
    - wskazania do stosowania
    - przeciwwskazania
@@ -27,11 +29,12 @@ B. Refundacja – https://lekinfo24.pl
    - poziom odpłatności
    - grupy pacjentów, którym przysługuje refundacja
    - dwa przykładowe preparaty handlowe
-   - link do strony
+   - link do otwartej strony z danymi (pomijaj przekierowania i niedziałające linki).
 
 WAŻNE:
-- Nie generuj żadnych linków samodzielnie – podawaj tylko rzeczywiste, otwarte linki ze źródeł.
-- Nie twórz danych, jeśli nie ma ich w otwartym dokumencie lub stronie.`;
+- Nie twórz ani nie generuj linków samodzielnie – podawaj tylko **prawdziwe, otwarte linki**, szczególnie **do plików PDF**.
+- Jeśli to możliwe, preferuj wyszukiwanie dokumentów typu PDF dostępnych publicznie (np. poprzez Google cache, publiczne repozytoria lub linki kończące się na `.pdf`).
+- Jeśli nie możesz znaleźć działającego linku do dokumentu, nie podawaj go wcale.
 
   const userPrompt = `Sprawdź charakterystykę i refundację dla leku: ${drugName}
 
