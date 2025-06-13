@@ -222,7 +222,7 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
         'X-Title': 'MedDiagnosis App'
       },
       body: JSON.stringify({
-        model: "perplexity/sonar-pro",
+        model: "openai/gpt-4o-search-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
