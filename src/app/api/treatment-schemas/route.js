@@ -229,8 +229,8 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
         ],
         temperature: 0.2,
         max_tokens: 6000, // Zmniejszone
-        stream: false,
-        response_format: { type: "json_object" } // Wymuszenie JSON
+        stream: false
+        
       }),
       signal: AbortSignal.timeout(45000) // 45s timeout
     });
