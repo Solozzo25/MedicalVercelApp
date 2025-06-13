@@ -82,7 +82,7 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
   "choroba": "${diagnosis}",
   "linie_leczenia": [
     {
-      "numer_linii": "numer linii",
+      "numer_linii": "1,2,3",
       "nazwa_linii": "Nazwa pierwszej linii leczenia",
       "opis_linii": "Opis pierwszej linii leczenia",
       "schematy_farmakologiczne": [
@@ -147,6 +147,29 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
     );
     
     console.log("✅ Odpowiedź od OpenRouter otrzymana, status:", openRouterResponse.status);
+
+	// Bezpośrednio po otrzymaniu odpowiedzi, przed parsowaniem
+	const responseContent = openRouterResponse.data.choices[0].message.content;
+
+	console.log("🔍 DIAGNOSTYKA ODPOWIEDZI:");
+	console.log("📏 Długość odpowiedzi:", responseContent.length);
+	console.log("🎯 Pozycja 8233:", responseContent.charAt(8233));
+	console.log("📍 Kontekst wokół 8233:", responseContent.slice(8223, 8243));
+	console.log("✅ Czy kończy się '}':", responseContent.trim().endsWith('}'));
+	console.log("✅ Czy zaczyna się '{':", responseContent.trim().startsWith('{'));
+	console.log("📝 Pierwsze 200 znaków:", responseContent.substring(0, 200));
+	console.log("📝 Ostatnie 200 znaków:", responseContent.slice(-200));
+
+	// Sprawdź czy to JSON w ogóle
+	try {
+	  const testParse = JSON.parse(responseContent);
+	  console.log("✅ JSON jest poprawny!");
+	} catch (error) {
+	  console.log("❌ JSON niepoprawny:", error.message);
+	  console.log("❌ Pozycja błędu:", error.message.match(/position (\d+)/)?.[1]);
+	}
+
+
 
     // Parsowanie odpowiedzi
     const responseContent = openRouterResponse.data.choices[0].message.content;
