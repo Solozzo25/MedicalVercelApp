@@ -5,7 +5,11 @@ import axios from 'axios';
 async function fetchSingleDrugCharacteristics(drugName, apiKey) {
   console.log(`🔍 Pobieranie charakterystyki dla: ${drugName}`);
   
-  const systemPrompt = `Jesteś ekspertem od wyszukiwania i przetwarzania danych o lekach z oficjalnych źródeł
+  const systemPrompt = `Jesteś ekspertem od wyszukiwania i przetwarzania danych o lekach z oficjalnych źródeł`;
+
+
+
+  const userPrompt = `Sprawdź charakterystykę i refundację dla leku: ${drugName}
 
 Dla podanej substancji czynnej lub nazwy handlowej leku:
 
@@ -36,7 +40,6 @@ WAŻNE:
 - Jeśli to możliwe, preferuj wyszukiwanie dokumentów typu PDF dostępnych publicznie (np. poprzez Google cache, publiczne repozytoria lub linki kończące się na .pdf).
 - Jeśli nie możesz znaleźć działającego linku do dokumentu, nie podawaj go wcale.`;
 
-  const userPrompt = `Sprawdź charakterystykę i refundację dla leku: ${drugName}
 
 Zwróć dane w jednym z dwóch formatów JSON:
 
@@ -49,7 +52,7 @@ Jeśli lek jest dostępny:
     "wskazania": ["wskazanie 1", "wskazanie 2"],
     "przeciwwskazania": ["przeciwwskazanie 1", "przeciwwskazanie 2"],
     "uwagi_specjalne": ["uwaga 1", "uwaga 2"],
-    "link": "https://rejestrymedyczne.ezdrowie.gov.pl/..."
+    "link": "https://rejestrymedyczne.ezdrowie.gov.pl/api/rpl/medicinal-products/32989/leaflet"
   },
   "refundacja": {
     "refundowany": true,
@@ -77,7 +80,7 @@ Jeśli lek jest niedostępny:
           { role: "user", content: userPrompt }
         ],
         temperature: 0.1, // Bardzo niska temperatura dla precyzyjnych danych
-        max_tokens: 1500
+        max_tokens: 5000
       },
       {
         headers: {

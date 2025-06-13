@@ -160,7 +160,7 @@ ${medicalSociety ? `Preferuj wytyczne z: ${medicalSociety}` : ''}
 
 WAŻNE:
 - Uwzględnij minimum trzy linie leczenia, każda z nazwą i opisem (np. wskazania do jej zastosowania).
-- Dla każdej linii leczenia podaj minimum trzy schematy farmakologiczne opisane w wiarygodnych źródłach medycznych.
+- Dla każdej linii leczenia wymagane są minimum trzy schematy farmakologiczne opisane w wiarygodnych źródłach medycznych.
 - Leki podawaj **tylko jeśli są zarejestrowane i dostępne w Polsce**.
 - Dla każdego leku podaj MINIMUM 2 alternatywy (jeśli istnieją), wraz z opisem różnic.
 - Zalecenia niefarmakologiczne przedstaw w formie bezosobowej (np. "Zaleca się", "Należy unikać").
@@ -228,7 +228,7 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
           { role: "user", content: userPrompt }
         ],
         temperature: 0.2,
-        max_tokens: 6000, // Zmniejszone
+        max_tokens: 8000, // Zmniejszone
         stream: false
         
       }),
