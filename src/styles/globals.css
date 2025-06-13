@@ -1599,3 +1599,186 @@ h1, h2, h3, h4, h5, h6 {
       gap: 6px;
   }
 }
+
+/* ===============================
+   DODATKOWE STYLE DLA WYBORU DIAGNOZY
+   =============================== */
+
+/* Styl dla klikanych kart diagnozy */
+.diagnosis-selectable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.diagnosis-selectable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-light);
+}
+
+/* Wyraźne podświetlenie wybranej diagnozy */
+.selected-diagnosis {
+    border: 3px solid var(--primary) !important;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%) !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 8px 25px rgba(59, 130, 246, 0.25) !important;
+    transform: translateY(-4px) !important;
+}
+
+.selected-diagnosis .result-header {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.selected-diagnosis .result-title {
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+.selected-diagnosis .list-item-title {
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+/* Wskaźnik wybranej diagnozy */
+.selected-indicator {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: var(--primary);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: 0 var(--radius-lg) 0 var(--radius-lg);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+}
+
+.selected-indicator i {
+    font-size: 14px;
+    animation: checkPulse 2s infinite;
+}
+
+@keyframes checkPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Karta informacyjna o wybranej diagnozie */
+.diagnosis-info-card {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    border: none !important;
+}
+
+.diagnosis-info-card .result-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.diagnosis-info-card .result-title {
+    color: var(--white);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.diagnosis-info-card .result-title i {
+    color: var(--white);
+}
+
+.diagnosis-info-card .list-item-desc {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Przycisk zmiany diagnozy */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.diagnosis-info-card .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(4px);
+}
+
+.diagnosis-info-card .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Badge dla wybranej diagnozy */
+.badge-primary {
+    background-color: var(--primary);
+    color: var(--white);
+    font-weight: 600;
+    padding: 6px 12px;
+    animation: selectedBadgePulse 3s infinite;
+}
+
+@keyframes selectedBadgePulse {
+    0%, 100% { 
+        background-color: var(--primary);
+        transform: scale(1);
+    }
+    50% { 
+        background-color: var(--primary-dark);
+        transform: scale(1.05);
+    }
+}
+
+/* Dodatkowe style dla badge w wybranej karcie */
+.selected-diagnosis .badge-primary {
+    background: linear-gradient(45deg, var(--primary), var(--primary-light));
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Efekt hover dla nie wybranych diagnoz */
+.diagnosis-selectable:not(.selected-diagnosis):hover {
+    border-color: var(--primary-light);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(59, 130, 246, 0.01) 100%);
+}
+
+.diagnosis-selectable:not(.selected-diagnosis):hover .result-title {
+    color: var(--primary);
+}
+
+.diagnosis-selectable:not(.selected-diagnosis):hover .list-item-title {
+    color: var(--primary);
+}
+
+/* Responsywność dla mobilnych */
+@media (max-width: 768px) {
+    .selected-indicator {
+        position: static;
+        margin: 12px -20px -20px -20px;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        text-align: center;
+    }
+    
+    .diagnosis-info-card .result-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .diagnosis-info-card .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .selected-diagnosis {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1), 0 4px 15px rgba(59, 130, 246, 0.2) !important;
+    }
+}

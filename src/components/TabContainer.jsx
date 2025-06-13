@@ -108,6 +108,12 @@ export default function TabContainer() {
       setIsLoading(false);
     }
   };
+
+  // NOWA FUNKCJA: Obsługa wyboru diagnozy
+  const handleDiagnosisSelect = (diagnosisName) => {
+    setSelectedDiagnosis(diagnosisName);
+    console.log("Wybrano diagnozę:", diagnosisName);
+  };
   
   // Funkcja do obsługi potwierdzenia diagnozy
   const handleDiagnosisConfirm = async () => {
@@ -206,6 +212,18 @@ export default function TabContainer() {
     }
   };
 
+  // NOWA FUNKCJA: Reset wyboru diagnozy i powrót do wyboru
+  const handleDiagnosisReset = () => {
+    setDiagnosisConfirmed(false);
+    setSelectedDiagnosis('');
+    setTreatmentData(null);
+    setCharacteristicsData(null);
+    setSelectedLineIndex(0);
+    setSelectedSchemaPerLine({});
+    setErrorMessage('');
+    console.log("Reset wyboru diagnozy");
+  };
+
   // Obsługa wyboru linii leczenia
   const handleLineSelection = (lineIndex) => {
     console.log("Wybrano linię leczenia o indeksie:", lineIndex);
@@ -275,16 +293,16 @@ export default function TabContainer() {
                 {diagnosisData.Diagnozy && diagnosisData.Diagnozy.map((diagnoza, index) => (
                   <div 
                     key={index} 
-                    className={`result-card diagnosis ${selectedDiagnosis === diagnoza.Nazwa ? 'selected-diagnosis' : ''}`}
-                    onClick={() => setSelectedDiagnosis(diagnoza.Nazwa)}
-                    style={{ cursor: 'pointer' }}
+                    className={`result-card diagnosis diagnosis-selectable ${selectedDiagnosis === diagnoza.Nazwa ? 'selected-diagnosis' : ''}`}
+                    onClick={() => handleDiagnosisSelect(diagnoza.Nazwa)}
                   >
                     <div className="result-header">
                       <div className="result-title">
                         <i className="fas fa-search-plus"></i> Diagnoza {index + 1}
                       </div>
-                      <span className={`badge ${diagnoza.Prawdopodobieństwo >= 70 ? 'badge-success' : diagnoza.Prawdopodobieństwo >= 40 ? 'badge-warning' : 'badge-danger'}`}>
-                        <i className="fas fa-percentage"></i> {diagnoza.Prawdopodobieństwo}%
+                      <span className={`badge ${selectedDiagnosis === diagnoza.Nazwa ? 'badge-primary' : (diagnoza.Prawdopodobieństwo >= 70 ? 'badge-success' : diagnoza.Prawdopodobieństwo >= 40 ? 'badge-warning' : 'badge-danger')}`}>
+                        <i className={`fas ${selectedDiagnosis === diagnoza.Nazwa ? 'fa-check-circle' : 'fa-percentage'}`}></i> 
+                        {selectedDiagnosis === diagnoza.Nazwa ? 'WYBRANA' : `${diagnoza.Prawdopodobieństwo}%`}
                       </span>
                     </div>
                     <div className="result-body">
@@ -296,7 +314,7 @@ export default function TabContainer() {
                             role="progressbar" 
                             style={{ 
                               width: `${diagnoza.Prawdopodobieństwo}%`,
-                              backgroundColor: diagnoza.Prawdopodobieństwo >= 70 ? 'var(--success)' : diagnoza.Prawdopodobieństwo >= 40 ? 'var(--warning)' : 'var(--error)'
+                              backgroundColor: selectedDiagnosis === diagnoza.Nazwa ? 'var(--primary)' : (diagnoza.Prawdopodobieństwo >= 70 ? 'var(--success)' : diagnoza.Prawdopodobieństwo >= 40 ? 'var(--warning)' : 'var(--error)')
                             }}
                           ></div>
                         </div>
@@ -311,6 +329,11 @@ export default function TabContainer() {
                         </p>
                       </div>
                     </div>
+                    {selectedDiagnosis === diagnoza.Nazwa && (
+                      <div className="selected-indicator">
+                        <i className="fas fa-check-double"></i> Wybrana do rekomendacji
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -339,6 +362,7 @@ export default function TabContainer() {
             selectedSchemaPerLine={selectedSchemaPerLine}
             onLineSelection={handleLineSelection}
             onSchemaSelection={handleSchemaSelection}
+            onDiagnosisReset={handleDiagnosisReset}
           />
         </div>
       </div>
