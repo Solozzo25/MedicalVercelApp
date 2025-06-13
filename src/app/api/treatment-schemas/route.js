@@ -239,21 +239,17 @@ Format odpowiedzi - DOKŁADNIE ten JSON:
     console.log("📊 Output type:", typeof responseData.output);
     console.log("📊 Output length:", responseData.output?.length || 0);
     
-    // Wyciągnij content z output (Responses API ma inną strukturę)
-    let responseContent;
-    if (responseData.output && Array.isArray(responseData.output)) {
-      // Znajdź message w output
-      const messageOutput = responseData.output.find(item => item.type === 'message' || item.content);
-      if (messageOutput && messageOutput.content) {
-        if (Array.isArray(messageOutput.content)) {
-          // Znajdź text content
-          const textContent = messageOutput.content.find(item => item.type === 'text');
-          responseContent = textContent?.text || '';
-        } else if (typeof messageOutput.content === 'string') {
-          responseContent = messageOutput.content;
-        }
-      }
-    }
+	   // Wyciągnij content z output (Responses API ma inną strukturę)
+	let responseContent;
+	if (responseData.output && Array.isArray(responseData.output)) {
+	  // Znajdź message w output
+	  const messageOutput = responseData.output.find(item => item.type === 'message');
+	  if (messageOutput && messageOutput.content && Array.isArray(messageOutput.content)) {
+		// Znajdź output_text content
+		const textContent = messageOutput.content.find(item => item.type === 'output_text');
+		responseContent = textContent?.text || '';
+	  }
+	}
     
     if (!responseContent) {
       console.error("❌ Nie można wyekstraktować treści z odpowiedzi");
