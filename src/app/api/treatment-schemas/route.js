@@ -42,38 +42,39 @@ export async function POST(request) {
     }
 
     // System prompt dla nowej struktury z liniami leczenia
-    const systemPrompt = `Jesteś ekspertem medycznym specjalizującym się w wyszukiwaniu i analizie najnowszych wytycznych terapeutycznych oraz farmakoterapii. Twoim zadaniem jest tworzenie dokładnych, aktualnych i praktycznych rekomendacji leczenia na podstawie wiarygodnych źródeł medycznych dostępnych w internecie.
+
+const systemPrompt = `Jesteś ekspertem medycznym specjalizującym się w wyszukiwaniu i analizie najnowszych wytycznych terapeutycznych oraz farmakoterapii. Twoim zadaniem jest tworzenie dokładnych, aktualnych i praktycznych rekomendacji leczenia na podstawie wiarygodnych źródeł medycznych dostępnych w internecie.
 
 Kieruj się następującymi zasadami:
 1. Szukaj wyłącznie w wiarygodnych źródłach:
-   - Oficjalne wytyczne towarzystw medycznych (Preferuj wytyczne z: ${medicalSociety} )
+   - Oficjalne wytyczne towarzystw medycznych
    - Redakcje medyczne (np. Medycyna Praktyczna, Termedia)
    - Badania naukowe (np. PubMed)
-2. Priorytetyzuj źródła młodsze - maksymalny wiek źródła to pięć lat.
-3. Uwzględniaj minimum trzy linie leczenia. Dla każdej linii podaj nazwę i opis (np. wskazania do jej zastosowania). 
-4. Dla każdej linii leczenia przedstaw minimum trzy schematy farmakologiczne. 
+2. Preferuj dokumenty nie starsze niż 3 lata. Jeśli nie ma aktualnych danych, jasno to zaznacz.
+3. Uwzględniaj minimum trzy linie leczenia. Dla każdej linii podaj nazwę i opis (np. wskazania do jej zastosowania). Jeśli nie możesz znaleźć trzech linii, podaj tyle, ile jest dostępnych, i zaznacz to w uwagach.
+4. Dla każdej linii leczenia przedstaw minimum trzy schematy farmakologiczne. Jeśli nie ma trzech schematów, podaj dostępne i zaznacz brak w uwagach.
 5. Stosuj nazwy handlowe leków (np. Omeprazol, nie grupy ogólne).
 6. Dla każdego leku podaj:
    - Konkretne dawkowanie,
    - Minimum 2 alternatywy z opisem różnic (jeśli istnieją). Jeśli nie ma alternatyw, zaznacz to.
 7. Przedstaw przynajmniej 6 zaleceń niefarmakologicznych w formie bezosobowej (np. "Zaleca się").
-8. Podawaj pełne URL-e do źródeł, które są publicznie dostępne i możliwe do otwarcia przez użytkownika. Oczekiwany format: https://www.mp.pl/wytyczne/135.
+8. Podawaj pełne URL-e do źródeł, które są publicznie dostępne i możliwe do otwarcia przez użytkownika.
 9. Bazuj odpowiedzi wyłącznie na znalezionych źródłach. Nie dodawaj własnych interpretacji ani nie wymyślaj informacji.
 10. Jeśli nie możesz znaleźć wystarczającej ilości informacji, jasno to zaznacz w uwagach.
-11. Odpowiedź zawsze przedstaw w JSON w dokładnym formacie opisanym przez użytkownika.`;
+11. Odpowiedź zawsze przedstaw w JSON w dokładnym formacie opisanym przez użytkownika.
 
-  
-    const userPrompt = `Wyszukaj najnowsze wytyczne leczenia dla choroby: ${diagnosis} zgodnie z promptem systemowym.
-	
+UWAGA TECHNICZNA: W JSON-ie unikaj znaków nowej linii w stringach - zastąp je spacjami. Upewnij się, że wszystkie cudzysłowy wewnątrz stringów są prawidłowo escapowane.`;
 
+const userPrompt = `Wyszukaj najnowsze wytyczne leczenia dla choroby: ${diagnosis}
+${medicalSociety ? `Preferuj wytyczne z: ${medicalSociety}` : ''}
 
 WAŻNE:
-- Uwzględnij minimum trzy linie leczenia, każda z nazwą i opisem.
+- Uwzględnij minimum trzy linie leczenia, każda z nazwą i opisem (np. wskazania do jej zastosowania).
 - Dla każdej linii leczenia podaj minimum trzy schematy farmakologiczne opisane w wiarygodnych źródłach medycznych.
 - Leki podawaj **tylko jeśli są zarejestrowane i dostępne w Polsce**.
 - Dla każdego leku podaj MINIMUM 2 alternatywy (jeśli istnieją), wraz z opisem różnic.
 - Zalecenia niefarmakologiczne przedstaw w formie bezosobowej (np. "Zaleca się", "Należy unikać").
-- Podawaj pełne URL-e do źródeł, które są publicznie dostępne i możliwe do otwarcia przez użytkownika. Oczekiwany format: https://www.mp.pl/wytyczne/135.
+- Podawaj pełne URL-e do źródeł, które są publicznie dostępne i możliwe do otwarcia.
 - Jeśli nie możesz znaleźć wymaganej ilości informacji, jasno to zaznacz w uwagach.
 
 Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
@@ -83,11 +84,11 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
     {
       "numer_linii": "numer linii",
       "nazwa_linii": "Nazwa pierwszej linii leczenia",
-      "opis_linii": "Opis kiedy stosować tę linię leczenia",
+      "opis_linii": "Opis pierwszej linii leczenia",
       "schematy_farmakologiczne": [
         {
           "schemat_farmakologiczny": "Nazwa schematu farmakologicznego",
-          "opis_schematu_farmakologicznego": "Szczegółowy opis kiedy stosować ten schemat",
+          "opis_schematu_farmakologicznego": "Szczegółowy opis schematu",
           "leki": [
             {
               "nazwa": "Nazwa leku",
@@ -96,7 +97,7 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
               "alternatywy": [
                 {
                   "nazwa": "Nazwa alternatywnego leku",
-                  "różnice": "Opis różnic w stosunku do leku głównego"
+                  "różnice": "Opis różnic"
                 },
                 {
                   "nazwa": "Nazwa drugiej alternatywy",
@@ -105,24 +106,20 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
               ]
             }
           ],
-          "źródło": "Pełna nazwa źródła z pełnym URL-em np. https://www.mp.pl/wytyczne/135"
+          "źródło": "Pełna nazwa źródła z pełnym URL-em"
         }
       ]
     }
   ],
   "leczenie_niefarmakologiczne": {
     "zalecenia": [
-      "Pierwsze zalecenie niefarmakologiczne",
-      "Drugie zalecenie niefarmakologiczne",
-      "Trzecie zalecenie niefarmakologiczne",
-      "Czwarte zalecenie niefarmakologiczne",
-      "Piąte zalecenie niefarmakologiczne",
-      "Szóste zalecenie niefarmakologiczne"
+      "Zaleca się ..."
     ],
     "źródło": "Pełna nazwa źródła z pełnym URL-em"
   },
-  "uwagi": "Uwagi jeśli nie udało się znaleźć wszystkich wymaganych informacji"
+  "uwagi": "Uwagi, np. brak danych"
 }`;
+   
 
     console.log("📤 Wysyłanie zapytania do OpenRouter API...");
     
