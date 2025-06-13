@@ -216,7 +216,7 @@ Format odpowiedzi - DOKŁADNIE ten JSON:
 		  }
 		}],
         temperature: 0.2,
-        max_completion_tokens: 8000
+        max_output_tokens: 8000
       })
     });
     
