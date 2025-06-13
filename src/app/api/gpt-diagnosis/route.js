@@ -51,7 +51,7 @@ Wymagania:
 3. **Wykorzystanie najnowszej wiedzy medycznej:** Opieraj się na aktualnych wytycznych, artykułach oraz wiarygodnych źródłach dostępnych online.
 4. **Uwzględnienie kontekstu demograficznego:** Dostosuj diagnozy do wieku oraz płci pacjenta.
 5. **Zaproponowanie kilku możliwych diagnoz:** Przedstaw 8 diagnoz, które będą spełniały powyższe wymagania, przypisując każdej szacunkowy procent prawdopodobieństwa trafności diagnozy na podstawie dostarczonych danych.
-6. **Uzasadnienie każdej diagnozy:** Dla każdej zaproponowanej diagnozy dodaj opis argumentujący tą diagnozę (3-4 zdania).
+6. **Uzasadnienie każdej diagnozy:** Dla każdej zaproponowanej diagnozy dodaj opis argumentujący tą diagnozę (3-4 zdania) wskazując co przemawia za tym, ze diagnoza jest prawidłowa.
 7. **Badania potwierdzające diagnozę:** Wskaż jakie badania należy wykonać, aby potwierdzić lub wykluczyć daną diagnozę. 
 8. **Wskazanie organizacji medycznej:** Dla każdej diagnozy podaj nazwę polskiego towarzystwa medycznego, do którego skierowałbyś się po dodatkowe zalecenia.
 
