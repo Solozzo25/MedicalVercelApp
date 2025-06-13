@@ -133,7 +133,7 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
           { role: "user", content: userPrompt }
         ],
         temperature: 0.2,
-        max_tokens: 10000, // Zwiększone dla bardziej złożonej struktury
+        max_tokens: 6000, // Zwiększone dla bardziej złożonej struktury
 		stream: false
       },
       {
