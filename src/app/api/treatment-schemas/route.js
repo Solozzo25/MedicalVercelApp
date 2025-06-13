@@ -170,9 +170,8 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
 	}
 
 
-
-    // Parsowanie odpowiedzi
-    const responseContent = openRouterResponse.data.choices[0].message.content;
+    
+    
     console.log("📝 Surowa odpowiedź:", responseContent.substring(0, 500) + "...");
     
     let parsedResponse;
