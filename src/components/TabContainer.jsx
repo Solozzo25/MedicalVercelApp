@@ -23,25 +23,28 @@ export default function TabContainer() {
   const [selectedDiagnosis, setSelectedDiagnosis] = useState('');
   const [diagnosisConfirmed, setDiagnosisConfirmed] = useState(false);
 
-  // State dla wyboru schematu leczenia (TYLKO TO!)
-  const [selectedSchemaIndex, setSelectedSchemaIndex] = useState(0);
+  // State dla wyboru linii leczenia i schematów
+  const [selectedLineIndex, setSelectedLineIndex] = useState(0);
+  const [selectedSchemaPerLine, setSelectedSchemaPerLine] = useState({});
 
   // Obsługa przełączania zakładek
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
   };
 
-  // Funkcja do ekstrakcji wszystkich nazw leków ze schematów leczenia
+  // Funkcja do ekstrakcji wszystkich nazw leków ze schematów leczenia - ZAKTUALIZOWANA
   const extractDrugNamesFromTreatment = (treatmentResult) => {
     const drugNames = new Set();
     
-    if (treatmentResult.rekomendacje_leczenia) {
-      treatmentResult.rekomendacje_leczenia.forEach(schemat => {
-        schemat.leki.forEach(lek => {
-          drugNames.add(lek.nazwa);
-          if (lek.alternatywy) {
-            lek.alternatywy.forEach(alt => drugNames.add(alt.nazwa));
-          }
+    if (treatmentResult.linie_leczenia) {
+      treatmentResult.linie_leczenia.forEach(linia => {
+        linia.schematy_farmakologiczne.forEach(schemat => {
+          schemat.leki.forEach(lek => {
+            drugNames.add(lek.nazwa);
+            if (lek.alternatywy) {
+              lek.alternatywy.forEach(alt => drugNames.add(alt.nazwa));
+            }
+          });
         });
       });
     }
@@ -62,7 +65,8 @@ export default function TabContainer() {
     // Reset state'u schematów
     setTreatmentData(null);
     setCharacteristicsData(null);
-    setSelectedSchemaIndex(0);
+    setSelectedLineIndex(0);
+    setSelectedSchemaPerLine({});
 
     try {
       // Krok 1: Pobierz diagnozę od OpenAI
@@ -151,6 +155,15 @@ export default function TabContainer() {
       // Zapisz dane schematów
       setTreatmentData(treatmentResult);
       
+      // Inicjalizuj wybór schematów dla każdej linii
+      const initialSchemaSelection = {};
+      if (treatmentResult.linie_leczenia) {
+        treatmentResult.linie_leczenia.forEach((_, lineIndex) => {
+          initialSchemaSelection[lineIndex] = 0;
+        });
+      }
+      setSelectedSchemaPerLine(initialSchemaSelection);
+      
       // Wyciągnij nazwy wszystkich leków
       const drugNames = extractDrugNamesFromTreatment(treatmentResult);
       console.log("💊 Lista leków do sprawdzenia:", drugNames);
@@ -185,9 +198,6 @@ export default function TabContainer() {
       setLoadingProgress(100);
       setDiagnosisConfirmed(true);
       
-      // Reset wyboru schematu
-      setSelectedSchemaIndex(0);
-      
     } catch (error) {
       console.error('❌ Błąd podczas przetwarzania rekomendacji:', error);
       setErrorMessage(error.message || 'Wystąpił nieoczekiwany błąd podczas pobierania rekomendacji leczenia.');
@@ -196,10 +206,19 @@ export default function TabContainer() {
     }
   };
 
-  // Obsługa wyboru schematu leczenia
-  const handleSchemaSelection = (schemaIndex) => {
-    console.log("Wybrano schemat leczenia o indeksie:", schemaIndex);
-    setSelectedSchemaIndex(schemaIndex);
+  // Obsługa wyboru linii leczenia
+  const handleLineSelection = (lineIndex) => {
+    console.log("Wybrano linię leczenia o indeksie:", lineIndex);
+    setSelectedLineIndex(lineIndex);
+  };
+
+  // Obsługa wyboru schematu w ramach linii
+  const handleSchemaSelection = (lineIndex, schemaIndex) => {
+    console.log(`Wybrano schemat ${schemaIndex} dla linii ${lineIndex}`);
+    setSelectedSchemaPerLine(prev => ({
+      ...prev,
+      [lineIndex]: schemaIndex
+    }));
   };
 
   return (
@@ -244,7 +263,7 @@ export default function TabContainer() {
 
         <div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
         
-          {/* Potwierdzenie diagnozy - wyświetlane jako karuzela kart */}
+          {/* Potwierdzenie diagnozy - NAPRAWIONE wyświetlanie kart */}
           {diagnosisData && !diagnosisConfirmed && (
             <div className="diagnosis-confirmation">
               <div className="alert alert-warning">
@@ -260,7 +279,38 @@ export default function TabContainer() {
                     onClick={() => setSelectedDiagnosis(diagnoza.Nazwa)}
                     style={{ cursor: 'pointer' }}
                   >
-                    {/* ... reszta kodu karty diagnozy ... */}
+                    <div className="result-header">
+                      <div className="result-title">
+                        <i className="fas fa-search-plus"></i> Diagnoza {index + 1}
+                      </div>
+                      <span className={`badge ${diagnoza.Prawdopodobieństwo >= 70 ? 'badge-success' : diagnoza.Prawdopodobieństwo >= 40 ? 'badge-warning' : 'badge-danger'}`}>
+                        <i className="fas fa-percentage"></i> {diagnoza.Prawdopodobieństwo}%
+                      </span>
+                    </div>
+                    <div className="result-body">
+                      <div className="result-section">
+                        <h3 className="list-item-title">{diagnoza.Nazwa}</h3>
+                        <div className="progress" style={{ height: '10px', margin: '10px 0' }}>
+                          <div 
+                            className="progress-bar" 
+                            role="progressbar" 
+                            style={{ 
+                              width: `${diagnoza.Prawdopodobieństwo}%`,
+                              backgroundColor: diagnoza.Prawdopodobieństwo >= 70 ? 'var(--success)' : diagnoza.Prawdopodobieństwo >= 40 ? 'var(--warning)' : 'var(--error)'
+                            }}
+                          ></div>
+                        </div>
+                        <p className="list-item-desc">
+                          <strong>Uzasadnienie:</strong> {diagnoza.Uzasadnienie}
+                        </p>
+                        <p className="list-item-desc">
+                          <strong>Badania:</strong> {diagnoza["Badania potwierdzające/wykluczające"]}
+                        </p>
+                        <p className="list-item-desc">
+                          <strong>Towarzystwo:</strong> {diagnoza.Towarzystwo_Medyczne}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -285,7 +335,9 @@ export default function TabContainer() {
             errorMessage={errorMessage}
             selectedDiagnosis={selectedDiagnosis}
             diagnosisConfirmed={diagnosisConfirmed}
-            selectedSchemaIndex={selectedSchemaIndex}
+            selectedLineIndex={selectedLineIndex}
+            selectedSchemaPerLine={selectedSchemaPerLine}
+            onLineSelection={handleLineSelection}
             onSchemaSelection={handleSchemaSelection}
           />
         </div>

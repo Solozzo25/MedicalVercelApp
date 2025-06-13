@@ -656,7 +656,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ===============================
-   SCHEMATY LECZENIA (NOWE)
+   SCHEMATY LECZENIA - NOWA STRUKTURA
    =============================== */
 .treatment-tabs {
     display: flex;
@@ -693,27 +693,96 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: var(--shadow-md);
 }
 
-.selected-treatment-schema {
+/* Podzakładki dla schematów farmakologicznych */
+.schema-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.schema-tab {
+    padding: 10px 20px;
+    background-color: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: var(--gray-600);
+    font-size: 13px;
+}
+
+.schema-tab:hover {
+    background-color: var(--primary-light);
+    color: var(--white);
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.schema-tab.active {
+    background-color: var(--accent);
+    color: var(--white);
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+}
+
+.selected-treatment-line {
     margin-bottom: 32px;
     animation: slideInFromLeft 0.4s ease-out;
 }
 
-.schema-header h3 {
+.line-header h3 {
     color: var(--primary);
     margin-bottom: 16px;
     font-size: 22px;
     font-weight: 700;
 }
 
-.schema-description {
+.line-description {
     color: var(--gray-700);
     line-height: 1.6;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     padding: 20px;
     background-color: var(--gray-50);
     border-radius: var(--radius-lg);
     border-left: 4px solid var(--primary);
     font-size: 15px;
+}
+
+.selected-schema {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.schema-info {
+    margin-bottom: 32px;
+}
+
+.schema-info h4 {
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.schema-description {
+    color: var(--gray-700);
+    line-height: 1.6;
+    padding: 16px;
+    background-color: rgba(139, 92, 246, 0.05);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--accent);
+    font-size: 14px;
 }
 
 .pharmacology-section {
@@ -738,49 +807,42 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 22px;
 }
 
-/* Kontener z przewijaniem poziomym */
-.drugs-container {
-    position: relative;
-    margin-bottom: 24px;
-}
-
-.drugs-scroll-area {
+/* Nowy układ pionowy dla leków */
+.drugs-vertical-container {
     display: flex;
-    gap: 24px;
-    overflow-x: auto;
-    padding: 16px 8px 24px 8px;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
+    gap: 32px;
 }
 
-.drugs-scroll-area::-webkit-scrollbar {
-    height: 8px;
+.drug-row {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    background-color: var(--gray-50);
 }
 
-.drugs-scroll-area::-webkit-scrollbar-track {
-    background: var(--gray-100);
-    border-radius: var(--radius-full);
-}
-
-.drugs-scroll-area::-webkit-scrollbar-thumb {
-    background: var(--gray-300);
-    border-radius: var(--radius-full);
-}
-
-.drugs-scroll-area::-webkit-scrollbar-thumb:hover {
-    background: var(--gray-400);
-}
-
-.drug-group {
+.drug-row-title {
+    color: var(--gray-700);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
     display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drug-row-title i {
+    color: var(--primary);
+}
+
+.drug-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 16px;
-    flex-shrink: 0;
 }
 
 /* Karty leków */
 .drug-card {
-    min-width: 320px;
-    max-width: 360px;
     background-color: var(--white);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
@@ -789,7 +851,6 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     height: fit-content;
-    animation: slideInFromLeft 0.3s ease-out;
 }
 
 .drug-card:hover {
@@ -803,7 +864,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .drug-card-alternative {
     border-top: 4px solid var(--accent);
-    background-color: var(--gray-50);
+    background-color: rgba(139, 92, 246, 0.02);
 }
 
 .drug-card-header {
@@ -813,7 +874,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .drug-card-alternative .drug-card-header {
-    background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(139, 92, 246, 0.02) 100%);
 }
 
 .drug-card-title {
@@ -897,6 +958,34 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--accent);
 }
 
+/* Rozwijane sekcje ChPL */
+.collapsible-header {
+    cursor: pointer;
+    justify-content: space-between;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.collapsible-header:hover {
+    color: var(--primary);
+}
+
+.collapse-icon {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.expanded {
+    max-height: 500px;
+    transition: max-height 0.3s ease-in;
+}
+
 .drug-section-content {
     color: var(--gray-700);
     font-size: 13px;
@@ -937,16 +1026,6 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--accent);
 }
 
-.more-items {
-    font-style: italic;
-    color: var(--gray-500) !important;
-}
-
-.more-items::before {
-    content: '…' !important;
-    color: var(--gray-400) !important;
-}
-
 /* Sekcja refundacji */
 .refundation-section {
     background-color: rgba(34, 197, 94, 0.02);
@@ -971,254 +1050,254 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .refundation-groups {
-    margin-top: 12px;
+   margin-top: 12px;
 }
 
 .refundation-groups strong {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--gray-800);
-    font-size: 13px;
+   display: block;
+   margin-bottom: 6px;
+   color: var(--gray-800);
+   font-size: 13px;
 }
 
 /* Footer karty leku */
 .drug-card-footer {
-    padding: 16px 20px;
-    background-color: var(--gray-50);
-    border-top: 1px solid var(--gray-100);
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: auto;
+   padding: 16px 20px;
+   background-color: var(--gray-50);
+   border-top: 1px solid var(--gray-100);
+   display: flex;
+   gap: 12px;
+   flex-wrap: wrap;
+   margin-top: auto;
 }
 
 .drug-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    background-color: var(--primary);
-    color: var(--white);
-    text-decoration: none;
-    border-radius: var(--radius);
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+   display: inline-flex;
+   align-items: center;
+   gap: 6px;
+   padding: 8px 14px;
+   background-color: var(--primary);
+   color: var(--white);
+   text-decoration: none;
+   border-radius: var(--radius);
+   font-size: 12px;
+   font-weight: 500;
+   transition: all 0.2s ease;
 }
 
 .drug-link:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-    color: var(--white);
-    text-decoration: none;
+   background-color: var(--primary-dark);
+   transform: translateY(-1px);
+   box-shadow: var(--shadow);
+   color: var(--white);
+   text-decoration: none;
 }
 
 .drug-card-alternative .drug-link {
-    background-color: var(--accent);
+   background-color: var(--accent);
 }
 
 .drug-card-alternative .drug-link:hover {
-    background-color: var(--accent-light);
+   background-color: var(--accent-light);
 }
 
 /* ===============================
-   LISTY I ŹRÓDŁA
-   =============================== */
+  LISTY I ŹRÓDŁA
+  =============================== */
 
 .list-item {
-   padding: 10px 0;
-   border-bottom: 1px solid var(--gray-100);
-   font-size: 14px;
-   line-height: 1.6;
-   color: var(--gray-700);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-100);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gray-700);
 }
 
 .list-item:last-child {
-   border-bottom: none;
+  border-bottom: none;
 }
 
 .list-item-title {
-   font-weight: 500;
-   color: var(--gray-800);
-   margin-bottom: 4px;
+  font-weight: 500;
+  color: var(--gray-800);
+  margin-bottom: 4px;
 }
 
 .list-item-desc {
-   color: var(--gray-600);
-   font-size: 13px;
+  color: var(--gray-600);
+  font-size: 13px;
 }
 
 /* Treatment Lists */
 .treatment-list {
-   list-style: none;
-   padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 .treatment-list li {
-   position: relative;
-   padding: 10px 0 10px 24px;
-   border-bottom: 1px solid var(--gray-100);
-   color: var(--gray-700);
-   font-size: 14px;
-   line-height: 1.6;
+  position: relative;
+  padding: 10px 0 10px 24px;
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-700);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .treatment-list li:last-child {
-   border-bottom: none;
+  border-bottom: none;
 }
 
 .treatment-list li::before {
-   content: '';
-   position: absolute;
-   top: 17px;
-   left: 0;
-   width: 8px;
-   height: 8px;
-   background-color: var(--primary-light);
-   border-radius: 50%;
+  content: '';
+  position: absolute;
+  top: 17px;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-light);
+  border-radius: 50%;
 }
 
 /* Źródła */
 .source-info {
-   font-size: 12px;
-   color: var(--gray-600);
-   margin-top: 4px;
-   margin-left: 4px;
-   font-style: italic;
-   line-height: 1.4;
-   padding-left: 8px;
-   border-left: 2px solid var(--gray-200);
+  font-size: 12px;
+  color: var(--gray-600);
+  margin-top: 4px;
+  margin-left: 4px;
+  font-style: italic;
+  line-height: 1.4;
+  padding-left: 8px;
+  border-left: 2px solid var(--gray-200);
 }
 
 .source-info i {
-   margin-right: 4px;
-   color: var(--primary);
+  margin-right: 4px;
+  color: var(--primary);
 }
 
 .source-link {
-   color: var(--primary);
-   text-decoration: none;
-   border-bottom: 1px dashed var(--primary-light);
-   padding-bottom: 1px;
-   transition: all 0.2s ease;
-   word-break: break-word;
-   display: inline-block;
-   margin-top: 3px;
+  color: var(--primary);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--primary-light);
+  padding-bottom: 1px;
+  transition: all 0.2s ease;
+  word-break: break-word;
+  display: inline-block;
+  margin-top: 3px;
 }
 
 .source-link:hover {
-   color: var(--primary-dark);
-   border-bottom: 1px solid var(--primary-dark);
-   text-decoration: none;
+  color: var(--primary-dark);
+  border-bottom: 1px solid var(--primary-dark);
+  text-decoration: none;
 }
 
 .copy-url-btn {
-   margin-left: 8px;
-   padding: 4px 8px;
-   background-color: var(--gray-100);
-   border: 1px solid var(--gray-200);
-   border-radius: var(--radius);
-   color: var(--gray-600);
-   cursor: pointer;
-   font-size: 10px;
-   transition: all 0.2s ease;
+  margin-left: 8px;
+  padding: 4px 8px;
+  background-color: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  color: var(--gray-600);
+  cursor: pointer;
+  font-size: 10px;
+  transition: all 0.2s ease;
 }
 
 .copy-url-btn:hover {
-   background-color: var(--primary-light);
-   color: var(--white);
+  background-color: var(--primary-light);
+  color: var(--white);
 }
 
 .source-text {
-   color: var(--gray-600);
+  color: var(--gray-600);
 }
 
 /* ===============================
-  MODAL I PROCESSING
-  =============================== */
+ MODAL I PROCESSING
+ =============================== */
 .modal-overlay {
-   position: fixed;
-   top: 0;
-   left: 0;
-   right: 0;
-   bottom: 0;
-   background-color: rgba(0, 0, 0, 0.75);
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   z-index: 1000;
-   backdrop-filter: blur(4px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
-   background-color: var(--white);
-   border-radius: var(--radius-lg);
-   box-shadow: var(--shadow-lg);
-   max-width: 500px;
-   width: 90%;
-   max-height: 90vh;
-   overflow-y: auto;
-   animation: modalSlideIn 0.3s ease-out;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
 }
 
 @keyframes modalSlideIn {
-   from {
-       opacity: 0;
-       transform: translateY(-50px) scale(0.95);
-   }
-   to {
-       opacity: 1;
-       transform: translateY(0) scale(1);
-   }
+  from {
+      opacity: 0;
+      transform: translateY(-50px) scale(0.95);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+  }
 }
 
 .processing-modal {
-   text-align: center;
+  text-align: center;
 }
 
 .modal-header {
-   padding: 24px 24px 16px;
-   border-bottom: 1px solid var(--gray-100);
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--gray-100);
 }
 
 .modal-title {
-   font-size: 20px;
-   font-weight: 600;
-   color: var(--gray-900);
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   gap: 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 .modal-title i {
-   color: var(--primary);
-   font-size: 24px;
+  color: var(--primary);
+  font-size: 24px;
 }
 
 .modal-body {
-   padding: 24px;
+  padding: 24px;
 }
 
 /* Medical pulse animation */
 .loading-animation {
-   margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .medical-pulse {
-   display: flex;
-   justify-content: center;
-   align-items: end;
-   gap: 4px;
-   height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 4px;
+  height: 60px;
 }
 
 .pulse-line {
-   width: 4px;
-   background: linear-gradient(to top, var(--primary), var(--primary-light));
-   border-radius: 2px;
-   animation: medicalPulse 1.4s ease-in-out infinite;
+  width: 4px;
+  background: linear-gradient(to top, var(--primary), var(--primary-light));
+  border-radius: 2px;
+  animation: medicalPulse 1.4s ease-in-out infinite;
 }
 
 .pulse-line:nth-child(1) { animation-delay: 0s; }
@@ -1226,281 +1305,297 @@ h1, h2, h3, h4, h5, h6 {
 .pulse-line:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes medicalPulse {
-   0%, 100% { height: 20px; }
-   50% { height: 50px; }
+  0%, 100% { height: 20px; }
+  50% { height: 50px; }
 }
 
 .current-step {
-   margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .current-step h3 {
-   font-size: 18px;
-   color: var(--gray-900);
-   margin-bottom: 8px;
-   min-height: 24px;
+  font-size: 18px;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+  min-height: 24px;
 }
 
 .current-step p {
-   color: var(--gray-600);
-   font-size: 14px;
+  color: var(--gray-600);
+  font-size: 14px;
 }
 
 .progress-container {
-   position: relative;
-   margin-bottom: 32px;
+  position: relative;
+  margin-bottom: 32px;
 }
 
 .progress-bar.processing {
-   background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
-   background-size: 200% 100%;
-   animation: progressShimmer 2s linear infinite;
-   transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
+  background-size: 200% 100%;
+  animation: progressShimmer 2s linear infinite;
+  transition: width 0.3s ease;
 }
 
 @keyframes progressShimmer {
-   0% { background-position: -200% 0; }
-   100% { background-position: 200% 0; }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .progress-text {
-   position: absolute;
-   top: 16px;
-   right: 0;
-   font-size: 12px;
-   font-weight: 500;
-   color: var(--gray-600);
+  position: absolute;
+  top: 16px;
+  right: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
 }
 
 .processing-steps {
-   display: flex;
-   flex-direction: column;
-   gap: 16px;
-   margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .step-item {
-   display: flex;
-   align-items: center;
-   gap: 12px;
-   padding: 12px 16px;
-   border-radius: var(--radius);
-   background-color: var(--gray-50);
-   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background-color: var(--gray-50);
+  transition: all 0.3s ease;
 }
 
 .step-item.active {
-   background-color: rgba(59, 130, 246, 0.1);
-   border-left: 3px solid var(--primary);
+  background-color: rgba(59, 130, 246, 0.1);
+  border-left: 3px solid var(--primary);
 }
 
 .step-item.completed {
-   background-color: rgba(34, 197, 94, 0.1);
-   border-left: 3px solid var(--success);
+  background-color: rgba(34, 197, 94, 0.1);
+  border-left: 3px solid var(--success);
 }
 
 .step-icon {
-   width: 32px;
-   height: 32px;
-   border-radius: 50%;
-   background-color: var(--gray-300);
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   color: var(--gray-600);
-   font-size: 14px;
-   transition: all 0.3s ease;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-600);
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
 .step-item.active .step-icon {
-   background-color: var(--primary);
-   color: var(--white);
-   animation: pulse 2s infinite;
+  background-color: var(--primary);
+  color: var(--white);
+  animation: pulse 2s infinite;
 }
 
 .step-item.completed .step-icon {
-   background-color: var(--success);
-   color: var(--white);
+  background-color: var(--success);
+  color: var(--white);
 }
 
 @keyframes pulse {
-   0% { transform: scale(1); }
-   50% { transform: scale(1.1); }
-   100% { transform: scale(1); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 .step-label {
-   font-size: 14px;
-   font-weight: 500;
-   color: var(--gray-700);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700);
 }
 
 .step-item.active .step-label {
-   color: var(--primary);
-   font-weight: 600;
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .step-item.completed .step-label {
-   color: var(--success);
+  color: var(--success);
 }
 
 .security-notice {
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   gap: 8px;
-   padding: 12px;
-   background-color: var(--gray-50);
-   border-radius: var(--radius);
-   font-size: 12px;
-   color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--gray-50);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--gray-600);
 }
 
 .security-notice i {
-   color: var(--success);
+  color: var(--success);
 }
 
 /* ===============================
-  ANIMACJE
-  =============================== */
+ ANIMACJE
+ =============================== */
 @keyframes slideInFromLeft {
-   from {
-       opacity: 0;
-       transform: translateX(-30px);
-   }
-   to {
-       opacity: 1;
-       transform: translateX(0);
-   }
+  from {
+      opacity: 0;
+      transform: translateX(-30px);
+  }
+  to {
+      opacity: 1;
+      transform: translateX(0);
+  }
 }
 
-.drug-card:nth-child(1) { animation-delay: 0.1s; }
-.drug-card:nth-child(2) { animation-delay: 0.2s; }
-.drug-card:nth-child(3) { animation-delay: 0.3s; }
-.drug-card:nth-child(4) { animation-delay: 0.4s; }
-
 /* ===============================
-  RESPONSYWNOŚĆ
-  =============================== */
+ RESPONSYWNOŚĆ
+ =============================== */
+@media (max-width: 1200px) {
+  .drug-cards-grid {
+      grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 992px) {
-   .result-grid {
-       grid-template-columns: 1fr;
-   }
+  .result-grid {
+      grid-template-columns: 1fr;
+  }
+  
+  .drug-row {
+      padding: 16px;
+  }
 }
 
 @media (max-width: 768px) {
-   .main-content {
-       margin-left: 0;
-       padding: 16px;
-   }
-   
-   .sidebar {
-       width: 70px;
-       transform: translateX(-100%);
-   }
-   
-   .sidebar.active {
-       transform: translateX(0);
-   }
-   
-   .sidebar-brand .logo-text,
-   .sidebar-menu span {
-       display: none;
-   }
-   
-   .sidebar-menu a {
-       padding: 15px;
-       justify-content: center;
-   }
-   
-   .sidebar-menu i {
-       margin-right: 0;
-       font-size: 20px;
-   }
-   
-   .topbar {
-       flex-direction: column;
-       align-items: flex-start;
-       gap: 16px;
-   }
-   
-   .user-actions {
-       width: 100%;
-       justify-content: space-between;
-   }
-   
-   .form-grid {
-       grid-template-columns: 1fr;
-   }
-   
-   .treatment-tabs {
-       flex-direction: column;
-       gap: 8px;
-   }
-   
-   .treatment-tab {
-       width: 100%;
-       text-align: center;
-       padding: 12px 16px;
-   }
-   
-   .drugs-scroll-area {
-       gap: 16px;
-       padding: 12px 4px 20px 4px;
-   }
-   
-   .drug-group {
-       flex-direction: column;
-       gap: 12px;
-   }
-   
-   .drug-card {
-       min-width: 280px;
-       max-width: 300px;
-   }
-   
-   .schema-description {
-       padding: 16px;
-   }
-   
-   .section-title {
-       font-size: 18px;
-   }
-   
-   .modal-content {
-       margin: 16px;
-       width: calc(100% - 32px);
-   }
+  .main-content {
+      margin-left: 0;
+      padding: 16px;
+  }
+  
+  .sidebar {
+      width: 70px;
+      transform: translateX(-100%);
+  }
+  
+  .sidebar.active {
+      transform: translateX(0);
+  }
+  
+  .sidebar-brand .logo-text,
+  .sidebar-menu span {
+      display: none;
+  }
+  
+  .sidebar-menu a {
+      padding: 15px;
+      justify-content: center;
+  }
+  
+  .sidebar-menu i {
+      margin-right: 0;
+      font-size: 20px;
+  }
+  
+  .topbar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+  }
+  
+  .user-actions {
+      width: 100%;
+      justify-content: space-between;
+  }
+  
+  .form-grid {
+      grid-template-columns: 1fr;
+  }
+  
+  .treatment-tabs {
+      flex-direction: column;
+      gap: 8px;
+  }
+  
+  .treatment-tab {
+      width: 100%;
+      text-align: center;
+      padding: 12px 16px;
+  }
+  
+  .schema-tabs {
+      flex-direction: column;
+      padding: 12px;
+  }
+  
+  .schema-tab {
+      width: 100%;
+      text-align: center;
+  }
+  
+  .drug-cards-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+  }
+  
+  .drug-row {
+      padding: 16px;
+  }
+  
+  .modal-content {
+      margin: 16px;
+      width: calc(100% - 32px);
+  }
 }
 
 @media (max-width: 576px) {
-   .form-grid {
-       grid-template-columns: 1fr;
-   }
-   
-   .chip-container {
-       gap: 6px;
-       padding: 6px;
-   }
-   
-   .chip {
-       font-size: 12px;
-       padding: 4px 10px;
-   }
-   
-   .form-hint {
-       font-size: 11px;
-   }
+  .form-grid {
+      grid-template-columns: 1fr;
+  }
+  
+  .chip-container {
+      gap: 6px;
+      padding: 6px;
+  }
+  
+  .chip {
+      font-size: 12px;
+      padding: 4px 10px;
+  }
+  
+  .form-hint {
+      font-size: 11px;
+  }
+  
+  .drug-card {
+      font-size: 13px;
+  }
+  
+  .drug-card-title h4 {
+      font-size: 16px;
+  }
+  
+  .section-title {
+      font-size: 18px;
+  }
 }
 
 @media (max-width: 480px) {
-   .drugs-scroll-area {
-       margin: 0 -8px;
-       padding: 12px 8px 20px 8px;
-   }
-   
-   .drug-card {
-       min-width: 260px;
-       max-width: 280px;
-   }
+  .drug-cards-grid {
+      gap: 10px;
+  }
+  
+  .drug-row {
+      padding: 12px;
+  }
+  
+  .treatment-tabs,
+  .schema-tabs {
+      gap: 6px;
+  }
 }
