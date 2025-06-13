@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // Konfiguracja Vercel
-export const maxDuration = 40; // 60 sekund
+export const maxDuration = 60; // 60 sekund
 export const dynamic = 'force-dynamic';
 
 // Funkcja do czyszczenia i walidacji JSON
@@ -232,7 +232,7 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
         stream: false
         
       }),
-      signal: AbortSignal.timeout(45000) // 45s timeout
+      
     });
     
     console.log("✅ Odpowiedź od OpenRouter otrzymana, status:", openRouterResponse.status);
