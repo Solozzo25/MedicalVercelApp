@@ -1782,3 +1782,238 @@ h1, h2, h3, h4, h5, h6 {
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1), 0 4px 15px rgba(59, 130, 246, 0.2) !important;
     }
 }
+
+/* ===============================
+   NOWY LAYOUT DESKTOP-FIRST - BEZ PRZEWIJANIA
+   =============================== */
+
+/* Główny kontener - pełna wysokość ekranu */
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 16px;
+    max-width: none;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-content {
+    display: none;
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===============================
+   NOWY LAYOUT FORMULARZA - 2 KOLUMNY BEZ PRZEWIJANIA
+   =============================== */
+
+/* Główny kontener formularza */
+.diagnosis-form-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 16px;
+}
+
+/* Górna sekcja - wiek i płeć w jednej linii */
+.form-top-row {
+    display: grid;
+    grid-template-columns: 200px 200px;
+    gap: 16px;
+    padding: 16px;
+    background-color: rgba(59, 130, 246, 0.03);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+}
+
+/* Środkowa sekcja - 2 kolumny */
+.form-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex: 1;
+    min-height: 0; /* Umożliwia shrinking */
+}
+
+/* Dolna sekcja - wyniki i historia */
+.form-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-height: 140px; /* Ograniczona wysokość */
+}
+
+/* Stylowanie grup formularza */
+.form-group-compact {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(59, 130, 246, 0.02);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-100);
+    padding: 12px;
+    min-height: 0;
+}
+
+.form-group-compact .form-label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.form-group-compact .form-hint {
+    font-size: 11px;
+    color: var(--gray-500);
+    font-weight: 400;
+}
+
+/* Textarea kompaktowe */
+.form-textarea-compact {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--gray-800);
+    background-color: var(--white);
+    resize: none;
+    flex: 1;
+    min-height: 80px;
+    max-height: 120px;
+    font-family: inherit;
+    line-height: 1.4;
+}
+
+.form-textarea-compact:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Chipy kompaktowe */
+.chip-container-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+    padding: 6px;
+    background-color: var(--gray-50);
+    border-radius: var(--radius);
+    min-height: 32px;
+    max-height: 60px;
+    overflow-y: auto;
+}
+
+.chip-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Edycja chipa */
+.chip-edit-input {
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 50px;
+    outline: none;
+}
+
+.chip-edit-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Przycisk submit */
+.form-submit-section {
+    padding: 16px;
+    border-top: 1px solid var(--gray-100);
+    background-color: var(--gray-50);
+}
+
+/* ===============================
+   RESPONSYWNOŚĆ - DESKTOP PRIORITY
+   =============================== */
+
+@media (max-width: 1400px) {
+    .form-main-grid {
+        gap: 16px;
+    }
+    
+    .form-bottom-grid {
+        max-height: 120px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .form-top-row {
+        grid-template-columns: 180px 180px;
+    }
+    
+    .form-textarea-compact {
+        min-height: 70px;
+        max-height: 100px;
+    }
+}
+
+/* Tylko dla bardzo małych ekranów przejście na mobile */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        height: 100vh;
+    }
+    
+    .form-main-grid,
+    .form-bottom-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .form-top-row {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .diagnosis-form-container {
+        height: auto;
+        overflow-y: auto;
+    }
+}

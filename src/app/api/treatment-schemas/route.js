@@ -93,14 +93,14 @@ export async function POST(request) {
   try {
     // Parsowanie danych wejściowych
     const reqData = await request.json();
-    const { diagnosis, medicalSociety, patientAge, patientSex } = reqData;
+    const { diagnosis, medicalSociety } = reqData;
+	
+	const processedMedicalSociety = medicalSociety || '';
     
-    console.log("📋 Otrzymane dane:", { 
-      diagnosis, 
-      medicalSociety, 
-      patientAge, 
-      patientSex 
-    });
+	console.log("📋 Otrzymane dane:", { 
+	  diagnosis, 
+	  medicalSociety: processedMedicalSociety
+	});
 
     // Sprawdzenie wymaganych pól
     if (!diagnosis) {
@@ -110,12 +110,7 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    if (!patientAge || !patientSex) {
-      console.log("❌ Błąd: Brakujące dane pacjenta");
-      return NextResponse.json({ 
-        error: 'Brakujące pola: wiek lub płeć pacjenta' 
-      }, { status: 400 });
-    }
+    
 
     // Klucz API OpenAI z zmiennych środowiskowych
     const apiKey = process.env.OPENAI_API_KEY;
@@ -129,9 +124,8 @@ export async function POST(request) {
 
     // Uproszczony prompt - web search będzie automatyczny
     const userPrompt = `Wyszukaj najnowsze wytyczne leczenia dla choroby: ${diagnosis}
-Preferuj wytyczne z: ${medicalSociety}
+						Preferuj wytyczne z: ${medicalSociety}
 
-Dane pacjenta: wiek ${patientAge}, płeć ${patientSex}
 
 WYMAGANIA:
 - Znajdź oficjalne wytyczne medyczne z wiarygodnych źródeł (towarzystwa medyczne, Medycyna Praktyczna, PubMed)
@@ -144,7 +138,7 @@ WYMAGANIA:
 - WAŻNE: Podawaj pełne, otwieralne URL-e do źródeł medycznych
 - Jeśli brak wystarczających danych, zaznacz w uwagach
 
-Format odpowiedzi - DOKŁADNIE ten JSON:
+KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie tym formacie:
 {
   "choroba": "${diagnosis}",
   "linie_leczenia": [
@@ -188,8 +182,7 @@ Format odpowiedzi - DOKŁADNIE ten JSON:
       "Konieczne jest szóste postępowanie"
     ],
     "źródło": "Pełna nazwa źródła z działającym URL-em"
-  },
-  "uwagi": "Ewentualne uwagi o braku danych lub ograniczeniach"
+  }
 }`;
 
     console.log("📤 Wysyłanie zapytania do OpenAI Responses API...");
