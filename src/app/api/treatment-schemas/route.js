@@ -93,14 +93,14 @@ export async function POST(request) {
   try {
     // Parsowanie danych wejściowych
     const reqData = await request.json();
-    const { diagnosis, medicalSociety, patientAge, patientSex } = reqData;
+    const { diagnosis, medicalSociety } = reqData;
+	
+	const processedMedicalSociety = medicalSociety || '';
     
-    console.log("📋 Otrzymane dane:", { 
-      diagnosis, 
-      medicalSociety, 
-      patientAge, 
-      patientSex 
-    });
+	console.log("📋 Otrzymane dane:", { 
+	  diagnosis, 
+	  medicalSociety: processedMedicalSociety
+	});
 
     // Sprawdzenie wymaganych pól
     if (!diagnosis) {
@@ -110,12 +110,7 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    if (!patientAge || !patientSex) {
-      console.log("❌ Błąd: Brakujące dane pacjenta");
-      return NextResponse.json({ 
-        error: 'Brakujące pola: wiek lub płeć pacjenta' 
-      }, { status: 400 });
-    }
+    
 
     // Klucz API OpenAI z zmiennych środowiskowych
     const apiKey = process.env.OPENAI_API_KEY;
@@ -131,7 +126,6 @@ export async function POST(request) {
     const userPrompt = `Wyszukaj najnowsze wytyczne leczenia dla choroby: ${diagnosis}
 Preferuj wytyczne z: ${medicalSociety}
 
-Dane pacjenta: wiek ${patientAge}, płeć ${patientSex}
 
 WYMAGANIA:
 - Znajdź oficjalne wytyczne medyczne z wiarygodnych źródeł (towarzystwa medyczne, Medycyna Praktyczna, PubMed)
