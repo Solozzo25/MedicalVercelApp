@@ -124,7 +124,7 @@ export async function POST(request) {
 
     // Uproszczony prompt - web search będzie automatyczny
     const userPrompt = `Wyszukaj najnowsze wytyczne leczenia dla choroby: ${diagnosis}
-Preferuj wytyczne z: ${medicalSociety}
+						Preferuj wytyczne z: ${medicalSociety}
 
 
 WYMAGANIA:
@@ -138,7 +138,7 @@ WYMAGANIA:
 - WAŻNE: Podawaj pełne, otwieralne URL-e do źródeł medycznych
 - Jeśli brak wystarczających danych, zaznacz w uwagach
 
-Format odpowiedzi - DOKŁADNIE ten JSON:
+KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie tym formacie:
 {
   "choroba": "${diagnosis}",
   "linie_leczenia": [
@@ -182,8 +182,7 @@ Format odpowiedzi - DOKŁADNIE ten JSON:
       "Konieczne jest szóste postępowanie"
     ],
     "źródło": "Pełna nazwa źródła z działającym URL-em"
-  },
-  "uwagi": "Ewentualne uwagi o braku danych lub ograniczeniach"
+  }
 }`;
 
     console.log("📤 Wysyłanie zapytania do OpenAI Responses API...");
