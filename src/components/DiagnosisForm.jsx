@@ -206,10 +206,11 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
     </>
   );
 
+
   return (
     <div className="diagnosis-form-container">
       <form onSubmit={handleSubmit}>
-        {/* Górna sekcja - Wiek i Płeć */}
+        {/* Pierwszy wiersz - Wiek i Płeć */}
         <div className="form-basic-info">
           <div className="form-field">
             <label htmlFor="age" className="form-label">Wiek pacjenta</label>
@@ -243,8 +244,8 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
           </div>
         </div>
 
-        {/* Główna sekcja - Objawy i badania */}
-        <div className="form-main-content">
+        {/* Drugi wiersz - Objawy (pełna szerokość) */}
+        <div className="form-symptoms-section">
           <div className="form-field">
             <label htmlFor="symptoms" className="form-label">
               Objawy podmiotowe
@@ -262,26 +263,9 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
               required={symptomChips.length === 0}
             ></textarea>
           </div>
-
-          <div className="form-field">
-            <label htmlFor="physicalExam" className="form-label">
-              Badanie przedmiotowe
-              <span className="form-hint">Podwójne kliknięcie = edycja • Enter = dodaj wynik</span>
-            </label>
-            <ChipDisplay chips={physicalExamChips} field="physicalExam" />
-            <textarea 
-              id="physicalExam" 
-              name="physicalExam" 
-              className="form-textarea" 
-              placeholder="Wynik badania i wciśnij Enter aby dodać..."
-              value={formData.physicalExam}
-              onChange={handleChange}
-              onKeyDown={(e) => handleChipAdd(e, 'physicalExam')}
-            ></textarea>
-          </div>
         </div>
 
-        {/* Dolna sekcja - Wyniki i Historia */}
+        {/* Trzeci wiersz - Wyniki badań i Historia */}
         <div className="form-secondary-content">
           <div className="form-field">
             <label htmlFor="additionalTests" className="form-label">
