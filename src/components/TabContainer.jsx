@@ -391,29 +391,29 @@ export default function TabContainer() {
           <DiagnosisForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
 
-        {/* Zakładka 2: Diagnozy */}
-        <div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
-          
-          {/* Wyświetl tylko diagnozy - bez leczenia */}
-          <Results 
-            diagnosisData={diagnosisData}
-            treatmentData={null} // Nie pokazuj leczenia w tej zakładce
-            characteristicsData={null}
-            patientData={patientData}
-            errorMessage={errorMessage}
-            selectedDiagnosis={selectedDiagnosis}
-            diagnosisConfirmed={false} // Zawsze false w tej zakładce
-            selectedLineIndex={selectedLineIndex}
-            selectedSchemaPerLine={selectedSchemaPerLine}
-            onLineSelection={handleLineSelection}
-            onSchemaSelection={handleSchemaSelection}
-            onDiagnosisReset={handleDiagnosisReset}
-			onDiagnosisSelect={handleDiagnosisSelect}     
-			onDiagnosisConfirm={handleDiagnosisConfirm}   
-			isLoading={isLoading}  
-            showTreatmentOnly={false}
-          />
-        </div>
+       {/* Zakładka 2: Diagnozy */}
+		<div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
+		  
+		  {/* Wyświetl tylko diagnozy - bez leczenia */}
+		  <Results 
+			diagnosisData={diagnosisData}
+			treatmentData={null}
+			characteristicsData={null}
+			patientData={patientData}
+			errorMessage={errorMessage}
+			selectedDiagnosis={selectedDiagnosis}
+			diagnosisConfirmed={false}
+			selectedLineIndex={selectedLineIndex}
+			selectedSchemaPerLine={selectedSchemaPerLine}
+			onLineSelection={handleLineSelection}
+			onSchemaSelection={handleSchemaSelection}
+			onDiagnosisReset={handleDiagnosisReset}
+			onDiagnosisSelect={handleDiagnosisSelect}
+			onDiagnosisConfirm={handleDiagnosisConfirm}
+			isLoading={isLoading}
+			showTreatmentOnly={false}
+		  />
+		</div>
 
         {/* Zakładka 3: Linie leczenia */}
         <div className={`tab-content ${activeTab === 'treatment-lines' ? 'active' : ''}`} id="treatment-lines">
