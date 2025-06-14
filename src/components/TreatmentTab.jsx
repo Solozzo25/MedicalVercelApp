@@ -3,53 +3,35 @@
 import { useState } from 'react';
 
 export default function TreatmentTab({
-  // Props z diagnozy
-  treatmentData,
-  characteristicsData,
-  selectedDiagnosis,
-  diagnosisConfirmed,
-  selectedLineIndex,
-  selectedSchemaPerLine,
+  // NOWE PROPS dla systemu wielu diagnoz
+  treatmentDiagnoses,
+  activeTreatmentIndex,
+  onTreatmentTabChange,
   onLineSelection,
   onSchemaSelection,
-  onDiagnosisReset,
-  // Props z bezpośredniej diagnozy
-  directDiagnosis,
-  directTreatmentData,
-  directCharacteristicsData,
-  directSelectedLineIndex,
-  directSelectedSchemaPerLine,
-  onDirectLineSelection,
-  onDirectSchemaSelection,
   onDirectDiagnosisSubmit,
   errorMessage,
   isLoading
 }) {
   const [directDiagnosisInput, setDirectDiagnosisInput] = useState('');
+  const [showManualSearch, setShowManualSearch] = useState(false);
   
-  // State dla rozwijanych sekcji ChPL
+  // State dla rozwijanych sekcji (usunięte ChPL, zostaje tylko refundacja)
   const [expandedSections, setExpandedSections] = useState({});
-
-  // Funkcja do przełączania rozwinięcia sekcji
-  const toggleSection = (drugName, sectionName) => {
-    const key = `${drugName}-${sectionName}`;
-    setExpandedSections(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
 
   // Obsługa formularza bezpośredniej diagnozy
   const handleDirectSubmit = (e) => {
     e.preventDefault();
     onDirectDiagnosisSubmit(directDiagnosisInput);
+    setDirectDiagnosisInput('');
+    setShowManualSearch(false);
   };
 
   // Funkcja do znalezienia charakterystyki leku
-  const findDrugCharacteristics = (drugName, isDirectMode = false) => {
-    const characteristicsToSearch = isDirectMode ? directCharacteristicsData : characteristicsData;
-    if (!characteristicsToSearch) return null;
-    return characteristicsToSearch.find(char => 
+  const findDrugCharacteristics = (drugName, diagnosisIndex = activeTreatmentIndex) => {
+    const currentDiagnosis = treatmentDiagnoses[diagnosisIndex];
+    if (!currentDiagnosis || !currentDiagnosis.characteristicsData) return null;
+    return currentDiagnosis.characteristicsData.find(char => 
       char.lek.toLowerCase() === drugName.toLowerCase()
     );
   };
@@ -74,170 +56,89 @@ export default function TreatmentTab({
     return 'badge-secondary';
   };
 
-  // Funkcja do renderowania charakterystyk leku
-  const renderDrugCharacteristics = (drugName, isAlternative = false, isDirectMode = false) => {
-    const characteristics = findDrugCharacteristics(drugName, isDirectMode);
+  // UPROSZCZONA funkcja renderowania charakterystyk - TYLKO REFUNDACJA
+  const renderDrugInfo = (drugName, isAlternative = false, diagnosisIndex = activeTreatmentIndex) => {
+    const characteristics = findDrugCharacteristics(drugName, diagnosisIndex);
     
-    if (!characteristics) {
+    if (!characteristics || characteristics.status !== 'dostępny') {
       return (
         <div className="drug-card-section">
-          <div className="alert alert-warning">
-            <i className="fas fa-info-circle"></i>
-            <div>Brak szczegółowych danych o tym leku</div>
-          </div>
+          <button className="btn btn-secondary btn-sm" disabled>
+            <i className="fas fa-file-medical"></i> Pobierz charakterystykę
+          </button>
+          <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
+            Brak danych o leku
+          </p>
         </div>
       );
     }
 
-    if (characteristics.status === 'niedostępny') {
-      return (
+    return (
+      <>
+        {/* Przycisk do pobrania charakterystyki - PLACEHOLDER */}
         <div className="drug-card-section">
-          <div className="alert alert-error">
-            <i className="fas fa-exclamation-triangle"></i>
-            <div>
-              <strong>Lek niedostępny</strong>
-              <p>{characteristics.uwagi}</p>
-            </div>
-          </div>
+          <button className="btn btn-secondary btn-sm" disabled>
+            <i className="fas fa-file-medical"></i> Pobierz charakterystykę
+          </button>
+          <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
+            Funkcja dostępna wkrótce
+          </p>
         </div>
-      );
-    }
 
-    if (characteristics.status === 'dostępny' && characteristics.chpl) {
-      return (
-        <>
-          {/* Substancja czynna */}
-          {characteristics.chpl.substancja_czynna && (
-            <div className="drug-card-section">
-              <h5 className="drug-section-title">
-                <i className="fas fa-flask"></i> Substancja czynna
-              </h5>
-              <p className="drug-section-content">{characteristics.chpl.substancja_czynna}</p>
-            </div>
-          )}
-
-          {/* Wskazania - rozwijane */}
-          {characteristics.chpl.wskazania && characteristics.chpl.wskazania.length > 0 && (
-            <div className="drug-card-section">
-              <h5 
-                className="drug-section-title collapsible-header"
-                onClick={() => toggleSection(drugName, 'wskazania')}
-              >
-                <i className="fas fa-check-circle"></i> Wskazania
-                <i className={`fas fa-chevron-${expandedSections[`${drugName}-wskazania`] ? 'up' : 'down'} collapse-icon`}></i>
-              </h5>
-              <div className={`collapsible-content ${expandedSections[`${drugName}-wskazania`] ? 'expanded' : ''}`}>
-                <ul className="drug-section-list">
-                  {characteristics.chpl.wskazania.map((indication, idx) => (
-                    <li key={idx}>{indication}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {/* Przeciwwskazania - rozwijane */}
-          {characteristics.chpl.przeciwwskazania && characteristics.chpl.przeciwwskazania.length > 0 && (
-            <div className="drug-card-section">
-              <h5 
-                className="drug-section-title collapsible-header"
-                onClick={() => toggleSection(drugName, 'przeciwwskazania')}
-              >
-                <i className="fas fa-exclamation-triangle"></i> Przeciwwskazania
-                <i className={`fas fa-chevron-${expandedSections[`${drugName}-przeciwwskazania`] ? 'up' : 'down'} collapse-icon`}></i>
-              </h5>
-              <div className={`collapsible-content ${expandedSections[`${drugName}-przeciwwskazania`] ? 'expanded' : ''}`}>
-                <ul className="drug-section-list">
-                  {characteristics.chpl.przeciwwskazania.map((contraindication, idx) => (
-                    <li key={idx}>{contraindication}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {/* Uwagi specjalne - rozwijane */}
-          {characteristics.chpl.uwagi_specjalne && characteristics.chpl.uwagi_specjalne.length > 0 && (
-            <div className="drug-card-section">
-              <h5 
-                className="drug-section-title collapsible-header"
-                onClick={() => toggleSection(drugName, 'uwagi')}
-              >
-                <i className="fas fa-exclamation-circle"></i> Uwagi specjalne
-                <i className={`fas fa-chevron-${expandedSections[`${drugName}-uwagi`] ? 'up' : 'down'} collapse-icon`}></i>
-              </h5>
-              <div className={`collapsible-content ${expandedSections[`${drugName}-uwagi`] ? 'expanded' : ''}`}>
-                <ul className="drug-section-list">
-                  {characteristics.chpl.uwagi_specjalne.map((warning, idx) => (
-                    <li key={idx}>{warning}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {/* Refundacja - zawsze rozwinięta */}
-          {characteristics.refundacja && (
-            <div className="drug-card-section refundation-section">
-              <h5 className="drug-section-title">
-                <i className="fas fa-credit-card"></i> Refundacja NFZ
-              </h5>
+        {/* TYLKO Refundacja - bez ChPL */}
+        {characteristics.refundacja && (
+          <div className="drug-card-section refundation-section">
+            <h5 className="drug-section-title">
+              <i className="fas fa-credit-card"></i> Refundacja NFZ
+            </h5>
+            
+            <div className="refundation-status">
+              <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
+                <i className="fas fa-shield-alt"></i>
+                {getRefundationStatusText(characteristics.refundacja.refundowany)}
+              </span>
               
-              <div className="refundation-status">
-                <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
-                  <i className="fas fa-shield-alt"></i>
-                  {getRefundationStatusText(characteristics.refundacja.refundowany)}
+              {characteristics.refundacja.odplatnosc && (
+                <span className="copayment-badge">
+                  Odpłatność: {characteristics.refundacja.odplatnosc}
                 </span>
-                
-                {characteristics.refundacja.odplatnosc && (
-                  <span className="copayment-badge">
-                    Odpłatność: {characteristics.refundacja.odplatnosc}
-                  </span>
-                )}
-              </div>
-
-              {/* Grupy pacjentów */}
-              {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
-                <div className="refundation-groups">
-                  <strong>Refundacja dla:</strong>
-                  <ul className="drug-section-list">
-                    {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
-                      <li key={idx}>{group}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Przykładowe preparaty */}
-              {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
-                <div className="refundation-groups">
-                  <strong>Przykładowe preparaty:</strong>
-                  <p className="drug-section-content">
-                    {characteristics.refundacja.przykladowy_preparat.join(', ')}
-                  </p>
-                </div>
               )}
             </div>
-          )}
 
-          {/* Footer z linkami */}
-          <div className="drug-card-footer">
-            {characteristics.chpl.link && (
-              <a href={characteristics.chpl.link} target="_blank" rel="noopener noreferrer" className="drug-link">
-                <i className="fas fa-file-medical"></i> ChPL
-              </a>
+            {/* Grupy pacjentów */}
+            {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
+              <div className="refundation-groups">
+                <strong>Refundacja dla:</strong>
+                <ul className="drug-section-list">
+                  {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
+                    <li key={idx}>{group}</li>
+                  ))}
+                </ul>
+              </div>
             )}
-            {characteristics.refundacja && characteristics.refundacja.link && (
-              <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
-                <i className="fas fa-info-circle"></i> Refundacja
-              </a>
+
+            {/* Przykładowe preparaty */}
+            {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
+              <div className="refundation-groups">
+                <strong>Przykładowe preparaty:</strong>
+                <p className="drug-section-content">
+                  {characteristics.refundacja.przykladowy_preparat.join(', ')}
+                </p>
+              </div>
+            )}
+
+            {/* Link do refundacji */}
+            {characteristics.refundacja.link && (
+              <div className="drug-card-footer">
+                <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                  <i className="fas fa-info-circle"></i> Sprawdź refundację
+                </a>
+              </div>
             )}
           </div>
-        </>
-      );
-    }
-
-    return null;
+        )}
+      </>
+    );
   };
 
   // Funkcja renderowania źródła z obsługą linków
@@ -281,14 +182,13 @@ export default function TreatmentTab({
     );
   };
 
-  // Funkcja renderowania schematów leczenia
-  const renderTreatmentSchemas = (data, isDirectMode = false) => {
-    if (!data || !data.linie_leczenia) return null;
+  // Funkcja renderowania schematów leczenia dla konkretnej diagnozy
+  const renderTreatmentSchemas = (diagnosis, diagnosisIndex) => {
+    if (!diagnosis || !diagnosis.treatmentData || !diagnosis.treatmentData.linie_leczenia) return null;
 
-    const currentLineIndex = isDirectMode ? directSelectedLineIndex : selectedLineIndex;
-    const currentSchemaPerLine = isDirectMode ? directSelectedSchemaPerLine : selectedSchemaPerLine;
-    const handleLineSelect = isDirectMode ? onDirectLineSelection : onLineSelection;
-    const handleSchemaSelect = isDirectMode ? onDirectSchemaSelection : onSchemaSelection;
+    const data = diagnosis.treatmentData;
+    const currentLineIndex = diagnosis.selectedLineIndex || 0;
+    const currentSchemaPerLine = diagnosis.selectedSchemaPerLine || {};
 
     const getCurrentSchema = () => {
       const currentLine = data.linie_leczenia[currentLineIndex];
@@ -305,7 +205,7 @@ export default function TreatmentTab({
             <button
               key={idx}
               className={`treatment-tab ${currentLineIndex === idx ? 'active' : ''}`}
-              onClick={() => handleLineSelect(idx)}
+              onClick={() => onLineSelection(idx)}
             >
               <div className="treatment-tab-name">
                 {linia.numer_linii}. {linia.nazwa_linii}
@@ -330,7 +230,7 @@ export default function TreatmentTab({
                 <button
                   key={idx}
                   className={`schema-tab ${(currentSchemaPerLine[currentLineIndex] || 0) === idx ? 'active' : ''}`}
-                  onClick={() => handleSchemaSelect(currentLineIndex, idx)}
+                  onClick={() => onSchemaSelection(currentLineIndex, idx)}
                 >
                   {schemat.schemat_farmakologiczny}
                 </button>
@@ -381,8 +281,8 @@ export default function TreatmentTab({
                               <p className="drug-section-content">{lek.dawkowanie}</p>
                             </div>
 
-                            {/* Charakterystyka leku głównego */}
-                            {renderDrugCharacteristics(lek.nazwa, false, isDirectMode)}
+                            {/* Informacje o leku głównym - TYLKO REFUNDACJA */}
+                            {renderDrugInfo(lek.nazwa, false, diagnosisIndex)}
                           </div>
                           
                           {/* Alternatywy */}
@@ -410,8 +310,8 @@ export default function TreatmentTab({
                                     <p className="drug-section-content">{alt.różnice}</p>
                                   </div>
 
-                                  {/* Pełne charakterystyki dla alternatywy */}
-                                  {renderDrugCharacteristics(alt.nazwa, true, isDirectMode)}
+                                  {/* Informacje o alternatywie - TYLKO REFUNDACJA */}
+                                  {renderDrugInfo(alt.nazwa, true, diagnosisIndex)}
                                 </div>
                               ))}
                             </>
@@ -452,42 +352,9 @@ export default function TreatmentTab({
     );
   };
 
+  // GŁÓWNY RENDER
   return (
     <div className="treatment-tab-container">
-      {/* Formularz bezpośredniej diagnozy */}
-      <div className="direct-diagnosis-section">
-        <div className="alert alert-info">
-          <i className="fas fa-lightbulb"></i>
-          <div>
-            <strong>Szybkie wyszukiwanie:</strong> Wprowadź nazwę diagnozy, aby uzyskać bezpośredni dostęp do schematów leczenia.
-          </div>
-        </div>
-        
-        <form onSubmit={handleDirectSubmit} className="direct-diagnosis-form">
-          <div className="form-group" style={{ display: 'flex', gap: '16px', alignItems: 'end', marginBottom: '0' }}>
-            <div style={{ flex: 1 }}>
-              <label htmlFor="directDiagnosis" className="form-label">Nazwa diagnozy</label>
-              <input
-                type="text"
-                id="directDiagnosis"
-                className="form-input"
-                placeholder="Np. Zapalenie płuc, Cukrzyca typu 2..."
-                value={directDiagnosisInput}
-                onChange={(e) => setDirectDiagnosisInput(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <button 
-              type="submit" 
-              className="btn btn-primary"
-              disabled={isLoading || !directDiagnosisInput.trim()}
-            >
-              <i className="fas fa-search"></i> Wyszukaj schematy
-            </button>
-          </div>
-        </form>
-      </div>
-
       {/* Wyświetlanie błędów */}
       {errorMessage && (
         <div className="alert alert-error">
@@ -496,65 +363,119 @@ export default function TreatmentTab({
         </div>
       )}
 
-      {/* Sekcja wyników z diagnozy */}
-      {treatmentData && diagnosisConfirmed && (
-        <div className="treatment-results-section">
-          <div className="result-card info diagnosis-info-card">
-            <div className="result-header">
-              <div className="result-title">
-                <i className="fas fa-check-circle"></i> Rekomendacje dla: {selectedDiagnosis}
+      {/* PRZYPADEK 1: Brak diagnoz - tylko formularz */}
+      {treatmentDiagnoses.length === 0 && (
+        <div className="no-diagnoses-section">
+          <div className="alert alert-info">
+            <i className="fas fa-lightbulb"></i>
+            <div>
+              <strong>Wyszukaj linie leczenia ręcznie:</strong> Wprowadź nazwę diagnozy, aby uzyskać bezpośredni dostęp do schematów leczenia.
+            </div>
+          </div>
+          
+          <form onSubmit={handleDirectSubmit} className="direct-diagnosis-form">
+            <div className="form-group" style={{ display: 'flex', gap: '16px', alignItems: 'end', marginBottom: '0' }}>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="directDiagnosis" className="form-label">Nazwa diagnozy</label>
+                <input
+                  type="text"
+                  id="directDiagnosis"
+                  className="form-input"
+                  placeholder="Np. Zapalenie płuc, Cukrzyca typu 2..."
+                  value={directDiagnosisInput}
+                  onChange={(e) => setDirectDiagnosisInput(e.target.value)}
+                  disabled={isLoading}
+                />
               </div>
               <button 
-                className="btn btn-secondary btn-sm"
-                onClick={onDiagnosisReset}
-                title="Wybierz inną diagnozę"
+                type="submit" 
+                className="btn btn-primary"
+                disabled={isLoading || !directDiagnosisInput.trim()}
               >
-                <i className="fas fa-exchange-alt"></i> Zmień diagnozę
+                <i className="fas fa-search"></i> Wyszukaj schematy
               </button>
             </div>
-            <div className="result-body">
-              <div className="result-section">
-                <p className="list-item-desc">
-                  Schematy leczenia przygotowane na podstawie diagnozy z danych pacjenta.
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {renderTreatmentSchemas(treatmentData, false)}
+          </form>
         </div>
       )}
 
-      {/* Sekcja wyników z bezpośredniej diagnozy */}
-      {directTreatmentData && (
-        <div className="treatment-results-section">
-          <div className="result-card info" style={{ backgroundColor: 'var(--secondary)', color: 'var(--white)' }}>
-            <div className="result-header">
-              <div className="result-title" style={{ color: 'var(--white)' }}>
-                <i className="fas fa-search"></i> Schematy dla: {directDiagnosis}
-              </div>
-            </div>
-            <div className="result-body">
-              <div className="result-section">
-                <p className="list-item-desc" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
-                  Schematy leczenia wyszukane bezpośrednio dla podanej diagnozy.
-                </p>
-              </div>
-            </div>
+      {/* PRZYPADEK 2: Mamy diagnozy - podzakładki + wyniki */}
+      {treatmentDiagnoses.length > 0 && (
+        <div className="diagnoses-sections">
+          {/* Podzakładki diagnoz (POZIOM 2) */}
+          <div className="diagnosis-subtabs">
+            {treatmentDiagnoses.map((diagnosis, index) => (
+              <button
+                key={index}
+                className={`diagnosis-subtab ${activeTreatmentIndex === index ? 'active' : ''}`}
+                onClick={() => onTreatmentTabChange(index)}
+              >
+                <i className="fas fa-stethoscope"></i>
+                {diagnosis.name}
+              </button>
+            ))}
           </div>
-          
-          {renderTreatmentSchemas(directTreatmentData, true)}
-        </div>
-      )}
 
-      {/* Placeholder gdy brak danych */}
-      {!treatmentData && !directTreatmentData && !isLoading && (
-        <div className="treatment-placeholder">
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--gray-500)' }}>
-            <i className="fas fa-pills" style={{ fontSize: '48px', marginBottom: '16px', color: 'var(--gray-300)' }}></i>
-            <h3 style={{ marginBottom: '8px', color: 'var(--gray-600)' }}>Brak schematów leczenia</h3>
-            <p>Wprowadź diagnozę powyżej lub wybierz diagnozę w zakładce "Diagnozy"</p>
-          </div>
+          {/* Wyniki dla aktywnej diagnozy */}
+          {treatmentDiagnoses[activeTreatmentIndex] && (
+            <div className="active-diagnosis-results">
+              <div className="diagnosis-header">
+                <h2>
+                  <i className="fas fa-check-circle"></i> 
+                  Rekomendacje dla: {treatmentDiagnoses[activeTreatmentIndex].name}
+                </h2>
+                <p>Schematy leczenia przygotowane na podstawie najnowszych wytycznych medycznych.</p>
+                
+                {/* Przycisk "Wyszukaj linie leczenia ręcznie" */}
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => setShowManualSearch(!showManualSearch)}
+                >
+                  <i className="fas fa-search-plus"></i> 
+                  Wyszukaj linie leczenia ręcznie
+                </button>
+              </div>
+
+              {/* Formularz wyszukiwania ręcznego - pokazywany na żądanie */}
+              {showManualSearch && (
+                <div className="manual-search-section" style={{marginTop: '20px', padding: '20px', backgroundColor: 'var(--gray-50)', borderRadius: 'var(--radius-lg)'}}>
+                  <form onSubmit={handleDirectSubmit} className="direct-diagnosis-form">
+                    <div className="form-group" style={{ display: 'flex', gap: '16px', alignItems: 'end', marginBottom: '0' }}>
+                      <div style={{ flex: 1 }}>
+                        <label htmlFor="manualDiagnosis" className="form-label">Wyszukaj dodatkową diagnozę</label>
+                        <input
+                          type="text"
+                          id="manualDiagnosis"
+                          className="form-input"
+                          placeholder="Np. Zapalenie płuc, Cukrzyca typu 2..."
+                          value={directDiagnosisInput}
+                          onChange={(e) => setDirectDiagnosisInput(e.target.value)}
+                          disabled={isLoading}
+                        />
+                      </div>
+                      <button 
+                        type="submit" 
+                        className="btn btn-primary"
+                        disabled={isLoading || !directDiagnosisInput.trim()}
+                      >
+                        <i className="fas fa-search"></i> Wyszukaj
+                      </button>
+                      <button 
+                        type="button" 
+                        className="btn btn-secondary"
+                        onClick={() => setShowManualSearch(false)}
+                      >
+                        Anuluj
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* Schematy leczenia dla aktywnej diagnozy */}
+              {renderTreatmentSchemas(treatmentDiagnoses[activeTreatmentIndex], activeTreatmentIndex)}
+            </div>
+          )}
         </div>
       )}
     </div>

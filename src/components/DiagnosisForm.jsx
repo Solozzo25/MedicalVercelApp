@@ -206,12 +206,13 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
     </>
   );
 
+
   return (
     <div className="diagnosis-form-container">
       <form onSubmit={handleSubmit}>
-        {/* Górna sekcja - Wiek i Płeć */}
-        <div className="form-top-row">
-          <div className="form-group-compact">
+        {/* Pierwszy wiersz - Wiek i Płeć */}
+        <div className="form-basic-info">
+          <div className="form-field">
             <label htmlFor="age" className="form-label">Wiek pacjenta</label>
             <input 
               type="number" 
@@ -225,7 +226,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
             />
           </div>
 
-          <div className="form-group-compact">
+          <div className="form-field">
             <label htmlFor="sex" className="form-label">Płeć pacjenta</label>
             <select 
               id="sex" 
@@ -243,69 +244,69 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
           </div>
         </div>
 
-        {/* Środkowa sekcja - Objawy */}
-        <div className="form-main-grid">
-          <div className="form-group-compact">
-            <label htmlFor="symptoms" className="form-label">
-              Objawy podmiotowe
-              <span className="form-hint">Podwójne kliknięcie = edycja</span>
-            </label>
-            <ChipDisplay chips={symptomChips} field="symptoms" />
-            <textarea 
-              id="symptoms" 
-              name="symptoms" 
-              className="form-textarea-compact" 
-              placeholder="Opisz objaw i wciśnij Enter..."
-              value={formData.symptoms}
-              onChange={handleChange}
-              onKeyDown={(e) => handleChipAdd(e, 'symptoms')}
-              required={symptomChips.length === 0}
-            ></textarea>
-          </div>
+		{/* Drugi wiersz - Objawy podmiotowe i przedmiotowe */}
+		<div className="form-symptoms-section">
+		  <div className="form-field">
+			<label htmlFor="symptoms" className="form-label">
+			  Objawy podmiotowe
+			  <span className="form-hint"> Enter = dodaj objaw</span>
+			</label>
+			<ChipDisplay chips={symptomChips} field="symptoms" />
+			<textarea 
+			  id="symptoms" 
+			  name="symptoms" 
+			  className="form-textarea" 
+			  placeholder="Opisz objaw i wciśnij Enter aby dodać..."
+			  value={formData.symptoms}
+			  onChange={handleChange}
+			  onKeyDown={(e) => handleChipAdd(e, 'symptoms')}
+			  required={symptomChips.length === 0}
+			></textarea>
+		  </div>
 
-          <div className="form-group-compact">
-            <label htmlFor="physicalExam" className="form-label">
-              Badanie przedmiotowe
-              <span className="form-hint">Podwójne kliknięcie = edycja</span>
-            </label>
-            <ChipDisplay chips={physicalExamChips} field="physicalExam" />
-            <textarea 
-              id="physicalExam" 
-              name="physicalExam" 
-              className="form-textarea-compact" 
-              placeholder="Wynik badania i wciśnij Enter..."
-              value={formData.physicalExam}
-              onChange={handleChange}
-              onKeyDown={(e) => handleChipAdd(e, 'physicalExam')}
-            ></textarea>
-          </div>
-        </div>
+		  <div className="form-field">
+			<label htmlFor="physicalExam" className="form-label">
+			  Badanie przedmiotowe
+			  <span className="form-hint">Enter = dodaj wynik</span>
+			</label>
+			<ChipDisplay chips={physicalExamChips} field="physicalExam" />
+			<textarea 
+			  id="physicalExam" 
+			  name="physicalExam" 
+			  className="form-textarea" 
+			  placeholder="Wynik badania i wciśnij Enter aby dodać..."
+			  value={formData.physicalExam}
+			  onChange={handleChange}
+			  onKeyDown={(e) => handleChipAdd(e, 'physicalExam')}
+			></textarea>
+		  </div>
+		</div>
 
-        {/* Dolna sekcja - Wyniki i Historia */}
-        <div className="form-bottom-grid">
-          <div className="form-group-compact">
+        {/* Trzeci wiersz - Wyniki badań i Historia */}
+        <div className="form-secondary-content">
+          <div className="form-field">
             <label htmlFor="additionalTests" className="form-label">
               Wyniki badań
-              <span className="form-hint">Podwójne kliknięcie = edycja</span>
+              <span className="form-hint">Enter = dodaj wynik</span>
             </label>
             <ChipDisplay chips={additionalTestsChips} field="additionalTests" />
             <textarea 
               id="additionalTests" 
               name="additionalTests" 
-              className="form-textarea-compact" 
-              placeholder="Wynik badania i wciśnij Enter..."
+              className="form-textarea" 
+              placeholder="Wynik badania i wciśnij Enter aby dodać..."
               value={formData.additionalTests}
               onChange={handleChange}
               onKeyDown={(e) => handleChipAdd(e, 'additionalTests')}
             ></textarea>
           </div>
 
-          <div className="form-group-compact">
+          <div className="form-field">
             <label htmlFor="medicalHistory" className="form-label">Historia medyczna</label>
             <textarea 
               id="medicalHistory" 
               name="medicalHistory" 
-              className="form-textarea-compact" 
+              className="form-textarea" 
               placeholder="Istotne informacje z historii medycznej..."
               value={formData.medicalHistory}
               onChange={handleChange}
