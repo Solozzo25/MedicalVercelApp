@@ -408,6 +408,9 @@ export default function TabContainer() {
             onLineSelection={handleLineSelection}
             onSchemaSelection={handleSchemaSelection}
             onDiagnosisReset={handleDiagnosisReset}
+			onDiagnosisSelect={handleDiagnosisSelect}     
+			onDiagnosisConfirm={handleDiagnosisConfirm}   
+			isLoading={isLoading}  
             showTreatmentOnly={false}
           />
         </div>

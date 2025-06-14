@@ -772,4 +772,24 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* Tu będę dodawać resztę stylów w kolejnych krokach... */
+/* Style dla klikanych kart diagnoz */
+.diagnosis-selectable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.diagnosis-selectable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.selected-diagnosis {
+    border: 3px solid var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+}
+
+.result-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--gray-100);
+    background-color: var(--gray-50);
+}
