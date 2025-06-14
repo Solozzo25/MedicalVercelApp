@@ -244,26 +244,43 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
           </div>
         </div>
 
-        {/* Drugi wiersz - Objawy (pełna szerokość) */}
-        <div className="form-symptoms-section">
-          <div className="form-field">
-            <label htmlFor="symptoms" className="form-label">
-              Objawy podmiotowe
-              <span className="form-hint">Podwójne kliknięcie = edycja • Enter = dodaj objaw</span>
-            </label>
-            <ChipDisplay chips={symptomChips} field="symptoms" />
-            <textarea 
-              id="symptoms" 
-              name="symptoms" 
-              className="form-textarea" 
-              placeholder="Opisz objaw i wciśnij Enter aby dodać..."
-              value={formData.symptoms}
-              onChange={handleChange}
-              onKeyDown={(e) => handleChipAdd(e, 'symptoms')}
-              required={symptomChips.length === 0}
-            ></textarea>
-          </div>
-        </div>
+		{/* Drugi wiersz - Objawy podmiotowe i przedmiotowe */}
+		<div className="form-symptoms-section">
+		  <div className="form-field">
+			<label htmlFor="symptoms" className="form-label">
+			  Objawy podmiotowe
+			  <span className="form-hint">Podwójne kliknięcie = edycja • Enter = dodaj objaw</span>
+			</label>
+			<ChipDisplay chips={symptomChips} field="symptoms" />
+			<textarea 
+			  id="symptoms" 
+			  name="symptoms" 
+			  className="form-textarea" 
+			  placeholder="Opisz objaw i wciśnij Enter aby dodać..."
+			  value={formData.symptoms}
+			  onChange={handleChange}
+			  onKeyDown={(e) => handleChipAdd(e, 'symptoms')}
+			  required={symptomChips.length === 0}
+			></textarea>
+		  </div>
+
+		  <div className="form-field">
+			<label htmlFor="physicalExam" className="form-label">
+			  Badanie przedmiotowe
+			  <span className="form-hint">Podwójne kliknięcie = edycja • Enter = dodaj wynik</span>
+			</label>
+			<ChipDisplay chips={physicalExamChips} field="physicalExam" />
+			<textarea 
+			  id="physicalExam" 
+			  name="physicalExam" 
+			  className="form-textarea" 
+			  placeholder="Wynik badania i wciśnij Enter aby dodać..."
+			  value={formData.physicalExam}
+			  onChange={handleChange}
+			  onKeyDown={(e) => handleChipAdd(e, 'physicalExam')}
+			></textarea>
+		  </div>
+		</div>
 
         {/* Trzeci wiersz - Wyniki badań i Historia */}
         <div className="form-secondary-content">

@@ -262,8 +262,8 @@ h1, h2, h3, h4, h5, h6 {
     margin-left: 260px;
     padding: 24px;
     max-width: 1400px;
-    height: 100vh;
-    overflow: hidden;
+    height: auto;
+    overflow: visible;
     display: flex;
     flex-direction: column;
 }
@@ -348,11 +348,7 @@ h1, h2, h3, h4, h5, h6 {
 .content-container {
     display: grid;
     gap: 24px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
+   }
 
 .card {
     background-color: var(--white);
@@ -436,7 +432,7 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
     padding: 16px;
     flex: 1;
-    overflow-y: auto;
+    overflow-y: visible;
 }
 
 .tab-content.active {
@@ -524,11 +520,20 @@ h1, h2, h3, h4, h5, h6 {
     grid-template-columns: 300px 300px;
     gap: 32px;
 }
-
-/* Drugi wiersz - Objawy (pełna szerokość) */
+/* Drugi wiersz - Objawy podmiotowe i przedmiotowe */
 .form-symptoms-section {
-    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
 }
+
+@media (max-width: 768px) {
+    .form-symptoms-section {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
 
 /* Trzeci wiersz - Wyniki badań i Historia */
 .form-secondary-content {
@@ -721,11 +726,12 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;
-        height: 100vh;
+        height: auto;  /* ZMIEŃ z 100vh na auto */
     }
     
     .form-basic-info,
-    .form-secondary-content {
+    .form-secondary-content,
+    .form-symptoms-section {  /* DODAJ .form-symptoms-section */
         grid-template-columns: 1fr;
         gap: 24px;
     }
