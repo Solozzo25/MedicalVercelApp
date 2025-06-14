@@ -14,7 +14,8 @@ export default function Results({
   selectedLineIndex,
   selectedSchemaPerLine,
   onLineSelection,
-  onSchemaSelection
+  onSchemaSelection,
+  onDiagnosisReset
 }) {
 
   // State dla rozwijanych sekcji ChPL
@@ -348,249 +349,257 @@ export default function Results({
       {renderError()}
       
       {diagnosisData && (
-        <div className="result-grid">
-          {/* Karty diagnoz */}
-          {diagnosisData.Diagnozy && diagnosisData.Diagnozy.map((diagnoza, index) => (
-            <div 
-              key={index} 
-              className={`result-card diagnosis ${selectedDiagnosis === diagnoza.Nazwa ? 'selected-diagnosis' : ''}`}
-            >
-              <div className="result-header">
-                <div className="result-title">
-                  <i className="fas fa-search-plus"></i> Diagnoza {index + 1}
-                </div>
-                <span className={`badge ${getProbabilityBadgeClass(diagnoza.Prawdopodobieństwo, selectedDiagnosis === diagnoza.Nazwa)}`}>
-                  <i className={`fas ${selectedDiagnosis === diagnoza.Nazwa ? 'fa-check-double' : 'fa-percentage'}`}></i> 
-                  {selectedDiagnosis === diagnoza.Nazwa ? 'Wybrana do rekomendacji' : `${diagnoza.Prawdopodobieństwo}%`}
-                </span>
-              </div>
-              <div className="result-body">
-                <div className="result-section">
-                  <h3 className="list-item-title">{diagnoza.Nazwa}</h3>
-                  <div className="progress" style={{ height: '10px', margin: '10px 0' }}>
-                    <div 
-                      className="progress-bar" 
-                      role="progressbar" 
-                      style={{ 
-                        width: `${diagnoza.Prawdopodobieństwo}%`,
-                        backgroundColor: getProbabilityColor(diagnoza.Prawdopodobieństwo)
-                      }}
-                      aria-valuenow={diagnoza.Prawdopodobieństwo} 
-                      aria-valuemin="0" 
-                      aria-valuemax="100"
-                    ></div>
-                  </div>
-                  <p className="list-item-desc">
-                    <strong>Uzasadnienie:</strong> {diagnoza.Uzasadnienie}
-                  </p>
-                  <p className="list-item-desc">
-                    <strong>Badania potwierdzające/wykluczające:</strong> {diagnoza["Badania potwierdzające/wykluczające"]}
-                  </p>
-                  <p className="list-item-desc">
-                    <strong>Towarzystwo medyczne:</strong> {diagnoza.Towarzystwo_Medyczne}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
+	  <div className="result-grid">
+         {/* Karty diagnoz */}
+         {diagnosisData.Diagnozy && diagnosisData.Diagnozy.map((diagnoza, index) => (
+           <div 
+             key={index} 
+             className={`result-card diagnosis ${selectedDiagnosis === diagnoza.Nazwa ? 'selected-diagnosis' : ''}`}
+           >
+             <div className="result-header">
+               <div className="result-title">
+                 <i className="fas fa-search-plus"></i> Diagnoza {index + 1}
+               </div>
+               <span className={`badge ${getProbabilityBadgeClass(diagnoza.Prawdopodobieństwo, selectedDiagnosis === diagnoza.Nazwa)}`}>
+                 <i className={`fas ${selectedDiagnosis === diagnoza.Nazwa ? 'fa-check-double' : 'fa-percentage'}`}></i> 
+                 {selectedDiagnosis === diagnoza.Nazwa ? 'Wybrana do rekomendacji' : `${diagnoza.Prawdopodobieństwo}%`}
+               </span>
+             </div>
+             <div className="result-body">
+               <div className="result-section">
+                 <h3 className="list-item-title">{diagnoza.Nazwa}</h3>
+                 <div className="progress" style={{ height: '10px', margin: '10px 0' }}>
+                   <div 
+                     className="progress-bar" 
+                     role="progressbar" 
+                     style={{ 
+                       width: `${diagnoza.Prawdopodobieństwo}%`,
+                       backgroundColor: getProbabilityColor(diagnoza.Prawdopodobieństwo)
+                     }}
+                     aria-valuenow={diagnoza.Prawdopodobieństwo} 
+                     aria-valuemin="0" 
+                     aria-valuemax="100"
+                   ></div>
+                 </div>
+                 <p className="list-item-desc">
+                   <strong>Uzasadnienie:</strong> {diagnoza.Uzasadnienie}
+                 </p>
+                 <p className="list-item-desc">
+                   <strong>Badania potwierdzające/wykluczające:</strong> {diagnoza["Badania potwierdzające/wykluczające"]}
+                 </p>
+                 <p className="list-item-desc">
+                   <strong>Towarzystwo medyczne:</strong> {diagnoza.Towarzystwo_Medyczne}
+                 </p>
+               </div>
+             </div>
+           </div>
+         ))}
 
-          {/* Informacja o wybranej diagnozie */}
-          {selectedDiagnosis && diagnosisConfirmed && (
-            <div className="result-card info" style={{ gridColumn: '1/-1' }}>
-              <div className="result-header">
-                <div className="result-title">
-                  <i className="fas fa-info-circle"></i> Rekomendacje dla: {selectedDiagnosis}
-                </div>
-              </div>
-              <div className="result-body">
-                <div className="result-section">
-                  <p className="list-item-desc">
-                    Poniżej znajdują się linie leczenia oraz schematy farmakologiczne przygotowane na podstawie najnowszych wytycznych medycznych.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+         {/* NOWA SEKCJA: Informacja o wybranej diagnozie z przyciskiem powrotu */}
+         {selectedDiagnosis && diagnosisConfirmed && (
+           <div className="result-card info diagnosis-info-card" style={{ gridColumn: '1/-1' }}>
+             <div className="result-header">
+               <div className="result-title">
+                 <i className="fas fa-check-circle"></i> Rekomendacje dla: {selectedDiagnosis}
+               </div>
+               <button 
+                 className="btn btn-secondary btn-sm"
+                 onClick={onDiagnosisReset}
+                 title="Wybierz inną diagnozę"
+               >
+                 <i className="fas fa-exchange-alt"></i> Zmień diagnozę
+               </button>
+             </div>
+             <div className="result-body">
+               <div className="result-section">
+                 <p className="list-item-desc">
+                   Poniżej znajdują się linie leczenia oraz schematy farmakologiczne przygotowane na podstawie najnowszych wytycznych medycznych.
+                   Możesz wrócić do wyboru innej diagnozy używając przycisku "Zmień diagnozę".
+                 </p>
+               </div>
+             </div>
+           </div>
+         )}
 
-          {/* Linie leczenia i schematy farmakologiczne */}
-          {treatmentData && diagnosisConfirmed && treatmentData.linie_leczenia && (
-            <div className="result-card treatment treatment-schemas" style={{ gridColumn: '1/-1' }}>
-              <div className="result-header">
-                <div className="result-title">
-                  <i className="fas fa-notes-medical"></i> Schematy leczenia
-                </div>
-              </div>
-              <div className="result-body">
-                {/* Tabs dla linii leczenia */}
-                <div className="treatment-tabs">
-                  {treatmentData.linie_leczenia.map((linia, idx) => (
-                    <button
-                      key={idx}
-                      className={`treatment-tab ${selectedLineIndex === idx ? 'active' : ''}`}
-                      onClick={() => onLineSelection(idx)}
-                    >
-                      <div className="treatment-tab-name">
-                        {linia.numer_linii}. {linia.nazwa_linii}
-                      </div>
-                    </button>
-                  ))}
-                </div>
+         {/* Linie leczenia i schematy farmakologiczne */}
+         {treatmentData && diagnosisConfirmed && treatmentData.linie_leczenia && (
+           <div className="result-card treatment treatment-schemas" style={{ gridColumn: '1/-1' }}>
+             <div className="result-header">
+               <div className="result-title">
+                 <i className="fas fa-notes-medical"></i> Schematy leczenia
+               </div>
+             </div>
+             <div className="result-body">
+               {/* Tabs dla linii leczenia */}
+               <div className="treatment-tabs">
+                 {treatmentData.linie_leczenia.map((linia, idx) => (
+                   <button
+                     key={idx}
+                     className={`treatment-tab ${selectedLineIndex === idx ? 'active' : ''}`}
+                     onClick={() => onLineSelection(idx)}
+                   >
+                     <div className="treatment-tab-name">
+                       {linia.numer_linii}. {linia.nazwa_linii}
+                     </div>
+                   </button>
+                 ))}
+               </div>
 
-                {/* Wybrana linia leczenia */}
-                {treatmentData.linie_leczenia[selectedLineIndex] && (
-                  <div className="selected-treatment-line">
-                    <div className="line-header">
-                      <h3>{treatmentData.linie_leczenia[selectedLineIndex].nazwa_linii}</h3>
-                      <p className="line-description">
-                        {treatmentData.linie_leczenia[selectedLineIndex].opis_linii}
-                      </p>
-                    </div>
-                    
-                    {/* Subtabs dla schematów farmakologicznych */}
-                    <div className="schema-tabs">
-                      {treatmentData.linie_leczenia[selectedLineIndex].schematy_farmakologiczne.map((schemat, idx) => (
-                        <button
-                          key={idx}
-                          className={`schema-tab ${(selectedSchemaPerLine[selectedLineIndex] || 0) === idx ? 'active' : ''}`}
-                          onClick={() => onSchemaSelection(selectedLineIndex, idx)}
-                        >
-                          {schemat.schemat_farmakologiczny}
-                        </button>
-                      ))}
-                    </div>
+               {/* Wybrana linia leczenia */}
+               {treatmentData.linie_leczenia[selectedLineIndex] && (
+                 <div className="selected-treatment-line">
+                   <div className="line-header">
+                     <h3>{treatmentData.linie_leczenia[selectedLineIndex].nazwa_linii}</h3>
+                     <p className="line-description">
+                       {treatmentData.linie_leczenia[selectedLineIndex].opis_linii}
+                     </p>
+                   </div>
+                   
+                   {/* Subtabs dla schematów farmakologicznych */}
+                   <div className="schema-tabs">
+                     {treatmentData.linie_leczenia[selectedLineIndex].schematy_farmakologiczne.map((schemat, idx) => (
+                       <button
+                         key={idx}
+                         className={`schema-tab ${(selectedSchemaPerLine[selectedLineIndex] || 0) === idx ? 'active' : ''}`}
+                         onClick={() => onSchemaSelection(selectedLineIndex, idx)}
+                       >
+                         {schemat.schemat_farmakologiczny}
+                       </button>
+                     ))}
+                   </div>
 
-                    {/* Wybrany schemat farmakologiczny */}
-                    {getCurrentSchema() && (
-                      <div className="selected-schema">
-                        <div className="schema-info">
-                          <h4>{getCurrentSchema().schemat_farmakologiczny}</h4>
-                          <p className="schema-description">
-                            {getCurrentSchema().opis_schematu_farmakologicznego}
-                          </p>
-                        </div>
-                        
-                        {/* Sekcja farmakologii - nowy układ pionowy */}
-                        <div className="pharmacology-section">
-                          <h4 className="section-title">
-                            <i className="fas fa-pills"></i> Farmakologia
-                          </h4>
-                          
-                          {/* Leki w układzie pionowym */}
-                          <div className="drugs-vertical-container">
-                            {getCurrentSchema().leki.map((lek, lekIdx) => (
-                              <div key={`drug-row-${lekIdx}`} className="drug-row">
-                                <h5 className="drug-row-title">
-                                  <i className="fas fa-prescription-bottle-alt"></i> Lek {lekIdx + 1}
-                                </h5>
-                                
-                                <div className="drug-cards-grid">
-                                  {/* Lek główny */}
-                                  <div className="drug-card drug-card-main">
-                                    <div className="drug-card-header">
-                                      <div className="drug-card-title">
-                                        <h4>{lek.nazwa}</h4>
-                                      </div>
-                                      {lek.typ && (
-                                        <span className="drug-type-badge">{lek.typ}</span>
-                                      )}
-                                    </div>
+                   {/* Wybrany schemat farmakologiczny */}
+                   {getCurrentSchema() && (
+                     <div className="selected-schema">
+                       <div className="schema-info">
+                         <h4>{getCurrentSchema().schemat_farmakologiczny}</h4>
+                         <p className="schema-description">
+                           {getCurrentSchema().opis_schematu_farmakologicznego}
+                         </p>
+                       </div>
+                       
+                       {/* Sekcja farmakologii - nowy układ pionowy */}
+                       <div className="pharmacology-section">
+                         <h4 className="section-title">
+                           <i className="fas fa-pills"></i> Farmakologia
+                         </h4>
+                         
+                         {/* Leki w układzie pionowym */}
+                         <div className="drugs-vertical-container">
+                           {getCurrentSchema().leki.map((lek, lekIdx) => (
+                             <div key={`drug-row-${lekIdx}`} className="drug-row">
+                               <h5 className="drug-row-title">
+                                 <i className="fas fa-prescription-bottle-alt"></i> Lek {lekIdx + 1}
+                               </h5>
+                               
+                               <div className="drug-cards-grid">
+                                 {/* Lek główny */}
+                                 <div className="drug-card drug-card-main">
+                                   <div className="drug-card-header">
+                                     <div className="drug-card-title">
+                                       <h4>{lek.nazwa}</h4>
+                                     </div>
+                                     {lek.typ && (
+                                       <span className="drug-type-badge">{lek.typ}</span>
+                                     )}
+                                   </div>
 
-                                    {/* Dawkowanie */}
-                                    <div className="drug-card-section">
-                                      <h5 className="drug-section-title">
-                                        <i className="fas fa-pills"></i> Dawkowanie
-                                      </h5>
-                                      <p className="drug-section-content">{lek.dawkowanie}</p>
-                                    </div>
+                                   {/* Dawkowanie */}
+                                   <div className="drug-card-section">
+                                     <h5 className="drug-section-title">
+                                       <i className="fas fa-pills"></i> Dawkowanie
+                                     </h5>
+                                     <p className="drug-section-content">{lek.dawkowanie}</p>
+                                   </div>
 
-                                    {/* Charakterystyka leku głównego */}
-                                    {renderDrugCharacteristics(lek.nazwa, false)}
-                                  </div>
-                                  
-                                  {/* Alternatywy */}
-                                  {lek.alternatywy && lek.alternatywy.length > 0 && (
-                                    <>
-                                      {lek.alternatywy.map((alt, altIdx) => (
-                                        <div key={`alt-${lekIdx}-${altIdx}`} className="drug-card drug-card-alternative">
-                                          <div className="drug-card-header">
-                                            <div className="drug-card-title">
-                                              <h4>{alt.nazwa}</h4>
-                                              <span className="alternative-badge">
-                                                <i className="fas fa-exchange-alt"></i> Alternatywa
-                                              </span>
-                                            </div>
-                                            {lek.typ && (
-                                              <span className="drug-type-badge">{lek.typ}</span>
-                                            )}
-                                          </div>
+                                   {/* Charakterystyka leku głównego */}
+                                   {renderDrugCharacteristics(lek.nazwa, false)}
+                                 </div>
+                                 
+                                 {/* Alternatywy */}
+                                 {lek.alternatywy && lek.alternatywy.length > 0 && (
+                                   <>
+                                     {lek.alternatywy.map((alt, altIdx) => (
+                                       <div key={`alt-${lekIdx}-${altIdx}`} className="drug-card drug-card-alternative">
+                                         <div className="drug-card-header">
+                                           <div className="drug-card-title">
+                                             <h4>{alt.nazwa}</h4>
+                                             <span className="alternative-badge">
+                                               <i className="fas fa-exchange-alt"></i> Alternatywa
+                                             </span>
+                                           </div>
+                                           {lek.typ && (
+                                             <span className="drug-type-badge">{lek.typ}</span>
+                                           )}
+                                         </div>
 
-                                          {/* Różnice */}
-                                          <div className="drug-card-section">
-                                            <h5 className="drug-section-title">
-                                              <i className="fas fa-exchange-alt"></i> Różnice
-                                            </h5>
-                                            <p className="drug-section-content">{alt.różnice}</p>
-                                          </div>
+                                         {/* Różnice */}
+                                         <div className="drug-card-section">
+                                           <h5 className="drug-section-title">
+                                             <i className="fas fa-exchange-alt"></i> Różnice
+                                           </h5>
+                                           <p className="drug-section-content">{alt.różnice}</p>
+                                         </div>
 
-                                          {/* Pełne charakterystyki dla alternatywy */}
-                                          {renderDrugCharacteristics(alt.nazwa, true)}
-                                        </div>
-                                      ))}
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
+                                         {/* Pełne charakterystyki dla alternatywy */}
+                                         {renderDrugCharacteristics(alt.nazwa, true)}
+                                       </div>
+                                     ))}
+                                   </>
+                                 )}
+                               </div>
+                             </div>
+                           ))}
+                         </div>
+                       </div>
 
-                        {/* Źródło schematu */}
-                        {getCurrentSchema().źródło && renderSource(getCurrentSchema().źródło)}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                       {/* Źródło schematu */}
+                       {getCurrentSchema().źródło && renderSource(getCurrentSchema().źródło)}
+                     </div>
+                   )}
+                 </div>
+               )}
+             </div>
+           </div>
+         )}
 
-          {/* Zalecenia niefarmakologiczne */}
-          {treatmentData && diagnosisConfirmed && treatmentData.leczenie_niefarmakologiczne && (
-            <div className="result-card treatment non-pharmacological" style={{ gridColumn: '1/-1' }}>
-              <div className="result-header">
-                <div className="result-title">
-                  <i className="fas fa-heartbeat"></i> Zalecenia niefarmakologiczne
-                </div>
-              </div>
-              <div className="result-body">
-                <ul className="treatment-list">
-                  {treatmentData.leczenie_niefarmakologiczne.zalecenia.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-                {treatmentData.leczenie_niefarmakologiczne.źródło && 
-                  renderSource(treatmentData.leczenie_niefarmakologiczne.źródło)}
-              </div>
-            </div>
-          )}
+         {/* Zalecenia niefarmakologiczne */}
+         {treatmentData && diagnosisConfirmed && treatmentData.leczenie_niefarmakologiczne && (
+           <div className="result-card treatment non-pharmacological" style={{ gridColumn: '1/-1' }}>
+             <div className="result-header">
+               <div className="result-title">
+                 <i className="fas fa-heartbeat"></i> Zalecenia niefarmakologiczne
+               </div>
+             </div>
+             <div className="result-body">
+               <ul className="treatment-list">
+                 {treatmentData.leczenie_niefarmakologiczne.zalecenia.map((item, index) => (
+                   <li key={index}>{item}</li>
+                 ))}
+               </ul>
+               {treatmentData.leczenie_niefarmakologiczne.źródło && 
+                 renderSource(treatmentData.leczenie_niefarmakologiczne.źródło)}
+             </div>
+           </div>
+         )}
 
-          {/* Przycisk eksportu */}
-          {diagnosisData && (
-            <div style={{ textAlign: 'center', marginTop: '24px', gridColumn: '1/-1' }}>
-              <button 
-                className="btn btn-secondary" 
-                onClick={handleExport}
-                disabled
-              >
-                <i className="fas fa-file-pdf"></i> Eksportuj raport
-              </button>
-              <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px' }}>
-                Funkcja eksportu do PDF jest tymczasowo niedostępna
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
+         {/* Przycisk eksportu */}
+         {diagnosisData && (
+           <div style={{ textAlign: 'center', marginTop: '24px', gridColumn: '1/-1' }}>
+             <button 
+               className="btn btn-secondary" 
+               onClick={handleExport}
+               disabled
+             >
+               <i className="fas fa-file-pdf"></i> Eksportuj raport
+             </button>
+             <p style={{ fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px' }}>
+               Funkcja eksportu do PDF jest tymczasowo niedostępna
+             </p>
+           </div>
+         )}
+       </div>
+     )}
+   </div>
+ );
 }

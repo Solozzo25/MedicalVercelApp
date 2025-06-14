@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export const maxDuration = 60; // 60 sekund
 export const dynamic = 'force-dynamic';
 
-// Funkcja do czyszczenia i walidacji JSON
+// Funkcja do czyszczenia i walidacji JSON - pozostaje bez zmian
 function cleanAndParseJSON(rawResponse) {
   try {
     // Krok 1: Usuń markdown wrapping jeśli istnieje
@@ -24,22 +24,18 @@ function cleanAndParseJSON(rawResponse) {
       
       // Krok 3: Napraw typowe problemy z JSON
       let fixedContent = cleanedContent
-        // Napraw znaki nowej linii i tabulatory
         .replace(/\n/g, '\\n')
         .replace(/\r/g, '\\r')
         .replace(/\t/g, '\\t')
-        // Usuń potencjalne dodatkowe przecinki
         .replace(/,(\s*[}\]])/g, '$1');
       
-      // Krok 4: Spróbuj ponownie po naprawie
       try {
         return JSON.parse(fixedContent);
       } catch (fixedParseError) {
-        // Krok 5: Jeśli nadal nie działa, spróbuj ekstrakcji JSON
+        // Krok 5: Spróbuj ekstrakcji JSON
         const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const extractedJson = jsonMatch[0];
-          // Powtórz proces naprawy dla wyekstraktowanego JSON
           const fixedExtracted = extractedJson
             .replace(/\n/g, '\\n')
             .replace(/\r/g, '\\r')
@@ -49,7 +45,6 @@ function cleanAndParseJSON(rawResponse) {
           return JSON.parse(fixedExtracted);
         }
         
-        // Jeśli wszystko zawiedzie, rzuć błąd
         throw new Error(`Nie udało się naprawić JSON: ${fixedParseError.message}`);
       }
     }
@@ -59,7 +54,7 @@ function cleanAndParseJSON(rawResponse) {
   }
 }
 
-// Funkcja do walidacji struktury odpowiedzi
+// Funkcja do walidacji struktury odpowiedzi - pozostaje bez zmian
 function validateTreatmentResponse(parsedResponse) {
   const errors = [];
   
@@ -122,153 +117,152 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // Klucz API z zmiennych środowiskowych
-    const apiKey = process.env.OPENROUTER_API_KEY;
+    // Klucz API OpenAI z zmiennych środowiskowych
+    const apiKey = process.env.OPENAI_API_KEY;
     
     if (!apiKey) {
-      console.log("❌ Błąd: Brak klucza API OpenRouter w zmiennych środowiskowych");
+      console.log("❌ Błąd: Brak klucza API OpenAI w zmiennych środowiskowych");
       return NextResponse.json({ 
-        error: 'Błąd konfiguracji API - brak klucza OpenRouter' 
+        error: 'Błąd konfiguracji API - brak klucza OpenAI' 
       }, { status: 500 });
     }
 
-    // System prompt - ORYGINALNY z minimalnymi dodatkami technicznymi
-    const systemPrompt = `Jesteś ekspertem medycznym specjalizującym się w wyszukiwaniu i analizie najnowszych wytycznych terapeutycznych oraz farmakoterapii. Twoim zadaniem jest tworzenie dokładnych, aktualnych i praktycznych rekomendacji leczenia na podstawie wiarygodnych źródeł medycznych dostępnych w internecie.
-
-Kieruj się następującymi zasadami:
-1. Szukaj wyłącznie w wiarygodnych źródłach:
-   - Oficjalne wytyczne towarzystw medycznych
-   - Redakcje medyczne (np. Medycyna Praktyczna, Termedia)
-   - Badania naukowe (np. PubMed)
-2. Preferuj dokumenty nie starsze niż 3 lata. Jeśli nie ma aktualnych danych, jasno to zaznacz.
-3. Uwzględniaj minimum trzy linie leczenia. Dla każdej linii podaj nazwę i opis (np. wskazania do jej zastosowania). Jeśli nie możesz znaleźć trzech linii, podaj tyle, ile jest dostępnych, i zaznacz to w uwagach.
-4. Dla każdej linii leczenia przedstaw minimum trzy schematy farmakologiczne. Jeśli nie ma trzech schematów, podaj dostępne i zaznacz brak w uwagach.
-5. Stosuj nazwy handlowe leków (np. Omeprazol, nie grupy ogólne).
-6. Dla każdego leku podaj:
-   - Konkretne dawkowanie,
-   - Minimum 2 alternatywy z opisem różnic (jeśli istnieją). Jeśli nie ma alternatyw, zaznacz to.
-7. Przedstaw przynajmniej 6 zaleceń niefarmakologicznych w formie bezosobowej (np. "Zaleca się").
-8. Podawaj pełne URL-e do źródeł, które są publicznie dostępne i możliwe do otwarcia przez użytkownika.
-9. Bazuj odpowiedzi wyłącznie na znalezionych źródłach. Nie dodawaj własnych interpretacji ani nie wymyślaj informacji.
-10. Jeśli nie możesz znaleźć wystarczającej ilości informacji, jasno to zaznacz w uwagach.
-11. Odpowiedź zawsze przedstaw w JSON w dokładnym formacie opisanym przez użytkownika.
-
-UWAGA TECHNICZNA: W JSON-ie unikaj znaków nowej linii w stringach - zastąp je spacjami. Upewnij się, że wszystkie cudzysłowy wewnątrz stringów są prawidłowo escapowane.`;
-
+    // Uproszczony prompt - web search będzie automatyczny
     const userPrompt = `Wyszukaj najnowsze wytyczne leczenia dla choroby: ${diagnosis}
-${medicalSociety ? `Preferuj wytyczne z: ${medicalSociety}` : ''}
+Preferuj wytyczne z: ${medicalSociety}
 
-WAŻNE:
-- Uwzględnij minimum trzy linie leczenia, każda z nazwą i opisem (np. wskazania do jej zastosowania).
-- Dla każdej linii leczenia wymagane są minimum trzy schematy farmakologiczne opisane w wiarygodnych źródłach medycznych.
-- Leki podawaj **tylko jeśli są zarejestrowane i dostępne w Polsce**.
-- Dla każdego leku podaj MINIMUM 2 alternatywy (jeśli istnieją), wraz z opisem różnic.
-- Zalecenia niefarmakologiczne przedstaw w formie bezosobowej (np. "Zaleca się", "Należy unikać").
-- Podawaj pełne URL-e do źródeł, które są publicznie dostępne i możliwe do otwarcia.
-- Jeśli nie możesz znaleźć wymaganej ilości informacji, jasno to zaznacz w uwagach.
+Dane pacjenta: wiek ${patientAge}, płeć ${patientSex}
 
-Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
+WYMAGANIA:
+- Znajdź oficjalne wytyczne medyczne z wiarygodnych źródeł (towarzystwa medyczne, Medycyna Praktyczna, PubMed)
+- Minimum 3 linie leczenia, każda z nazwą i opisem wskazań
+- Dla każdej linii minimum 3 schematy farmakologiczne z wiarygodnych źródeł
+- Leki TYLKO zarejestrowane i dostępne w Polsce
+- Dla każdego leku minimum 2 alternatywy (jeśli istnieją) z opisem różnic
+- Konkretne dawkowanie dla wszystkich leków
+- Minimum 6 zaleceń niefarmakologicznych w formie bezosobowej
+- WAŻNE: Podawaj pełne, otwieralne URL-e do źródeł medycznych
+- Jeśli brak wystarczających danych, zaznacz w uwagach
+
+Format odpowiedzi - DOKŁADNIE ten JSON:
 {
   "choroba": "${diagnosis}",
   "linie_leczenia": [
     {
-      "numer_linii": "numer linii",
+      "numer_linii": "1",
       "nazwa_linii": "Nazwa pierwszej linii leczenia",
-      "opis_linii": "Opis pierwszej linii leczenia",
+      "opis_linii": "Opis wskazań do pierwszej linii leczenia",
       "schematy_farmakologiczne": [
         {
           "schemat_farmakologiczny": "Nazwa schematu farmakologicznego",
-          "opis_schematu_farmakologicznego": "Szczegółowy opis schematu",
+          "opis_schematu_farmakologicznego": "Szczegółowy opis schematu i wskazań",
           "leki": [
             {
               "nazwa": "Nazwa leku",
               "typ": "Typ/grupa leku",
-              "dawkowanie": "Szczegółowe dawkowanie",
+              "dawkowanie": "Szczegółowe dawkowanie z częstotliwością",
               "alternatywy": [
                 {
                   "nazwa": "Nazwa alternatywnego leku",
-                  "różnice": "Opis różnic"
+                  "różnice": "Opis różnic w działaniu, dawkowaniu lub wskazaniach"
                 },
                 {
                   "nazwa": "Nazwa drugiej alternatywy",
-                  "różnice": "Opis różnic"
+                  "różnice": "Opis różnic w działaniu, dawkowaniu lub wskazaniach"
                 }
               ]
             }
           ],
-          "źródło": "Pełna nazwa źródła z pełnym URL-em"
+          "źródło": "Pełna nazwa źródła z działającym URL-em"
         }
       ]
     }
   ],
   "leczenie_niefarmakologiczne": {
     "zalecenia": [
-      "Zaleca się ..."
+      "Zaleca się pierwsze zalecenie",
+      "Zaleca się drugie zalecenie",
+      "Należy unikać trzeciego",
+      "Wskazana jest czwarta aktywność",
+      "Pomocne jest piąte działanie",
+      "Konieczne jest szóste postępowanie"
     ],
-    "źródło": "Pełna nazwa źródła z pełnym URL-em"
+    "źródło": "Pełna nazwa źródła z działającym URL-em"
   },
-  "uwagi": "Uwagi, np. brak danych"
+  "uwagi": "Ewentualne uwagi o braku danych lub ograniczeniach"
 }`;
 
-    console.log("📤 Wysyłanie zapytania do OpenRouter API...");
+    console.log("📤 Wysyłanie zapytania do OpenAI Responses API...");
     
-    // Wywołanie API OpenRouter z fetch
-    const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    // Wywołanie OpenAI Responses API z web_search tool
+    const openAIResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:3000',
-        'X-Title': 'MedDiagnosis App'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "openai/gpt-4o-search-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
+        model: "gpt-4o",
+        input: userPrompt,
+        tools: [{ 
+		  "type": "web_search_preview",
+		  "search_context_size": "high",  // Maksymalna głębokość dla medycyny
+		  "user_location": {
+			"type": "approximate",
+			"country": "PL",
+			"city": "Warsaw",
+			"region": "Mazowieckie", 
+			"timezone": "Europe/Warsaw"
+		  }
+		}],
         temperature: 0.2,
-        max_tokens: 8000, // Zmniejszone
-        stream: false
-        
-      }),
-      
+        max_output_tokens: 8000
+      })
     });
     
-    console.log("✅ Odpowiedź od OpenRouter otrzymana, status:", openRouterResponse.status);
+    console.log("✅ Odpowiedź od OpenAI otrzymana, status:", openAIResponse.status);
 
     // Sprawdzenie czy odpowiedź jest OK
-    if (!openRouterResponse.ok) {
-      const errorText = await openRouterResponse.text();
-      console.error("❌ Błąd OpenRouter API:", openRouterResponse.status, errorText);
+    if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text();
+      console.error("❌ Błąd OpenAI API:", openAIResponse.status, errorText);
       return NextResponse.json({ 
-        error: `Błąd OpenRouter API: ${openRouterResponse.status} - ${errorText}` 
+        error: `Błąd OpenAI API: ${openAIResponse.status} - ${errorText}` 
       }, { status: 500 });
     }
 
     // Parsowanie odpowiedzi JSON
-    const responseData = await openRouterResponse.json();
+    const responseData = await openAIResponse.json();
     
-    // Bezpośrednio po otrzymaniu odpowiedzi, przed parsowaniem
-    const responseContent = responseData.choices[0].message.content;
-
     console.log("🔍 DIAGNOSTYKA ODPOWIEDZI:");
-    console.log("📏 Długość odpowiedzi:", responseContent.length);
-    console.log("🎯 Pozycja 8233:", responseContent.charAt(8233));
-    console.log("📍 Kontekst wokół 8233:", responseContent.slice(8223, 8243));
-    console.log("✅ Czy kończy się '}':", responseContent.trim().endsWith('}'));
-    console.log("✅ Czy zaczyna się '{':", responseContent.trim().startsWith('{'));
+    console.log("📊 Status:", responseData.status);
+    console.log("📊 Output type:", typeof responseData.output);
+    console.log("📊 Output length:", responseData.output?.length || 0);
+    
+	   // Wyciągnij content z output (Responses API ma inną strukturę)
+	let responseContent;
+	if (responseData.output && Array.isArray(responseData.output)) {
+	  // Znajdź message w output
+	  const messageOutput = responseData.output.find(item => item.type === 'message');
+	  if (messageOutput && messageOutput.content && Array.isArray(messageOutput.content)) {
+		// Znajdź output_text content
+		const textContent = messageOutput.content.find(item => item.type === 'output_text');
+		responseContent = textContent?.text || '';
+	  }
+	}
+    
+    if (!responseContent) {
+      console.error("❌ Nie można wyekstraktować treści z odpowiedzi");
+      console.log("📋 Cała odpowiedź:", JSON.stringify(responseData, null, 2));
+      return NextResponse.json({ 
+        error: "Nie można wyekstraktować treści z odpowiedzi OpenAI",
+        rawResponse: responseData
+      }, { status: 500 });
+    }
+
+    console.log("📏 Długość treści:", responseContent.length);
     console.log("📝 Pierwsze 200 znaków:", responseContent.substring(0, 200));
     console.log("📝 Ostatnie 200 znaków:", responseContent.slice(-200));
-
-    // Sprawdź czy to JSON w ogóle
-    try {
-      const testParse = JSON.parse(responseContent);
-      console.log("✅ JSON jest poprawny!");
-    } catch (error) {
-      console.log("❌ JSON niepoprawny:", error.message);
-      console.log("❌ Pozycja błędu:", error.message.match(/position (\d+)/)?.[1]);
-    }
 
     // Parsowanie odpowiedzi z ulepszoną obsługą błędów
     let parsedResponse;
@@ -308,29 +302,18 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
         linia.schematy_farmakologiczne.forEach((schemat, schematIndex) => {
           console.log(`   - Schemat ${schematIndex + 1}: ${schemat.schemat_farmakologiczny}`);
           console.log(`     - Liczba leków: ${schemat.leki?.length || 0}`);
-        });
-      }
-    });
-    
-    // Logowanie wszystkich leków do ekstrakcji
-    const allDrugs = [];
-    parsedResponse.linie_leczenia.forEach(linia => {
-      if (linia.schematy_farmakologiczne) {
-        linia.schematy_farmakologiczne.forEach(schemat => {
-          if (schemat.leki) {
-            schemat.leki.forEach(lek => {
-              allDrugs.push(lek.nazwa);
-              if (lek.alternatywy) {
-                lek.alternatywy.forEach(alt => allDrugs.push(alt.nazwa));
-              }
-            });
+          if (schemat.źródło) {
+            console.log(`     - Źródło: ${schemat.źródło}`);
           }
         });
       }
     });
     
-    console.log("💊 Wszystkie leki do sprawdzenia:", allDrugs);
-    console.log("💊 Łączna liczba leków:", allDrugs.length);
+    // Logowanie źródeł
+    console.log("🔗 Źródła z web search:");
+    if (parsedResponse.leczenie_niefarmakologiczne?.źródło) {
+      console.log(`   - Niefarmakologiczne: ${parsedResponse.leczenie_niefarmakologiczne.źródło}`);
+    }
 
     // Sprawdzenie uwag
     if (parsedResponse.uwagi) {
@@ -349,7 +332,7 @@ Format odpowiedzi - MUSI być dokładnie w tym formacie JSON:
       errorMessage = 'Przekroczono limit czasu oczekiwania na odpowiedź z API';
       errorDetails = { timeout: true };
     } else if (error.cause && error.cause.code === 'FETCH_ERROR') {
-      errorMessage = 'Błąd połączenia z OpenRouter API';
+      errorMessage = 'Błąd połączenia z OpenAI API';
       errorDetails = { networkError: true };
     } else {
       errorDetails = { message: error.message };
