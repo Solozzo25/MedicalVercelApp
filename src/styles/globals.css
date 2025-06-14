@@ -525,6 +525,7 @@ h1, h2, h3, h4, h5, h6 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 32px;
+	margin-bottom: 24px;
 }
 
 @media (max-width: 768px) {
@@ -540,13 +541,15 @@ h1, h2, h3, h4, h5, h6 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 32px;
+	margin-bottom: 24px;
 }
 
 /* Pole formularza - PROSTE, BEZ OBRAMOWAŃ KONTENERA */
 .form-field {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+	margin-bottom: 16px;
 }
 
 /* Label formularza */
@@ -557,7 +560,7 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 16px;
     font-weight: 600;
     color: var(--primary-dark);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .form-hint {

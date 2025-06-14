@@ -249,7 +249,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
 		  <div className="form-field">
 			<label htmlFor="symptoms" className="form-label">
 			  Objawy podmiotowe
-			  <span className="form-hint">Podwójne kliknięcie = edycja • Enter = dodaj objaw</span>
+			  <span className="form-hint"> Enter = dodaj objaw</span>
 			</label>
 			<ChipDisplay chips={symptomChips} field="symptoms" />
 			<textarea 
@@ -267,7 +267,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
 		  <div className="form-field">
 			<label htmlFor="physicalExam" className="form-label">
 			  Badanie przedmiotowe
-			  <span className="form-hint">Podwójne kliknięcie = edycja • Enter = dodaj wynik</span>
+			  <span className="form-hint">Enter = dodaj wynik</span>
 			</label>
 			<ChipDisplay chips={physicalExamChips} field="physicalExam" />
 			<textarea 
@@ -287,7 +287,7 @@ export default function DiagnosisForm({ onFormSubmit, isLoading }) {
           <div className="form-field">
             <label htmlFor="additionalTests" className="form-label">
               Wyniki badań
-              <span className="form-hint">Podwójne kliknięcie = edycja • Enter = dodaj wynik</span>
+              <span className="form-hint">Enter = dodaj wynik</span>
             </label>
             <ChipDisplay chips={additionalTestsChips} field="additionalTests" />
             <textarea 
