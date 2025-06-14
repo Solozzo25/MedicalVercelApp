@@ -300,7 +300,7 @@ export default function TabContainer() {
         });
 
         if (characteristicsResponse.ok) {
-          const characteristicsResult = await characteristicsResponse.json();
+          const characteristicsData = await characteristicsResponse.json();
           console.log("✅ Otrzymano charakterystyki leków (bezpośrednie):", characteristicsResult);
           characteristicsResult = characteristicsResult.characteristics;
         }
