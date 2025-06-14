@@ -1837,115 +1837,177 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     height: 100%;
-    gap: 16px;
+    gap: 24px;
+    padding: 0;
 }
 
-/* Górna sekcja - wiek i płeć w jednej linii */
-.form-top-row {
+/* Podstawowe informacje - wiek i płeć */
+.form-basic-info {
     display: grid;
-    grid-template-columns: 200px 200px;
-    gap: 16px;
-    padding: 16px;
+    grid-template-columns: minmax(200px, 300px) minmax(200px, 300px);
+    gap: 24px;
+    padding: 20px;
     background-color: rgba(59, 130, 246, 0.03);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--gray-200);
 }
 
-/* Środkowa sekcja - 2 kolumny */
-.form-main-grid {
+/* Główna zawartość - objawy i badanie */
+.form-main-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    flex: 1;
-    min-height: 0; /* Umożliwia shrinking */
+    grid-template-columns: 1.2fr 1fr;
+    gap: 24px;
 }
 
-/* Dolna sekcja - wyniki i historia */
-.form-bottom-grid {
+/* Dodatkowa zawartość - wyniki i historia */
+.form-secondary-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    max-height: 140px; /* Ograniczona wysokość */
+    gap: 24px;
 }
 
-/* Stylowanie grup formularza */
-.form-group-compact {
+/* Pole formularza */
+.form-field {
     display: flex;
     flex-direction: column;
-    background-color: rgba(59, 130, 246, 0.02);
-    border-radius: var(--radius);
-    border: 1px solid var(--gray-100);
-    padding: 12px;
-    min-height: 0;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    padding: 20px;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
 }
 
-.form-group-compact .form-label {
-    margin-bottom: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--primary-dark);
-    border-bottom: 1px solid var(--gray-200);
-    padding-bottom: 4px;
+.form-field:hover {
+    border-color: var(--gray-300);
+    box-shadow: var(--shadow);
+}
+
+.form-field:focus-within {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Label formularza */
+.form-label {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gray-200);
 }
 
-.form-group-compact .form-hint {
-    font-size: 11px;
+.form-hint {
+    font-size: 12px;
     color: var(--gray-500);
     font-weight: 400;
+    font-style: italic;
+    line-height: 1.2;
 }
 
-/* Textarea kompaktowe */
-.form-textarea-compact {
+/* Input i textarea */
+.form-input,
+.form-select,
+.form-textarea {
     width: 100%;
-    padding: 8px 12px;
+    padding: 14px 16px;
     border: 1px solid var(--gray-300);
     border-radius: var(--radius);
-    font-size: 13px;
+    font-size: 14px;
     color: var(--gray-800);
+    transition: all 0.2s ease;
     background-color: var(--white);
-    resize: none;
-    flex: 1;
-    min-height: 80px;
-    max-height: 120px;
+    box-shadow: var(--shadow-sm);
     font-family: inherit;
-    line-height: 1.4;
 }
 
-.form-textarea-compact:focus {
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    padding-right: 40px;
+}
+
+.form-textarea {
+    min-height: 120px;
+    max-height: 200px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
     outline: none;
     border-color: var(--primary-light);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Chipy kompaktowe */
+/* Chipy - aktualizacja */
 .chip-container-compact {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 8px;
-    padding: 6px;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 8px;
     background-color: var(--gray-50);
     border-radius: var(--radius);
-    min-height: 32px;
-    max-height: 60px;
-    overflow-y: auto;
+    min-height: 40px;
+    align-items: center;
+}
+
+.chip-container-compact:empty {
+    display: none;
 }
 
 .chip-compact {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
+    gap: 6px;
+    padding: 6px 12px;
     background-color: var(--primary);
     color: var(--white);
     border-radius: var(--radius-full);
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.chip-new {
+    animation: chipFadeIn 0.2s ease-out;
+}
+
+@keyframes chipFadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: var(--white);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 10px;
+}
+
+.chip-remove:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
 /* Edycja chipa */
@@ -1953,7 +2015,7 @@ h1, h2, h3, h4, h5, h6 {
     background: transparent;
     border: none;
     color: var(--white);
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 500;
     min-width: 50px;
     outline: none;
@@ -1965,33 +2027,58 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Przycisk submit */
 .form-submit-section {
-    padding: 16px;
+    padding: 24px;
     border-top: 1px solid var(--gray-100);
     background-color: var(--gray-50);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    margin: 0 -24px -24px -24px;
 }
 
 /* ===============================
    RESPONSYWNOŚĆ - DESKTOP PRIORITY
    =============================== */
 
-@media (max-width: 1400px) {
-    .form-main-grid {
-        gap: 16px;
+@media (max-width: 1200px) {
+    .form-main-content {
+        grid-template-columns: 1fr 1fr;
     }
     
-    .form-bottom-grid {
-        max-height: 120px;
+    .form-basic-info {
+        grid-template-columns: 1fr 1fr;
     }
 }
 
-@media (max-width: 1200px) {
-    .form-top-row {
-        grid-template-columns: 180px 180px;
+@media (max-width: 768px) {
+    .form-main-content,
+    .form-secondary-content,
+    .form-basic-info {
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
     
-    .form-textarea-compact {
-        min-height: 70px;
-        max-height: 100px;
+    .form-field {
+        padding: 16px;
+    }
+    
+    .diagnosis-form-container {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-field {
+        padding: 12px;
+    }
+    
+    .form-label {
+        font-size: 14px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .form-hint {
+        font-size: 11px;
     }
 }
 
