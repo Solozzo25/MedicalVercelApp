@@ -35,6 +35,10 @@ export default function TabContainer() {
   const [directSelectedLineIndex, setDirectSelectedLineIndex] = useState(0);
   const [directSelectedSchemaPerLine, setDirectSelectedSchemaPerLine] = useState({});
 
+  // NOWE STATE dla tablicy diagnoz
+  const [treatmentDiagnoses, setTreatmentDiagnoses] = useState([]); // Tablica diagnoz z liniami leczenia
+  const [activeTreatmentIndex, setActiveTreatmentIndex] = useState(0); // Indeks aktywnej diagnozy
+
   // Obsługa przełączania zakładek
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
@@ -121,7 +125,7 @@ export default function TabContainer() {
     console.log("Wybrano diagnozę:", diagnosisName);
   };
   
-  // Funkcja do obsługi potwierdzenia diagnozy z auto-przełączaniem
+  // ZMODYFIKOWANA FUNKCJA: Dodawanie diagnozy do tablicy zamiast nadpisywania
   const handleDiagnosisConfirm = async () => {
     if (!selectedDiagnosis) {
       setErrorMessage('Proszę wybrać diagnozę przed kontynuacją.');
@@ -142,8 +146,8 @@ export default function TabContainer() {
       const treatmentRequestData = {
         diagnosis: selectedDiagnosis,
         medicalSociety: selectedDiag?.Towarzystwo_Medyczne || '',
-        patientAge: patientData.age,
-        patientSex: patientData.sex
+        patientAge: patientData?.age || 'nie podano',
+        patientSex: patientData?.sex || 'nie określono'
       };
 
       const treatmentResponse = await fetch('/api/treatment-schemas', {
@@ -162,19 +166,10 @@ export default function TabContainer() {
       const treatmentResult = await treatmentResponse.json();
       console.log("✅ Otrzymano schematy leczenia:", treatmentResult);
       
-      setTreatmentData(treatmentResult);
-      
-      const initialSchemaSelection = {};
-      if (treatmentResult.linie_leczenia) {
-        treatmentResult.linie_leczenia.forEach((_, lineIndex) => {
-          initialSchemaSelection[lineIndex] = 0;
-        });
-      }
-      setSelectedSchemaPerLine(initialSchemaSelection);
-      
       const drugNames = extractDrugNamesFromTreatment(treatmentResult);
       console.log("💊 Lista leków do sprawdzenia:", drugNames);
       
+      let characteristicsResult = null;
       if (drugNames.length > 0) {
         setLoadingStep('treatment');
         setLoadingMessage(`Pobieranie charakterystyk dla ${drugNames.length} leków`);
@@ -189,14 +184,34 @@ export default function TabContainer() {
           body: JSON.stringify({ drugs: drugNames })
         });
 
-        if (!characteristicsResponse.ok) {
-          console.error("⚠️ Błąd pobierania charakterystyk, kontynuuję bez nich");
-        } else {
-          const characteristicsResult = await characteristicsResponse.json();
-          console.log("✅ Otrzymano charakterystyki leków:", characteristicsResult);
-          setCharacteristicsData(characteristicsResult.characteristics);
+        if (characteristicsResponse.ok) {
+          const characteristicsData = await characteristicsResponse.json();
+          console.log("✅ Otrzymano charakterystyki leków:", characteristicsData);
+          characteristicsResult = characteristicsData.characteristics;
         }
       }
+
+      // NOWA LOGIKA: Dodaj diagnozę do tablicy zamiast nadpisywać
+      const newDiagnosis = {
+        name: selectedDiagnosis,
+        treatmentData: treatmentResult,
+        characteristicsData: characteristicsResult,
+        selectedLineIndex: 0,
+        selectedSchemaPerLine: {}
+      };
+
+      // Inicjalizacja schematów
+      const initialSchemaSelection = {};
+      if (treatmentResult.linie_leczenia) {
+        treatmentResult.linie_leczenia.forEach((_, lineIndex) => {
+          initialSchemaSelection[lineIndex] = 0;
+        });
+      }
+      newDiagnosis.selectedSchemaPerLine = initialSchemaSelection;
+
+      // Dodaj nową diagnozę do tablicy
+      setTreatmentDiagnoses(prev => [...prev, newDiagnosis]);
+      setActiveTreatmentIndex(treatmentDiagnoses.length); // Ustaw nową jako aktywną
 
       setLoadingStep('complete');
       setLoadingMessage('Finalizacja wyników');
@@ -267,20 +282,10 @@ export default function TabContainer() {
       const treatmentResult = await treatmentResponse.json();
       console.log("✅ Otrzymano schematy leczenia dla bezpośredniej diagnozy:", treatmentResult);
       
-      setDirectTreatmentData(treatmentResult);
-      
-      const initialSchemaSelection = {};
-      if (treatmentResult.linie_leczenia) {
-        treatmentResult.linie_leczenia.forEach((_, lineIndex) => {
-          initialSchemaSelection[lineIndex] = 0;
-        });
-      }
-      setDirectSelectedSchemaPerLine(initialSchemaSelection);
-      setDirectSelectedLineIndex(0);
-      
       const drugNames = extractDrugNamesFromTreatment(treatmentResult);
       console.log("💊 Lista leków do sprawdzenia (bezpośrednie):", drugNames);
       
+      let characteristicsResult = null;
       if (drugNames.length > 0) {
         setLoadingStep('treatment');
         setLoadingMessage(`Pobieranie charakterystyk dla ${drugNames.length} leków`);
@@ -294,14 +299,34 @@ export default function TabContainer() {
           body: JSON.stringify({ drugs: drugNames })
         });
 
-        if (!characteristicsResponse.ok) {
-          console.error("⚠️ Błąd pobierania charakterystyk, kontynuuję bez nich");
-        } else {
+        if (characteristicsResponse.ok) {
           const characteristicsResult = await characteristicsResponse.json();
           console.log("✅ Otrzymano charakterystyki leków (bezpośrednie):", characteristicsResult);
-          setDirectCharacteristicsData(characteristicsResult.characteristics);
+          characteristicsResult = characteristicsResult.characteristics;
         }
       }
+
+      // NOWA LOGIKA: Dodaj bezpośrednią diagnozę do tablicy
+      const newDiagnosis = {
+        name: diagnosis.trim(),
+        treatmentData: treatmentResult,
+        characteristicsData: characteristicsResult,
+        selectedLineIndex: 0,
+        selectedSchemaPerLine: {}
+      };
+
+      // Inicjalizacja schematów
+      const initialSchemaSelection = {};
+      if (treatmentResult.linie_leczenia) {
+        treatmentResult.linie_leczenia.forEach((_, lineIndex) => {
+          initialSchemaSelection[lineIndex] = 0;
+        });
+      }
+      newDiagnosis.selectedSchemaPerLine = initialSchemaSelection;
+
+      // Dodaj nową diagnozę do tablicy
+      setTreatmentDiagnoses(prev => [...prev, newDiagnosis]);
+      setActiveTreatmentIndex(treatmentDiagnoses.length); // Ustaw nową jako aktywną
 
       setLoadingStep('complete');
       setLoadingMessage('Finalizacja wyników');
@@ -315,32 +340,35 @@ export default function TabContainer() {
     }
   };
 
-  // Obsługa wyboru linii leczenia
+  // Obsługa wyboru linii leczenia - dla aktywnej diagnozy
   const handleLineSelection = (lineIndex) => {
     console.log("Wybrano linię leczenia o indeksie:", lineIndex);
-    setSelectedLineIndex(lineIndex);
+    if (treatmentDiagnoses[activeTreatmentIndex]) {
+      setTreatmentDiagnoses(prev => {
+        const updated = [...prev];
+        updated[activeTreatmentIndex].selectedLineIndex = lineIndex;
+        return updated;
+      });
+    }
   };
 
   const handleSchemaSelection = (lineIndex, schemaIndex) => {
     console.log(`Wybrano schemat ${schemaIndex} dla linii ${lineIndex}`);
-    setSelectedSchemaPerLine(prev => ({
-      ...prev,
-      [lineIndex]: schemaIndex
-    }));
+    if (treatmentDiagnoses[activeTreatmentIndex]) {
+      setTreatmentDiagnoses(prev => {
+        const updated = [...prev];
+        updated[activeTreatmentIndex].selectedSchemaPerLine = {
+          ...updated[activeTreatmentIndex].selectedSchemaPerLine,
+          [lineIndex]: schemaIndex
+        };
+        return updated;
+      });
+    }
   };
 
-  // NOWE FUNKCJE: Obsługa linii dla bezpośredniej diagnozy
-  const handleDirectLineSelection = (lineIndex) => {
-    console.log("Wybrano linię leczenia (bezpośrednio) o indeksie:", lineIndex);
-    setDirectSelectedLineIndex(lineIndex);
-  };
-
-  const handleDirectSchemaSelection = (lineIndex, schemaIndex) => {
-    console.log(`Wybrano schemat ${schemaIndex} dla linii ${lineIndex} (bezpośrednio)`);
-    setDirectSelectedSchemaPerLine(prev => ({
-      ...prev,
-      [lineIndex]: schemaIndex
-    }));
+  // Obsługa przełączania między diagnozami w "Linie leczenia"
+  const handleTreatmentTabChange = (diagnosisIndex) => {
+    setActiveTreatmentIndex(diagnosisIndex);
   };
 
   return (
@@ -364,7 +392,7 @@ export default function TabContainer() {
           </div>
         </div>
 
-        {/* NOWE ZAKŁADKI - 3 zamiast 2 */}
+        {/* GŁÓWNE ZAKŁADKI - 3 zamiast 2 */}
         <div className="tabs">
           <div 
             className={`tab ${activeTab === 'patient-data' ? 'active' : ''}`} 
@@ -391,51 +419,37 @@ export default function TabContainer() {
           <DiagnosisForm onFormSubmit={handleFormSubmit} isLoading={isLoading} />
         </div>
 
-       {/* Zakładka 2: Diagnozy */}
-		<div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
-		  
-		  {/* Wyświetl tylko diagnozy - bez leczenia */}
-		  <Results 
-			diagnosisData={diagnosisData}
-			treatmentData={null}
-			characteristicsData={null}
-			patientData={patientData}
-			errorMessage={errorMessage}
-			selectedDiagnosis={selectedDiagnosis}
-			diagnosisConfirmed={false}
-			selectedLineIndex={selectedLineIndex}
-			selectedSchemaPerLine={selectedSchemaPerLine}
-			onLineSelection={handleLineSelection}
-			onSchemaSelection={handleSchemaSelection}
-			onDiagnosisReset={handleDiagnosisReset}
-			onDiagnosisSelect={handleDiagnosisSelect}
-			onDiagnosisConfirm={handleDiagnosisConfirm}
-			isLoading={isLoading}
-			showTreatmentOnly={false}
-		  />
-		</div>
-
-        {/* Zakładka 3: Linie leczenia */}
-        <div className={`tab-content ${activeTab === 'treatment-lines' ? 'active' : ''}`} id="treatment-lines">
-          <TreatmentTab
-            // Dane z diagnozy
-            treatmentData={treatmentData}
-            characteristicsData={characteristicsData}
+        {/* Zakładka 2: Diagnozy */}
+        <div className={`tab-content ${activeTab === 'results' ? 'active' : ''}`} id="results">
+          <Results 
+            diagnosisData={diagnosisData}
+            treatmentData={null}
+            characteristicsData={null}
+            patientData={patientData}
+            errorMessage={errorMessage}
             selectedDiagnosis={selectedDiagnosis}
-            diagnosisConfirmed={diagnosisConfirmed}
+            diagnosisConfirmed={false}
             selectedLineIndex={selectedLineIndex}
             selectedSchemaPerLine={selectedSchemaPerLine}
             onLineSelection={handleLineSelection}
             onSchemaSelection={handleSchemaSelection}
             onDiagnosisReset={handleDiagnosisReset}
-            // Dane z bezpośredniej diagnozy
-            directDiagnosis={directDiagnosis}
-            directTreatmentData={directTreatmentData}
-            directCharacteristicsData={directCharacteristicsData}
-            directSelectedLineIndex={directSelectedLineIndex}
-            directSelectedSchemaPerLine={directSelectedSchemaPerLine}
-            onDirectLineSelection={handleDirectLineSelection}
-            onDirectSchemaSelection={handleDirectSchemaSelection}
+            onDiagnosisSelect={handleDiagnosisSelect}
+            onDiagnosisConfirm={handleDiagnosisConfirm}
+            isLoading={isLoading}
+            showTreatmentOnly={false}
+          />
+        </div>
+
+        {/* Zakładka 3: Linie leczenia */}
+        <div className={`tab-content ${activeTab === 'treatment-lines' ? 'active' : ''}`} id="treatment-lines">
+          <TreatmentTab
+            // NOWE PROPS dla systemu wielu diagnoz
+            treatmentDiagnoses={treatmentDiagnoses}
+            activeTreatmentIndex={activeTreatmentIndex}
+            onTreatmentTabChange={handleTreatmentTabChange}
+            onLineSelection={handleLineSelection}
+            onSchemaSelection={handleSchemaSelection}
             onDirectDiagnosisSubmit={handleDirectDiagnosisSubmit}
             errorMessage={errorMessage}
             isLoading={isLoading}

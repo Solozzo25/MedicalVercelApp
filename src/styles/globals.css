@@ -794,3 +794,261 @@ h1, h2, h3, h4, h5, h6 {
     border-top: 1px solid var(--gray-100);
     background-color: var(--gray-50);
 }
+
+/* ===============================
+   STYLE DLA PODZAKŁADEK DIAGNOZ I NOWEGO LAYOUTU
+   =============================== */
+
+/* Podzakładki diagnoz (poziom 2) */
+.diagnosis-subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding: 20px;
+    background-color: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+}
+
+.diagnosis-subtab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: var(--white);
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: var(--gray-700);
+    font-size: 14px;
+}
+
+.diagnosis-subtab:hover {
+    background-color: var(--primary-light);
+    color: var(--white);
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.diagnosis-subtab.active {
+    background-color: var(--success);
+    color: var(--white);
+    border-color: var(--success);
+    box-shadow: var(--shadow);
+}
+
+.diagnosis-subtab i {
+    font-size: 16px;
+}
+
+/* Header aktywnej diagnozy */
+.diagnosis-header {
+    margin-bottom: 32px;
+    padding: 24px;
+    background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+    color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.diagnosis-header h2 {
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.diagnosis-header p {
+    margin-bottom: 16px;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+.diagnosis-header .btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(4px);
+}
+
+.diagnosis-header .btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Sekcja wyszukiwania ręcznego */
+.manual-search-section {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.no-diagnoses-section {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.direct-diagnosis-form .form-group {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Przyciski "Pobierz charakterystykę" */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Style dla kart leków - dopasowanie do nowego layoutu */
+.drug-card-section {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.drug-card-section:last-of-type {
+    border-bottom: none;
+}
+
+.drug-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gray-800);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.drug-section-title i {
+    color: var(--primary);
+    font-size: 14px;
+}
+
+.drug-section-content {
+    color: var(--gray-700);
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Refundacja */
+.refundation-section {
+    background-color: rgba(34, 197, 94, 0.02);
+    border-left: 3px solid var(--success);
+}
+
+.refundation-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.copayment-badge {
+    font-size: 12px;
+    color: var(--gray-700);
+    padding: 4px 10px;
+    background-color: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-300);
+}
+
+.refundation-groups {
+    margin-top: 12px;
+}
+
+.refundation-groups strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--gray-800);
+    font-size: 13px;
+}
+
+.drug-section-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.drug-section-list li {
+    position: relative;
+    padding: 4px 0 4px 16px;
+    color: var(--gray-700);
+    font-size: 12px;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.drug-section-list li:last-child {
+    border-bottom: none;
+}
+
+.drug-section-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    color: var(--success);
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .diagnosis-subtabs {
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px;
+    }
+    
+    .diagnosis-subtab {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+    
+    .diagnosis-header {
+        padding: 20px 16px;
+    }
+    
+    .diagnosis-header h2 {
+        font-size: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .direct-diagnosis-form .form-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .direct-diagnosis-form .form-group > div {
+        width: 100%;
+    }
+    
+    .direct-diagnosis-form button {
+        width: 100%;
+        margin-top: 12px;
+    }
+}
