@@ -1096,7 +1096,6 @@ html {
    border: 2px solid var(--white);
    border-radius: var(--radius-lg);
    padding: var(--space-3) var(--space-5); /* Zmienione z 12px 20px */
-   margin-right: var(--space-2);          /* Zmienione z 8px */
    cursor: pointer;
    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Ulepszona transition */
    font-weight: 500;
@@ -1125,7 +1124,6 @@ html {
    display: flex;
    flex-wrap: wrap;
    gap: var(--space-2);                   /* Zmienione z 8px */
-   margin-bottom: var(--space-5);         /* Zmienione z 20px */
    padding: var(--space-3);               /* Zmienione z 12px */
    background-color: var(--gray-50);
    border-radius: var(--radius);
@@ -1167,14 +1165,14 @@ html {
 .drugs-horizontal-container {
    display: flex;
    flex-direction: column;
-   gap: var(--space-8);                   /* Zmienione z 32px */
+   gap: var(--space-3);                   /* Zmienione z 32px */
 }
 
 /* Wiersz dla jednego leku głównego + alternatywy */
 .drug-row-horizontal {
    display: flex;
    flex-direction: column;
-   gap: var(--space-4);                   /* Zmienione z 16px */
+   gap: var(--space-2);                   /* Zmienione z 16px */
 }
 
 .drug-row-title {
@@ -1182,7 +1180,7 @@ html {
    font-size: 18px;
    font-weight: 600;
    margin: 0;
-   padding: var(--space-3) 0;             /* Zmienione z 12px */
+   padding: var(--space-1) 0;             /* Zmienione z 12px */
    border-bottom: 2px solid var(--gray-200);
    display: flex;
    align-items: center;
@@ -1834,7 +1832,7 @@ html {
 }
 
 .line-header {
-   padding: var(--space-6);
+   padding: var(--space-3);
    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
    border-bottom: 1px solid var(--gray-100);
 }
@@ -1856,8 +1854,8 @@ html {
 }
 
 .schema-info {
-   margin-bottom: var(--space-8);
-   padding: var(--space-6);
+   margin-bottom: var(--space-3);
+   padding: var(--space-3);
    background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
    border-radius: var(--radius-lg);
    border-left: 4px solid var(--primary);
@@ -1879,14 +1877,14 @@ html {
 .pharmacology-section {
    background-color: var(--gray-50);
    border-radius: var(--radius-lg);
-   padding: var(--space-6);
+   padding: var(--space-3);
 }
 
 .section-title {
    display: flex;
    align-items: center;
-   gap: var(--space-3);
-   margin-bottom: var(--space-6);
+   gap: var(--space-2);
+   margin-bottom: var(--space-2);
    font-size: 20px;
    font-weight: 600;
    color: var(--gray-900);
