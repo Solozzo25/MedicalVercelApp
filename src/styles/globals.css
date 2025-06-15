@@ -403,7 +403,7 @@ html {
 .main-content {
     flex: 1;
     margin-left: 260px;
-    padding: var(--space-6);              /* Zmienione z 24px */
+    padding: var(--space-4);              /* Zmienione z 24px */
     max-width: none;
     height: auto;
     overflow: visible;
@@ -493,7 +493,7 @@ html {
    =============================== */
 .content-container {
     display: grid;
-    gap: var(--space-6);                  /* Zmienione z 24px */
+    gap: var(--space-4);                  /* Zmienione z 24px */
 }
 
 .card {
@@ -514,7 +514,7 @@ html {
 }
 
 .card-header {
-    padding: var(--space-6);              /* Zmienione z 20px 24px */
+    padding: var(--space-4);              /* Zmienione z 20px 24px */
     border-bottom: 1px solid var(--gray-100);
     display: flex;
     justify-content: space-between;
@@ -587,7 +587,7 @@ html {
 
 .tab-content {
     display: none;
-    padding: var(--space-6);              /* Zmienione z 24px */
+    padding: var(--space-4);              /* Zmienione z 24px */
     flex: 1;
     overflow-y: visible;
     width: 100%;
@@ -691,8 +691,8 @@ html {
 .diagnosis-form-container {
     display: flex;
     flex-direction: column;
-    gap: var(--space-8);                  /* Zmienione z 32px */
-    padding: var(--space-6);              /* Zmienione z 24px */
+    gap: var(--space-4);                  /* Zmienione z 32px */
+    padding: var(--space-4);              /* Zmienione z 24px */
     height: 100%;
     width: 100%;   
 }
@@ -920,9 +920,9 @@ html {
 .diagnosis-subtabs {
    display: flex;
    flex-wrap: wrap;
-   gap: var(--space-3);                  /* Zmienione z 12px */
-   margin-bottom: var(--space-8);        /* Zmienione z 32px */
-   padding: var(--space-6);              /* Zmienione z 20px */
+   gap: var(--space-2);                  /* Zmienione z 12px */
+   margin-bottom: var(--space-4);        /* Zmienione z 32px */
+   padding: var(--space-3);              /* Zmienione z 20px */
    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
    border-radius: var(--radius-lg);
    border: 1px solid var(--gray-200);
@@ -965,8 +965,8 @@ html {
 
 /* Header aktywnej diagnozy - ULEPSZONE */
 .diagnosis-header {
-   margin-bottom: var(--space-8);        /* Zmienione z 32px */
-   padding: var(--space-6);              /* Zmienione z 24px */
+   margin-bottom: var(--space-4);        /* Zmienione z 32px */
+   padding: var(--space-4);              /* Zmienione z 24px */
    background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
    color: var(--white);
    border-radius: var(--radius-lg);
@@ -1478,7 +1478,7 @@ html {
    .form-secondary-content,
    .form-symptoms-section {
        grid-template-columns: 1fr;
-       gap: var(--space-6);               /* Zmienione z 24px */
+       gap: var(--space-4);               /* Zmienione z 24px */
    }
    
    .diagnosis-form-container {
@@ -1822,7 +1822,7 @@ html {
 .treatment-schemas-section {
    display: flex;
    flex-direction: column;
-   gap: var(--space-6);
+   gap: var(--space-4);
 }
 
 .selected-treatment-line {
@@ -1852,7 +1852,7 @@ html {
 }
 
 .selected-schema {
-   padding: var(--space-6);
+   padding: var(--space-4);
 }
 
 .schema-info {
