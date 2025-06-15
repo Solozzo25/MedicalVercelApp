@@ -49,7 +49,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-barlow), 'Helvetica Neue', Arial, sans-serif;
     background-color: var(--gray-50);
     color: var(--gray-800);
     line-height: 1.5;
@@ -58,7 +58,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--font-lato), 'Helvetica Neue', Arial, sans-serif;
     font-weight: 600;
 }
 
