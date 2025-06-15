@@ -1,376 +1,250 @@
 /* ===============================
-   ZMIENNE CSS - SKONSOLIDOWANE
+   MODERNIZACJA 2025 - MEDICAL PROFESSIONAL
    =============================== */
+
+/* Import nowego fontu */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-    /* Kolory główne */
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --primary-light: #60a5fa;
-    --secondary: #10b981;
-    --accent: #8b5cf6;
-    --accent-light: #a78bfa;
+    /* === NOWA PALETA - MEDICAL PROFESSIONAL === */
     
-    /* Neutralne */
+    /* Primary - Professional Medical Blue */
+    --primary: #0369a1;           /* Główny niebieski - mniej krzyczący */
+    --primary-dark: #075985;      /* Ciemniejszy niebieski */
+    --primary-light: #0ea5e9;     /* Jaśniejszy niebieski */
+    --primary-50: #f0f9ff;        /* Bardzo jasny niebieski */
+    --primary-100: #e0f2fe;       /* Jasny niebieski */
+    --primary-200: #bae6fd;       /* Background dla selected items */
+    
+    /* Success - Subtle Medical Green */
+    --success: #059669;           /* Mniej nasycony zielony */
+    --success-dark: #047857;      /* Ciemniejszy zielony */
+    --success-light: #10b981;     /* Jaśniejszy zielony */
+    --success-50: #f0fdf4;        /* Bardzo jasny zielony */
+    --success-100: #dcfce7;       /* Jasny zielony */
+    
+    /* Secondary - Professional Teal */
+    --secondary: #0d9488;         /* Teal zamiast jaskrawego zielonego */
+    --secondary-dark: #0f766e;
+    --secondary-light: #14b8a6;
+    
+    /* Accent - Subtle Purple */
+    --accent: #7c3aed;           /* Fioletowy accent */
+    --accent-light: #8b5cf6;
+    
+    /* === WARM GRAYS - PROFESSIONAL === */
     --white: #ffffff;
-    --gray-50: #f8fafc;
-    --gray-100: #f1f5f9;
-    --gray-200: #e2e8f0;
-    --gray-300: #cbd5e1;
-    --gray-400: #94a3b8;
-    --gray-500: #64748b;
-    --gray-600: #475569;
-    --gray-700: #334155;
-    --gray-800: #1e293b;
-    --gray-900: #0f172a;
+    --gray-50: #fafaf9;          /* Cieplejszy odcień */
+    --gray-100: #f4f4f5;         /* Cieplejszy */
+    --gray-200: #e4e4e7;         /* Cieplejszy */
+    --gray-300: #d4d4d8;         /* Cieplejszy */
+    --gray-400: #a1a1aa;         /* Cieplejszy */
+    --gray-500: #71717a;         /* Cieplejszy */
+    --gray-600: #52525b;         /* Cieplejszy */
+    --gray-700: #3f3f46;         /* Cieplejszy */
+    --gray-800: #27272a;         /* Cieplejszy */
+    --gray-900: #18181b;         /* Cieplejszy */
     
-    /* Semantyczne */
-    --success: #22c55e;
-    --warning: #eab308;
-    --error: #ef4444;
-    --info: #0ea5e9;
+    /* === SEMANTIC COLORS === */
+    --warning: #d97706;          /* Cieplejszy orange */
+    --error: #dc2626;            /* Mniej krzyczący czerwony */
+    --info: #0284c7;             /* Spójny z primary */
     
-    /* Cienie i promienie */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    --radius: 0.5rem;
-    --radius-lg: 1rem;
+    /* === SHADOWS - SUBTLE === */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    
+    /* === RADIUSES - MODERN === */
+    --radius-sm: 6px;
+    --radius: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
     --radius-full: 9999px;
+    
+    /* === SPACING SYSTEM - 8PT GRID === */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    
+    /* === TYPOGRAPHY === */
+    --font-primary: var(--font-barlow);
+	--font-headings: var(--font-lato);
+    --font-mono: 'JetBrains Mono', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 
 /* ===============================
-   RESETOWANIE I PODSTAWY
+   BODY & BASIC ELEMENTS
    =============================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: var(--font-barlow), 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--font-primary);
     background-color: var(--gray-50);
     color: var(--gray-800);
-    line-height: 1.5;
-    min-height: 100vh;
-    display: flex;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-lato), 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--font-primary);
     font-weight: 600;
+    color: var(--gray-900);
+    letter-spacing: -0.025em;
 }
 
 /* ===============================
-   KOMPONENTY WIELOKROTNEGO UŻYTKU
+   BUTTONS - NOWA HIERARCHIA
    =============================== */
-
-/* Przyciski */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
     font-weight: 500;
     border-radius: var(--radius);
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 14px;
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
 }
 
-.btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
 }
 
+/* Primary Button - tylko 1 na ekranie */
 .btn-primary {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: var(--white);
+    box-shadow: var(--shadow-sm);
 }
 
-.btn-primary:hover {
-    background-color: var(--primary-dark);
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
+/* Secondary Button */
 .btn-secondary {
-    background-color: var(--secondary);
-    color: var(--white);
+    background-color: var(--white);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    box-shadow: var(--shadow-xs);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: var(--gray-50);
+    border-color: var(--gray-400);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+/* Button sizes */
+.btn-sm {
+    padding: var(--space-2) var(--space-3);
+    font-size: 13px;
 }
 
 .btn-lg {
-    padding: 12px 24px;
+    padding: var(--space-4) var(--space-6);
     font-size: 16px;
+    font-weight: 600;
 }
 
 .btn-block {
     width: 100%;
 }
 
-/* Odznaki */
+/* ===============================
+   BADGES - SUBTELNIEJSZE
+   =============================== */
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 4px 10px;
+    padding: var(--space-1) var(--space-3);
     border-radius: var(--radius-full);
     font-size: 12px;
     font-weight: 500;
     line-height: 1.2;
+    border: 1px solid transparent;
 }
 
 .badge i {
-    margin-right: 4px;
+    margin-right: var(--space-1);
     font-size: 10px;
 }
 
-.badge-primary { background-color: rgba(59, 130, 246, 0.1); color: var(--primary); }
-.badge-success { background-color: rgba(34, 197, 94, 0.1); color: var(--success); }
-.badge-warning { background-color: rgba(234, 179, 8, 0.1); color: var(--warning); }
-.badge-danger { background-color: rgba(239, 68, 68, 0.1); color: var(--error); }
-
-/* Alerty */
-.alert {
-    padding: 16px;
-    border-radius: var(--radius);
-    margin-bottom: 20px;
-    font-size: 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
+.badge-primary { 
+    background-color: var(--primary-100); 
+    color: var(--primary-700);
+    border-color: var(--primary-200);
 }
 
-.alert-error {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: var(--error);
-    border-left: 4px solid var(--error);
+.badge-success { 
+    background-color: var(--success-100); 
+    color: var(--success-700);
+    border-color: var(--success-200);
 }
 
-.alert-warning {
-    background-color: rgba(234, 179, 8, 0.1);
-    color: var(--warning);
-    border-left: 4px solid var(--warning);
+.badge-warning { 
+    background-color: #fef3c7; 
+    color: #92400e;
+    border-color: #fde68a;
 }
 
-/* Paska postępu */
-.progress {
-    display: flex;
-    height: 0.75rem;
-    overflow: hidden;
-    background-color: var(--gray-200);
-    border-radius: var(--radius-full);
+.badge-danger { 
+    background-color: #fee2e2; 
+    color: #991b1b;
+    border-color: #fecaca;
 }
 
-.progress-bar {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: var(--white);
-    text-align: center;
-    white-space: nowrap;
-    transition: width .6s ease;
+.badge-secondary {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+    border-color: var(--gray-200);
 }
 
 /* ===============================
-   LAYOUT GŁÓWNY
+   CARDS - MODERN DESIGN
    =============================== */
-
-/* Sidebar */
-.sidebar {
-    width: 260px;
-    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: var(--white);
-    height: 100vh;
-    position: fixed;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
-    z-index: 100;
-}
-
-.sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 24px;
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-brand .logo-icon {
-    font-size: 24px;
-    background-color: var(--white);
-    color: var(--primary);
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.sidebar-brand .logo-text {
-    font-weight: 700;
-    font-size: 20px;
-    letter-spacing: -0.5px;
-}
-
-.sidebar-menu {
-    list-style: none;
-    padding: 16px 0;
-}
-
-.sidebar-menu a {
-    display: flex;
-    align-items: center;
-    padding: 12px 24px;
-    color: var(--white);
-    text-decoration: none;
-    opacity: 0.8;
-    transition: all 0.2s ease;
-    border-left: 3px solid transparent;
-}
-
-.sidebar-menu a:hover,
-.sidebar-menu a.active {
-    opacity: 1;
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-menu a.active {
-    border-left: 3px solid var(--white);
-}
-
-.sidebar-menu i {
-    width: 24px;
-    margin-right: 12px;
-    font-size: 18px;
-}
-
-.sidebar-footer {
-    padding: 16px 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: auto;
-    font-size: 14px;
-    opacity: 0.7;
-    text-align: center;
-}
-
-/* Main Content */
-.main-content {
-    flex: 1;
-    margin-left: 260px;
-    padding: 24px;
-    max-width: none;
-    height: auto;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Topbar */
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.page-title h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: 4px;
-}
-
-.page-title p {
-    font-size: 14px;
-    color: var(--gray-500);
-}
-
-.user-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.action-btn {
-    background: var(--white);
-    border: none;
-    padding: 8px;
-    border-radius: var(--radius);
-    color: var(--gray-600);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-sm);
-}
-
-.action-btn:hover {
-    color: var(--primary);
-    background-color: var(--gray-50);
-    box-shadow: var(--shadow);
-    transform: translateY(-1px);
-}
-
-/* User Profile */
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background-color: var(--white);
-    padding: 6px 12px 6px 6px;
-    border-radius: var(--radius-full);
-    box-shadow: var(--shadow-sm);
-}
-
-.user-profile:hover {
-    box-shadow: var(--shadow);
-}
-
-.user-info h5 {
-    font-size: 14px;
-    margin: 0;
-    color: var(--gray-900);
-}
-
-.user-info p {
-    font-size: 12px;
-    color: var(--gray-500);
-    margin: 0;
-}
-
-/* ===============================
-   KARTY I SEKCJE WYNIKÓW
-   =============================== */
-.content-container {
-    display: grid;
-    gap: 24px;
-   }
-
 .card {
     background-color: var(--white);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
     overflow: hidden;
-    transition: box-shadow 0.3s ease;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
+    border-color: var(--gray-300);
 }
 
 .card-header {
-    padding: 20px 24px;
+    padding: var(--space-6);
     border-bottom: 1px solid var(--gray-100);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background-color: var(--gray-50);
 }
 
 .card-title {
@@ -379,46 +253,118 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--gray-900);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
+    margin: 0;
 }
 
 .card-title i {
     color: var(--primary);
+    font-size: 16px;
 }
 
-.card-actions {
+/* ===============================
+   RESULT CARDS - PRZEPROJEKTOWANE
+   =============================== */
+.result-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: fit-content;
     display: flex;
-    gap: 8px;
+    flex-direction: column;
 }
 
-/* Tabs */
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-200);
+}
+
+.result-card.diagnosis { 
+    border-top: 3px solid var(--primary); 
+}
+
+.result-card.diagnosis.selected-diagnosis {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-100), var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.result-card.treatment { 
+    border-top: 3px solid var(--success); 
+}
+
+.result-card.info { 
+    border-top: 3px solid var(--info); 
+}
+
+.result-header {
+    padding: var(--space-5) var(--space-6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--gray-100);
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+}
+
+.result-title {
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--gray-900);
+}
+
+.result-body {
+    padding: var(--space-6);
+    flex-grow: 1;
+}
+
+.result-footer {
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--gray-100);
+    background-color: var(--gray-50);
+}
+
+/* ===============================
+   TABS - NOWOCZESNE
+   =============================== */
 .tabs {
     display: flex;
-    padding: 0 24px;
+    padding: 0 var(--space-6);
     margin-bottom: 0;
     border-bottom: 1px solid var(--gray-200);
-    margin-top: -1px;
+    background-color: var(--white);
 }
 
 .tab {
-    padding: 16px 20px;
+    padding: var(--space-4) var(--space-5);
     cursor: pointer;
     color: var(--gray-600);
     font-weight: 500;
     position: relative;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 14px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin-bottom: -1px;
 }
 
 .tab:hover {
     color: var(--primary);
+    background-color: var(--gray-50);
 }
 
 .tab.active {
     color: var(--primary);
+    background-color: var(--white);
+    border-bottom: 2px solid var(--primary);
 }
 
-.tab.active::after {
+.tab.active::before {
     content: '';
     position: absolute;
     bottom: -1px;
@@ -428,384 +374,16 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--primary);
 }
 
-.tab-content {
-    display: none;
-    padding: 24px;
-    flex: 1;
-    overflow-y: visible;
-	width: 100%;
-}
-
-.tab-content.active {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Result Grid i Cards */
-.result-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-}
-
-.result-card {
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    transition: all 0.3s ease;
-    height: fit-content;
-    display: flex;
-    flex-direction: column;
-}
-
-.result-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-}
-
-.result-card.diagnosis { border-top: 4px solid var(--primary); }
-.result-card.treatment { border-top: 4px solid var(--secondary); }
-.result-card.info { border-top: 4px solid var(--info); }
-
-.result-header {
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--gray-100);
-}
-
-.result-title {
-    font-size: 16px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.result-body {
-    padding: 20px;
-    flex-grow: 1;
-}
-
-.result-section {
-    margin-bottom: 20px;
-}
-
-.result-section:last-child {
-    margin-bottom: 0;
-}
-
-.selected-diagnosis {
-    border-left: 4px solid var(--primary) !important;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1), var(--shadow-md) !important;
-}
-
 /* ===============================
-   PROSTY LAYOUT FORMULARZA - BEZ ZAGNIEŻDŻEŃ
+   PODZAKŁADKI DIAGNOZ - ELEGANCKIE
    =============================== */
-
-/* Główny kontener formularza - PROSTY, PŁASKI */
-.diagnosis-form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    padding: 24px;
-    height: 100%;
-    width: 100%;   
-}
-
-/* Pierwszy wiersz - Wiek i Płeć */
-.form-basic-info {
-    display: grid;
-    grid-template-columns:  1fr 1fr;
-    gap: 32px;
-	margin-bottom: 24px;
-
-}
-/* Drugi wiersz - Objawy podmiotowe i przedmiotowe */
-.form-symptoms-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-	margin-bottom: 24px;
-	width: 100%;
-}
-
-@media (max-width: 768px) {
-    .form-symptoms-section {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-}
-
-
-/* Trzeci wiersz - Wyniki badań i Historia */
-.form-secondary-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-	margin-bottom: 24px;
-	width: 100%;
-}
-
-/* Pole formularza - PROSTE, BEZ OBRAMOWAŃ KONTENERA */
-.form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-	margin-bottom: 16px;
-}
-
-/* Label formularza */
-.form-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--primary-dark);
-    margin-bottom: 4px;
-}
-
-.form-hint {
-    font-size: 12px;
-    color: var(--gray-500);
-    font-weight: 400;
-    font-style: italic;
-    line-height: 1.2;
-}
-
-/* Input i textarea - z obramowaniami */
-.form-input,
-.form-select,
-.form-textarea {
-    width: 100%;
-    padding: 16px 20px;
-    border: 2px solid var(--gray-300);
-    border-radius: var(--radius-lg);
-    font-size: 15px;
-    color: var(--gray-800);
-    transition: all 0.2s ease;
-    background-color: var(--white);
-    box-shadow: var(--shadow-sm);
-    font-family: inherit;
-}
-
-.form-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    background-size: 20px;
-    padding-right: 48px;
-}
-
-.form-textarea {
-    min-height: 120px;
-    max-height: 200px;
-    resize: vertical;
-    line-height: 1.6;
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-    transform: translateY(-1px);
-}
-
-.form-input:hover,
-.form-select:hover,
-.form-textarea:hover {
-    border-color: var(--primary-light);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-}
-
-/* Chipy */
-.chip-container-compact {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-    padding: 12px;
-    background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
-    border-radius: var(--radius-lg);
-    min-height: 48px;
-    align-items: center;
-    border: 1px solid var(--gray-200);
-}
-
-.chip-container-compact:empty {
-    display: none;
-}
-
-.chip-compact {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: var(--white);
-    border-radius: var(--radius-full);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
-}
-
-.chip-compact:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-}
-
-.chip-new {
-    animation: chipFadeIn 0.3s ease-out;
-}
-
-@keyframes chipFadeIn {
-    from { 
-        opacity: 0; 
-        transform: scale(0.8) translateY(10px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: scale(1) translateY(0); 
-    }
-}
-
-.chip-remove {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    background-color: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 50%;
-    color: var(--white);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 10px;
-}
-
-.chip-remove:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    transform: scale(1.2);
-}
-
-/* Edycja chipa */
-.chip-edit-input {
-    background: transparent;
-    border: none;
-    color: var(--white);
-    font-size: 13px;
-    font-weight: 500;
-    min-width: 60px;
-    outline: none;
-}
-
-.chip-edit-input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-/* Przycisk submit */
-.form-submit-section {
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 2px solid var(--gray-200);
-}
-
-/* ===============================
-   RESPONSYWNOŚĆ
-   =============================== */
-
-@media (max-width: 1200px) {
-    .form-basic-info {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .main-content {
-        margin-left: 0;
-        height: auto;  /* ZMIEŃ z 100vh na auto */
-    }
-    
-    .form-basic-info,
-    .form-secondary-content,
-    .form-symptoms-section {  /* DODAJ .form-symptoms-section */
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-    
-    .diagnosis-form-container {
-        gap: 24px;
-        padding: 16px;
-    }
-}
-
-@media (max-width: 576px) {
-    .form-label {
-        font-size: 14px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-    
-    .form-hint {
-        font-size: 11px;
-    }
-    
-    .form-input,
-    .form-select,
-    .form-textarea {
-        padding: 14px 16px;
-        font-size: 14px;
-    }
-}
-
-/* Style dla klikanych kart diagnoz */
-.diagnosis-selectable {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.diagnosis-selectable:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.result-card.diagnosis.selected-diagnosis {
-    border: 3px solid #22c55e;
-    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
-    transform: translateY(-2px);
-}
-
-.result-footer {
-    padding: 16px 20px;
-    border-top: 1px solid var(--gray-100);
-    background-color: var(--gray-50);
-}
-
-/* ===============================
-   STYLE DLA PODZAKŁADEK DIAGNOZ I NOWEGO LAYOUTU
-   =============================== */
-
-/* Podzakładki diagnoz (poziom 2) */
 .diagnosis-subtabs {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 32px;
-    padding: 20px;
-    background-color: var(--gray-50);
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+    padding: var(--space-6);
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
     border-radius: var(--radius-lg);
     border: 1px solid var(--gray-200);
 }
@@ -813,428 +391,183 @@ h1, h2, h3, h4, h5, h6 {
 .diagnosis-subtab {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
     background-color: var(--white);
-    border: 2px solid var(--gray-300);
+    border: 1px solid var(--gray-200);
     border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
     color: var(--gray-700);
     font-size: 14px;
+    box-shadow: var(--shadow-xs);
 }
 
 .diagnosis-subtab:hover {
-    background-color: var(--primary-light);
-    color: var(--white);
-    border-color: var(--primary-light);
+    background-color: var(--primary-50);
+    color: var(--primary-700);
+    border-color: var(--primary-200);
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
 }
 
 .diagnosis-subtab.active {
-    background-color: var(--success);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: var(--white);
-    border-color: var(--success);
-    box-shadow: var(--shadow);
-}
-
-.diagnosis-subtab i {
-    font-size: 16px;
-}
-
-/* Header aktywnej diagnozy */
-.diagnosis-header {
-    margin-bottom: 32px;
-    padding: 24px;
-    background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
-    color: var(--white);
-    border-radius: var(--radius-lg);
+    border-color: var(--primary);
     box-shadow: var(--shadow-md);
 }
 
-.diagnosis-header h2 {
-    margin-bottom: 12px;
-    font-size: 24px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.diagnosis-header p {
-    margin-bottom: 16px;
-    opacity: 0.9;
-    font-size: 16px;
-}
-
-.diagnosis-header .btn {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: var(--white);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(4px);
-}
-
-.diagnosis-header .btn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-1px);
-}
-
-/* Sekcja wyszukiwania ręcznego */
-.manual-search-section {
-    animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.no-diagnoses-section {
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.direct-diagnosis-form .form-group {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Przyciski "Pobierz charakterystykę" */
-.btn-sm {
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-/* Style dla kart leków - dopasowanie do nowego layoutu */
-.drug-card-section {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--gray-100);
-}
-
-.drug-card-section:last-of-type {
-    border-bottom: none;
-}
-
-.drug-section-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--gray-800);
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.drug-section-title i {
-    color: var(--primary);
+.diagnosis-subtab i {
     font-size: 14px;
 }
 
-.drug-section-content {
-    color: var(--gray-700);
-    font-size: 13px;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* Refundacja */
-.refundation-section {
-    background-color: rgba(34, 197, 94, 0.02);
-    border-left: 3px solid var(--success);
-}
-
-.refundation-status {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.copayment-badge {
-    font-size: 12px;
-    color: var(--gray-700);
-    padding: 4px 10px;
-    background-color: var(--white);
-    border-radius: var(--radius);
-    border: 1px solid var(--gray-300);
-}
-
-.refundation-groups {
-    margin-top: 12px;
-}
-
-.refundation-groups strong {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--gray-800);
-    font-size: 13px;
-}
-
-.drug-section-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.drug-section-list li {
-    position: relative;
-    padding: 4px 0 4px 16px;
-    color: var(--gray-700);
-    font-size: 12px;
-    line-height: 1.4;
-    border-bottom: 1px solid var(--gray-100);
-}
-
-.drug-section-list li:last-child {
-    border-bottom: none;
-}
-
-.drug-section-list li::before {
-    content: '•';
-    position: absolute;
-    left: 0;
-    top: 4px;
-    color: var(--success);
-    font-weight: bold;
-    font-size: 12px;
-}
-
-/* Responsywność */
-@media (max-width: 768px) {
-    .diagnosis-subtabs {
-        flex-direction: column;
-        gap: 8px;
-        padding: 16px;
-    }
-    
-    .diagnosis-subtab {
-        width: 100%;
-        justify-content: center;
-        padding: 10px 16px;
-    }
-    
-    .diagnosis-header {
-        padding: 20px 16px;
-    }
-    
-    .diagnosis-header h2 {
-        font-size: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-}
-
-@media (max-width: 576px) {
-    .direct-diagnosis-form .form-group {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .direct-diagnosis-form .form-group > div {
-        width: 100%;
-    }
-    
-    .direct-diagnosis-form button {
-        width: 100%;
-        margin-top: 12px;
-    }
-}
-
-/* ===============================
-   NOWE STYLE DLA ZAKŁADEK I UKŁADU LEKÓW
-   =============================== */
-
-/* Zakładka "Wyszukaj ręcznie" */
+/* Manual search tab - wyróżniona */
 .manual-search-tab {
-    background-color: var(--info) !important;
+    background: linear-gradient(135deg, var(--info) 0%, #0284c7 100%) !important;
     color: var(--white) !important;
     border-color: var(--info) !important;
 }
 
 .manual-search-tab:hover {
-    background-color: #0284c7 !important;
+    background: linear-gradient(135deg, #0284c7 0%, var(--info) 100%) !important;
     border-color: #0284c7 !important;
 }
 
 .manual-search-tab.active {
-    background-color: #0369a1 !important;
+    background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%) !important;
     border-color: #0369a1 !important;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg) !important;
 }
 
-/* Zawartość zakładki "Wyszukaj ręcznie" */
-.manual-search-content {
-    padding: 32px 24px;
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    margin-bottom: 32px;
-}
-
-.manual-search-header {
-    text-align: center;
-    margin-bottom: 32px;
-}
-
-.manual-search-header h2 {
-    color: var(--info);
-    margin-bottom: 12px;
-    font-size: 24px;
-    font-weight: 700;
+/* ===============================
+   PROGRESS BARS - NOWOCZESNE
+   =============================== */
+.progress {
     display: flex;
-    align-items: center;
+    height: 8px;
+    overflow: hidden;
+    background-color: var(--gray-200);
+    border-radius: var(--radius-full);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    gap: 12px;
-}
-
-.manual-search-header p {
-    color: var(--gray-600);
-    font-size: 16px;
-}
-
-/* NOWE STYLE ZAKŁADEK P3 i P4 - NIEBIESKIE JAK NA SCREENIE */
-
-/* P3 - Zakładki linii leczenia */
-.treatment-tab {
-    background-color: var(--primary);
     color: var(--white);
-    border: 2px solid var(--white);
-    border-radius: var(--radius-lg);
-    padding: 12px 20px;
-    margin-right: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    font-size: 14px;
-    box-shadow: var(--shadow-sm);
+    text-align: center;
+    white-space: nowrap;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius-full);
 }
 
-.treatment-tab:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
+/* Processing progress bar */
+.progress-bar.processing {
+    background: linear-gradient(90deg, 
+        var(--primary) 0%, 
+        var(--primary-light) 50%,
+        var(--primary) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
 }
 
-.treatment-tab.active {
-    background-color: var(--primary-dark);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 
-.treatment-tab-name {
-    font-weight: 600;
-}
-
-/* P4 - Zakładki schematów farmakologicznych */
-.schema-tab {
-    background-color: var(--primary);
-    color: var(--white);
-    border: 2px solid var(--white);
-    border-radius: var(--radius-lg);
-    padding: 10px 16px;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    font-size: 13px;
-    box-shadow: var(--shadow-sm);
-    display: inline-block;
-}
-
-.schema-tab:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-}
-
-.schema-tab.active {
-    background-color: var(--primary-dark);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-}
-
-/* Kontenery dla zakładek */
-.treatment-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 24px;
-    padding: 16px;
-    background-color: var(--gray-50);
-    border-radius: var(--radius-lg);
-}
-
-.schema-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-    padding: 12px;
-    background-color: var(--gray-50);
+/* ===============================
+   ALERTS - PROFESJONALNE
+   =============================== */
+.alert {
+    padding: var(--space-4);
     border-radius: var(--radius);
-}
-
-/* NOWY UKŁAD LEKÓW - POZIOMY */
-
-/* Kontener główny dla poziomego układu leków */
-.drugs-horizontal-container {
+    margin-bottom: var(--space-5);
+    font-size: 14px;
     display: flex;
-    flex-direction: column;
-    gap: 32px;
+    align-items: flex-start;
+    gap: var(--space-3);
+    border: 1px solid transparent;
 }
 
-/* Wiersz dla jednego leku głównego + alternatywy */
-.drug-row-horizontal {
+.alert-error {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border-color: #fca5a5;
+    border-left: 4px solid var(--error);
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border-color: #f9c74f;
+    border-left: 4px solid var(--warning);
+}
+
+.alert-info {
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+    color: var(--primary-700);
+    border-color: var(--primary-200);
+    border-left: 4px solid var(--primary);
+}
+
+/* ===============================
+   FORMS - ULEPSZONE
+   =============================== */
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius);
+    font-size: 15px;
+    color: var(--gray-800);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: var(--white);
+    box-shadow: var(--shadow-xs);
+    font-family: var(--font-primary);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-100);
+    transform: translateY(-1px);
+}
+
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+    border-color: var(--gray-400);
+    box-shadow: var(--shadow-sm);
+}
+
+.form-label {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.drug-row-title {
-    color: var(--primary);
-    font-size: 18px;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 15px;
     font-weight: 600;
-    margin: 0;
-    padding: 12px 0;
-    border-bottom: 2px solid var(--gray-200);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    color: var(--gray-900);
+    margin-bottom: var(--space-2);
 }
 
-.drug-row-title i {
-    color: var(--secondary);
-}
-
-/* Poziomy układ kart leków */
-.drug-cards-horizontal {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-    align-items: start;
-	width: 100%;
-}
-
-/* Zachowaj istniejące style kart leków, ale popraw responsywność */
+/* ===============================
+   DRUG CARDS - PRZEPROJEKTOWANE
+   =============================== */
 .drug-card {
     background-color: var(--white);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     min-height: 200px;
@@ -1243,6 +576,7 @@ h1, h2, h3, h4, h5, h6 {
 .drug-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--gray-300);
 }
 
 .drug-card-main {
@@ -1253,230 +587,137 @@ h1, h2, h3, h4, h5, h6 {
     border-left: 4px solid var(--accent);
 }
 
-//* Stylizacja linków - NOWA WERSJA */
-.source-link,
-.drug-link {
-    color: var(--gray-600);
-    text-decoration: none;
-    font-style: italic;
-    font-size: 13px;
-    font-weight: 400;
-    transition: all 0.2s ease;
-    border-bottom: 1px dotted var(--gray-400);
-    display: inline;
-    padding: 0;
-    background: none;
-    border-radius: 0;
-    box-shadow: none;
-}
-
-.source-link:hover,
-.drug-link:hover {
-    color: var(--primary);
-    border-bottom: 1px solid var(--primary);
-    background: none;
-    transform: none;
-    box-shadow: none;
-}
-
-.copy-url-btn {
-    margin-left: 8px;
-    padding: 2px 6px;
-    background-color: var(--gray-100);
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius);
-    color: var(--gray-500);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 10px;
-    font-style: normal;
-}
-
-.copy-url-btn:hover {
-    background-color: var(--gray-200);
-    color: var(--primary);
-    border-color: var(--gray-400);
-    transform: none;
-}
-
-.source-info {
-    margin-top: 12px;
-    padding: 12px;
-    background-color: var(--gray-50);
-    border-radius: var(--radius);
-    border-left: 3px solid var(--primary);
-    font-size: 13px;
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 4px;
-    line-height: 1.5;
-}
-
-.source-info i {
-    color: var(--primary);
-    margin-right: 6px;
-    margin-top: 2px;
-    flex-shrink: 0;
-}
-
-.source-text {
-    color: var(--gray-600);
-    font-style: italic;
-    font-size: 13px;
-}
-/* ===============================
-   WYMUSZENIE PEŁNEJ SZEROKOŚCI I STYLIZACJA LINKÓW
-   =============================== */
-
-/* Wymuszenie pełnej szerokości */
-.main-content {
-    width: 100%;
-    max-width: none;
-    min-width: 1200px; /* Wymusza minimum szerokość */
-}
-
-.content-container {
-    width: 100%;
-    max-width: none;
-}
-
-.card {
-    width: 100%;
-    max-width: none;
-}
-
-.tab-content {
-    width: 100%;
-    max-width: none;
-}
-
-/* Stylizacja linków */
-.source-link,
-.drug-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: var(--white);
-    text-decoration: none;
-    border-radius: var(--radius);
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
-}
-
-.source-link:hover,
-.drug-link:hover {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-    color: var(--white);
-}
-
-.copy-url-btn {
-    margin-left: 8px;
-    padding: 4px 8px;
-    background-color: var(--gray-200);
-    border: none;
-    border-radius: var(--radius);
-    color: var(--gray-600);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 11px;
-}
-
-.copy-url-btn:hover {
-    background-color: var(--gray-300);
-    color: var(--primary);
-    transform: translateY(-1px);
-}
-
-.source-info {
-    margin-top: 12px;
-    padding: 12px;
-    background-color: var(--gray-50);
-    border-radius: var(--radius);
-    border-left: 3px solid var(--primary);
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.source-info i {
-    color: var(--primary);
-    margin-right: 4px;
-}
-
-.source-text {
-    color: var(--gray-700);
-    font-style: italic;
-}
-
-/* ===============================
-   POPRAWKA PADDINGÓW W KARTACH LEKÓW
-   =============================== */
-
-/* Zwiększenie paddingu w kartach leków */
-.drug-card {
-    background-color: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    min-height: 200px;
-    padding: 0; /* Reset padding */
-}
-
 .drug-card-header {
-    padding: 20px 24px 16px 24px; /* Zwiększony padding */
-}
-
-.drug-card-section {
-    padding: 16px 24px; /* Zwiększony padding z 12px 16px */
+    padding: var(--space-6);
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
     border-bottom: 1px solid var(--gray-100);
 }
 
-.drug-card-footer {
-    padding: 16px 24px; /* Zwiększony padding */
-    margin-top: auto;
+.drug-card-section {
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--gray-100);
 }
 
-/* Poprawka dla tytułów w kartach */
-.drug-card-title h4 {
-    margin: 0 0 8px 0;
-    padding-right: 12px; /* Dodatkowy odstęp od prawej */
+.drug-card-section:last-of-type {
+    border-bottom: none;
 }
 
-.drug-section-content {
-    color: var(--gray-700);
-    font-size: 13px;
-    line-height: 1.6; /* Zwiększony line-height */
-    margin: 0;
-    padding-right: 8px; /* Dodatkowy odstęp od prawej */
+.drug-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--gray-900);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
 }
 
-/* Poprawka dla badge'ów żeby nie nachodzily */
-.drug-type-badge,
-.alternative-badge {
-    flex-shrink: 0; /* Nie pozwól się zmniejszać */
-    margin-left: 8px;
+.drug-section-title i {
+    color: var(--primary);
+    font-size: 14px;
 }
 
-/* Zwiększenie odstępów w sekcji refundacji */
-.refundation-section {
-    background-color: rgba(34, 197, 94, 0.02);
-    border-left: 3px solid var(--success);
-    padding: 20px 24px !important; /* Wymuś większy padding */
+/* ===============================
+   SIDEBAR - ELEGANCKI
+   =============================== */
+.sidebar {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+    box-shadow: var(--shadow-xl);
 }
 
-.refundation-groups {
-    margin-top: 16px; /* Zwiększony margines */
-    padding-right: 12px; /* Dodatkowy odstęp od prawej */
+.sidebar-brand {
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.sidebar-brand .logo-icon {
+    background: linear-gradient(135deg, var(--white) 0%, var(--gray-100) 100%);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ===============================
+   MICROINTERACTIONS
+   =============================== */
+.interactive-element {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-element:hover {
+    transform: translateY(-1px);
+}
+
+/* Loading animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading-skeleton {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===============================
+   RESPONSYWNOŚĆ
+   =============================== */
+@media (max-width: 768px) {
+    .diagnosis-subtabs {
+        flex-direction: column;
+        gap: var(--space-2);
+        padding: var(--space-4);
+    }
+    
+    .diagnosis-subtab {
+        width: 100%;
+        justify-content: center;
+        padding: var(--space-3) var(--space-4);
+    }
+    
+    .drug-cards-horizontal {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-basic-info,
+    .form-symptoms-section,
+    .form-secondary-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+}
+
+/* ===============================
+   AKCESORIA
+   =============================== */
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+    background-color: var(--primary-200);
+    color: var(--primary-900);
+}
+
+/* Focus outline */
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
