@@ -1052,3 +1052,280 @@ h1, h2, h3, h4, h5, h6 {
         margin-top: 12px;
     }
 }
+
+/* ===============================
+   NOWE STYLE DLA ZAKŁADEK I UKŁADU LEKÓW
+   =============================== */
+
+/* Zakładka "Wyszukaj ręcznie" */
+.manual-search-tab {
+    background-color: var(--info) !important;
+    color: var(--white) !important;
+    border-color: var(--info) !important;
+}
+
+.manual-search-tab:hover {
+    background-color: #0284c7 !important;
+    border-color: #0284c7 !important;
+}
+
+.manual-search-tab.active {
+    background-color: #0369a1 !important;
+    border-color: #0369a1 !important;
+    box-shadow: var(--shadow-md);
+}
+
+/* Zawartość zakładki "Wyszukaj ręcznie" */
+.manual-search-content {
+    padding: 32px 24px;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 32px;
+}
+
+.manual-search-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.manual-search-header h2 {
+    color: var(--info);
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.manual-search-header p {
+    color: var(--gray-600);
+    font-size: 16px;
+}
+
+/* NOWE STYLE ZAKŁADEK P3 i P4 - NIEBIESKIE JAK NA SCREENIE */
+
+/* P3 - Zakładki linii leczenia */
+.treatment-tab {
+    background-color: var(--primary);
+    color: var(--white);
+    border: 2px solid var(--white);
+    border-radius: var(--radius-lg);
+    padding: 12px 20px;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: var(--shadow-sm);
+}
+
+.treatment-tab:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.treatment-tab.active {
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.treatment-tab-name {
+    font-weight: 600;
+}
+
+/* P4 - Zakładki schematów farmakologicznych */
+.schema-tab {
+    background-color: var(--primary);
+    color: var(--white);
+    border: 2px solid var(--white);
+    border-radius: var(--radius-lg);
+    padding: 10px 16px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 13px;
+    box-shadow: var(--shadow-sm);
+    display: inline-block;
+}
+
+.schema-tab:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.schema-tab.active {
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+/* Kontenery dla zakładek */
+.treatment-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: var(--gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.schema-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: var(--gray-50);
+    border-radius: var(--radius);
+}
+
+/* NOWY UKŁAD LEKÓW - POZIOMY */
+
+/* Kontener główny dla poziomego układu leków */
+.drugs-horizontal-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Wiersz dla jednego leku głównego + alternatywy */
+.drug-row-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.drug-row-title {
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    padding: 12px 0;
+    border-bottom: 2px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drug-row-title i {
+    color: var(--secondary);
+}
+
+/* Poziomy układ kart leków */
+.drug-cards-horizontal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+/* Zachowaj istniejące style kart leków, ale popraw responsywność */
+.drug-card {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+}
+
+.drug-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.drug-card-main {
+    border-left: 4px solid var(--primary);
+}
+
+.drug-card-alternative {
+    border-left: 4px solid var(--accent);
+}
+
+/* Responsywność dla układu poziomego */
+@media (max-width: 1200px) {
+    .drug-cards-horizontal {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .drug-cards-horizontal {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .drugs-horizontal-container {
+        gap: 24px;
+    }
+    
+    .drug-row-title {
+        font-size: 16px;
+        padding: 10px 0;
+    }
+    
+    .treatment-tabs {
+        padding: 12px;
+    }
+    
+    .treatment-tab {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    .schema-tabs {
+        padding: 8px;
+    }
+    
+    .schema-tab {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .treatment-tabs {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .treatment-tab {
+        width: 100%;
+        text-align: center;
+        margin-right: 0;
+    }
+    
+    .schema-tabs {
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .schema-tab {
+        width: 100%;
+        text-align: center;
+        margin-right: 0;
+        margin-bottom: 0;
+    }
+    
+    .manual-search-content {
+        padding: 20px 16px;
+    }
+    
+    .manual-search-header h2 {
+        font-size: 20px;
+        flex-direction: column;
+        gap: 8px;
+    }
+}

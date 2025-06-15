@@ -14,7 +14,9 @@ export default function TreatmentTab({
   isLoading
 }) {
   const [directDiagnosisInput, setDirectDiagnosisInput] = useState('');
-  const [showManualSearch, setShowManualSearch] = useState(false);
+  
+  // NOWY STATE dla zakładki "Wyszukaj ręcznie"
+  const [isManualSearchActive, setIsManualSearchActive] = useState(false);
   
   // State dla rozwijanych sekcji (usunięte ChPL, zostaje tylko refundacja)
   const [expandedSections, setExpandedSections] = useState({});
@@ -22,9 +24,11 @@ export default function TreatmentTab({
   // Obsługa formularza bezpośredniej diagnozy
   const handleDirectSubmit = (e) => {
     e.preventDefault();
-    onDirectDiagnosisSubmit(directDiagnosisInput);
-    setDirectDiagnosisInput('');
-    setShowManualSearch(false);
+    if (directDiagnosisInput.trim()) {
+      onDirectDiagnosisSubmit(directDiagnosisInput);
+      setDirectDiagnosisInput('');
+      setIsManualSearchActive(false); // Powrót do normalnych zakładek po wyszukaniu
+    }
   };
 
   // Funkcja do znalezienia charakterystyki leku
@@ -253,15 +257,15 @@ export default function TreatmentTab({
                     <i className="fas fa-pills"></i> Farmakologia
                   </h4>
                   
-                  {/* Leki w układzie pionowym */}
-                  <div className="drugs-vertical-container">
+                  {/* ZMIANA: Leki w układzie poziomym - każdy lek główny z alternatywami w rzędzie */}
+                  <div className="drugs-horizontal-container">
                     {getCurrentSchema().leki.map((lek, lekIdx) => (
-                      <div key={`drug-row-${lekIdx}`} className="drug-row">
+                      <div key={`drug-row-${lekIdx}`} className="drug-row-horizontal">
                         <h5 className="drug-row-title">
                           <i className="fas fa-prescription-bottle-alt"></i> Lek {lekIdx + 1}
                         </h5>
                         
-                        <div className="drug-cards-grid">
+                        <div className="drug-cards-horizontal">
                           {/* Lek główny */}
                           <div className="drug-card drug-card-main">
                             <div className="drug-card-header">
@@ -285,7 +289,7 @@ export default function TreatmentTab({
                             {renderDrugInfo(lek.nazwa, false, diagnosisIndex)}
                           </div>
                           
-                          {/* Alternatywy */}
+                          {/* Alternatywy - w tym samym rzędzie */}
                           {lek.alternatywy && lek.alternatywy.length > 0 && (
                             <>
                               {lek.alternatywy.map((alt, altIdx) => (
@@ -402,22 +406,72 @@ export default function TreatmentTab({
       {/* PRZYPADEK 2: Mamy diagnozy - podzakładki + wyniki */}
       {treatmentDiagnoses.length > 0 && (
         <div className="diagnoses-sections">
-          {/* Podzakładki diagnoz (POZIOM 2) */}
+          {/* NOWE: Podzakładki diagnoz (POZIOM 2) + zakładka "Wyszukaj ręcznie" */}
           <div className="diagnosis-subtabs">
             {treatmentDiagnoses.map((diagnosis, index) => (
               <button
                 key={index}
-                className={`diagnosis-subtab ${activeTreatmentIndex === index ? 'active' : ''}`}
-                onClick={() => onTreatmentTabChange(index)}
+                className={`diagnosis-subtab ${!isManualSearchActive && activeTreatmentIndex === index ? 'active' : ''}`}
+                onClick={() => {
+                  setIsManualSearchActive(false);
+                  onTreatmentTabChange(index);
+                }}
               >
                 <i className="fas fa-stethoscope"></i>
                 {diagnosis.name}
               </button>
             ))}
+            
+            {/* NOWA ZAKŁADKA: Wyszukaj ręcznie */}
+            <button
+              className={`diagnosis-subtab manual-search-tab ${isManualSearchActive ? 'active' : ''}`}
+              onClick={() => setIsManualSearchActive(true)}
+            >
+              <i className="fas fa-search-plus"></i>
+              Wyszukaj ręcznie
+            </button>
           </div>
 
-          {/* Wyniki dla aktywnej diagnozy */}
-          {treatmentDiagnoses[activeTreatmentIndex] && (
+          {/* NOWE: Zawartość zakładki "Wyszukaj ręcznie" */}
+          {isManualSearchActive && (
+            <div className="manual-search-content">
+              <div className="manual-search-header">
+                <h2>
+                  <i className="fas fa-search-plus"></i> 
+                  Wyszukaj linie leczenia ręcznie
+                </h2>
+                <p>Wprowadź nazwę diagnozy, aby uzyskać dodatkowe schematy leczenia.</p>
+              </div>
+
+              <form onSubmit={handleDirectSubmit} className="direct-diagnosis-form">
+                <div className="form-group" style={{ display: 'flex', gap: '16px', alignItems: 'end', marginBottom: '0' }}>
+                  <div style={{ flex: 1 }}>
+                    <label htmlFor="manualDiagnosis" className="form-label">Nazwa diagnozy</label>
+                    <input
+                      type="text"
+                      id="manualDiagnosis"
+                      className="form-input"
+                      placeholder="Np. Zapalenie płuc, Cukrzyca typu 2..."
+                      value={directDiagnosisInput}
+                      onChange={(e) => setDirectDiagnosisInput(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                    disabled={isLoading || !directDiagnosisInput.trim()}
+                  >
+                    <i className="fas fa-search"></i> 
+                    {isLoading ? 'Wyszukiwanie...' : 'Wyszukaj schematy'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Wyniki dla aktywnej diagnozy - tylko gdy nie jest aktywna zakładka "Wyszukaj ręcznie" */}
+          {!isManualSearchActive && treatmentDiagnoses[activeTreatmentIndex] && (
             <div className="active-diagnosis-results">
               <div className="diagnosis-header">
                 <h2>
@@ -425,52 +479,7 @@ export default function TreatmentTab({
                   Rekomendacje dla: {treatmentDiagnoses[activeTreatmentIndex].name}
                 </h2>
                 <p>Schematy leczenia przygotowane na podstawie najnowszych wytycznych medycznych.</p>
-                
-                {/* Przycisk "Wyszukaj linie leczenia ręcznie" */}
-                <button 
-                  className="btn btn-secondary"
-                  onClick={() => setShowManualSearch(!showManualSearch)}
-                >
-                  <i className="fas fa-search-plus"></i> 
-                  Wyszukaj linie leczenia ręcznie
-                </button>
               </div>
-
-              {/* Formularz wyszukiwania ręcznego - pokazywany na żądanie */}
-              {showManualSearch && (
-                <div className="manual-search-section" style={{marginTop: '20px', padding: '20px', backgroundColor: 'var(--gray-50)', borderRadius: 'var(--radius-lg)'}}>
-                  <form onSubmit={handleDirectSubmit} className="direct-diagnosis-form">
-                    <div className="form-group" style={{ display: 'flex', gap: '16px', alignItems: 'end', marginBottom: '0' }}>
-                      <div style={{ flex: 1 }}>
-                        <label htmlFor="manualDiagnosis" className="form-label">Wyszukaj dodatkową diagnozę</label>
-                        <input
-                          type="text"
-                          id="manualDiagnosis"
-                          className="form-input"
-                          placeholder="Np. Zapalenie płuc, Cukrzyca typu 2..."
-                          value={directDiagnosisInput}
-                          onChange={(e) => setDirectDiagnosisInput(e.target.value)}
-                          disabled={isLoading}
-                        />
-                      </div>
-                      <button 
-                        type="submit" 
-                        className="btn btn-primary"
-                        disabled={isLoading || !directDiagnosisInput.trim()}
-                      >
-                        <i className="fas fa-search"></i> Wyszukaj
-                      </button>
-                      <button 
-                        type="button" 
-                        className="btn btn-secondary"
-                        onClick={() => setShowManualSearch(false)}
-                      >
-                        Anuluj
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )}
 
               {/* Schematy leczenia dla aktywnej diagnozy */}
               {renderTreatmentSchemas(treatmentDiagnoses[activeTreatmentIndex], activeTreatmentIndex)}
