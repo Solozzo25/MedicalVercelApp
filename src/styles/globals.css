@@ -8,46 +8,46 @@
     
     /* === NOWA PALETA - MEDICAL PROFESSIONAL === */
     /* Primary - Professional Medical Blue */
-    --primary: #0369a1;           /* Zmienione z #3b82f6 */
-    --primary-dark: #075985;      /* Zmienione z #2563eb */
-    --primary-light: #0ea5e9;     /* Zmienione z #60a5fa */
-    --primary-50: #f0f9ff;        /* Nowe */
-    --primary-100: #e0f2fe;       /* Nowe */
-    --primary-200: #bae6fd;       /* Nowe */
+	--primary: #1e40af;
+    --primary-dark: #1e3a8a;
+    --primary-light: #3b82f6;
+    --primary-50: #eff6ff;
+    --primary-100: #dbeafe;
+    --primary-200: #bfdbfe;
     
-    /* Secondary - Professional Teal */
-    --secondary: #0d9488;         /* Zmienione z #10b981 */
-    --secondary-dark: #0f766e;    /* Nowe */
-    --secondary-light: #14b8a6;   /* Nowe */
+   /* === SUCCESS - ŻYWY ZIELONY === */
+    --success: #16a34a;
+    --success-dark: #15803d;
+    --success-light: #22c55e;
+    --success-50: #f0fdf4;
+    --success-100: #dcfce7;
     
-    /* Success - Subtle Medical Green */
-    --success: #059669;           /* Zmienione z #22c55e */
-    --success-dark: #047857;      /* Nowe */
-    --success-light: #10b981;     /* Nowe */
-    --success-50: #f0fdf4;        /* Nowe */
-    --success-100: #dcfce7;       /* Nowe */
+    /* === SECONDARY - ENERGICZNY TEAL === */
+    --secondary: #0891b2;
+    --secondary-dark: #0e7490;
+    --secondary-light: #06b6d4;
     
-    /* Accent - Subtle Purple */
-    --accent: #7c3aed;            /* Zmienione z #8b5cf6 */
-    --accent-light: #a78bfa;
+    /* === ACCENT - ŻYWY FIOLET === */
+    --accent: #7c3aed;
+    --accent-light: #a855f7;
     
-    /* === WARM GRAYS - PROFESSIONAL === */
+    /* === GRAYS - CIEPLEJSZE ALE KONTRASTOWE === */
     --white: #ffffff;
-    --gray-50: #fafaf9;          /* Zmienione z #f8fafc - cieplejszy */
-    --gray-100: #f4f4f5;         /* Zmienione z #f1f5f9 - cieplejszy */
-    --gray-200: #e4e4e7;         /* Zmienione z #e2e8f0 - cieplejszy */
-    --gray-300: #d4d4d8;         /* Zmienione z #cbd5e1 - cieplejszy */
-    --gray-400: #a1a1aa;         /* Zmienione z #94a3b8 - cieplejszy */
-    --gray-500: #71717a;         /* Zmienione z #64748b - cieplejszy */
-    --gray-600: #52525b;         /* Zmienione z #475569 - cieplejszy */
-    --gray-700: #3f3f46;         /* Zmienione z #334155 - cieplejszy */
-    --gray-800: #27272a;         /* Zmienione z #1e293b - cieplejszy */
-    --gray-900: #18181b;         /* Zmienione z #0f172a - cieplejszy */
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
     
-    /* === SEMANTIC COLORS === */
-    --warning: #d97706;          /* Zmienione z #eab308 - cieplejszy */
-    --error: #dc2626;            /* Zmienione z #ef4444 - mniej krzyczący */
-    --info: #0284c7;             /* Zmienione z #0ea5e9 - spójny z primary */
+    /* === SEMANTIC - ŻYWSZE KOLORY === */
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
     
     /* === SHADOWS - SUBTLE === */
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
