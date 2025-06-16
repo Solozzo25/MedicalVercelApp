@@ -175,8 +175,8 @@ export default function TabContainer() {
         setLoadingMessage(`Pobieranie charakterystyk dla ${drugNames.length} leków`);
         setLoadingProgress(60);
         
-        console.log("📋 REQUEST 2: Pobieranie charakterystyk leków");
-        const characteristicsResponse = await fetch('/api/drug-characteristics', {
+		console.log("📋 REQUEST 2: Pobieranie refundacji leków (grupowanie po 4)");
+        const refundationResponse = await fetch('/api/drug-refundation', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -184,12 +184,12 @@ export default function TabContainer() {
           body: JSON.stringify({ drugs: drugNames })
         });
 
-        if (characteristicsResponse.ok) {
-          const characteristicsData = await characteristicsResponse.json();
-          console.log("✅ Otrzymano charakterystyki leków:", characteristicsData);
-          characteristicsResult = characteristicsData.characteristics;
+        if (refundationResponse.ok) {
+          const refundationData = await refundationResponse.json();
+          console.log("✅ Otrzymano refundacje leków:", refundationData);
+          console.log("💰 Oszczędność API:", refundationData.summary?.oszczędność || "brak danych");
+          characteristicsResult = refundationData.refundations;
         }
-      }
 
       // NOWA LOGIKA: Dodaj diagnozę do tablicy zamiast nadpisywać
       const newDiagnosis = {
@@ -291,7 +291,7 @@ export default function TabContainer() {
         setLoadingMessage(`Pobieranie charakterystyk dla ${drugNames.length} leków`);
         setLoadingProgress(60);
         
-        const characteristicsResponse = await fetch('/api/drug-characteristics', {
+        const refundationResponse = await fetch('/api/drug-refundation', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -299,12 +299,11 @@ export default function TabContainer() {
           body: JSON.stringify({ drugs: drugNames })
         });
 
-        if (characteristicsResponse.ok) {
-          const characteristicsData = await characteristicsResponse.json();
-          console.log("✅ Otrzymano charakterystyki leków (bezpośrednie):", characteristicsResult);
-          characteristicsResult = characteristicsResult.characteristics;
+        if (refundationResponse.ok) {
+          const refundationData = await refundationResponse.json();
+          console.log("✅ Otrzymano refundacje leków (bezpośrednie):", refundationData);
+          characteristicsResult = refundationData.refundations;
         }
-      }
 
       // NOWA LOGIKA: Dodaj bezpośrednią diagnozę do tablicy
       const newDiagnosis = {

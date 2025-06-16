@@ -2274,3 +2274,242 @@ th {
 .result-card:hover {
    will-change: auto;
 }
+
+/* ===============================
+  MODAL CHARAKTERYSTYK LEKU
+  =============================== */
+
+/* Modal overlay - używa istniejącego */
+.drug-characteristics-modal {
+  max-width: 800px;
+  width: 95%;
+  max-height: 90vh;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--gray-500);
+  font-size: 20px;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  color: var(--error);
+  background-color: var(--gray-100);
+}
+
+/* Loading state */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--gray-200);
+  border-top: 3px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Characteristics content */
+.characteristics-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.characteristics-section {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--primary);
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+}
+
+.characteristics-section .section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.characteristics-section .section-title.danger {
+  color: var(--error);
+}
+
+.characteristics-section .section-title.danger i {
+  color: var(--error);
+}
+
+.characteristics-section .section-title.warning {
+  color: var(--warning);
+}
+
+.characteristics-section .section-title.warning i {
+  color: var(--warning);
+}
+
+.characteristics-section .section-title i {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+/* Lista charakterystyk */
+.characteristics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.characteristics-list li {
+  position: relative;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  line-height: 1.6;
+  transition: all 0.2s ease;
+}
+
+.characteristics-list li:hover {
+  border-color: var(--gray-300);
+  box-shadow: var(--shadow-sm);
+}
+
+.characteristics-list li::before {
+  content: '•';
+  position: absolute;
+  left: var(--space-3);
+  top: var(--space-3);
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.characteristics-list li {
+  padding-left: var(--space-8);
+}
+
+/* Sekcja przeciwwskazań - czerwone akcenty */
+.characteristics-section:has(.section-title.danger) {
+  border-left-color: var(--error);
+  background: linear-gradient(135deg, #fef2f2 0%, var(--white) 100%);
+}
+
+.characteristics-section:has(.section-title.danger) .characteristics-list li::before {
+  content: '⚠';
+  color: var(--error);
+}
+
+/* Sekcja uwag - żółte akcenty */
+.characteristics-section:has(.section-title.warning) {
+  border-left-color: var(--warning);
+  background: linear-gradient(135deg, #fffbeb 0%, var(--white) 100%);
+}
+
+.characteristics-section:has(.section-title.warning) .characteristics-list li::before {
+  content: '⚡';
+  color: var(--warning);
+}
+
+/* Przycisk PDF */
+.pdf-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+  color: var(--white);
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.pdf-link-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, var(--error) 100%);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  color: var(--white);
+}
+
+.pdf-link-btn i {
+  font-size: 13px;
+}
+
+/* Responsywność modala */
+@media (max-width: 768px) {
+  .drug-characteristics-modal {
+    width: 98%;
+    max-height: 95vh;
+    margin: var(--space-2);
+  }
+  
+  .characteristics-section {
+    padding: var(--space-4);
+  }
+  
+  .characteristics-section .section-title {
+    font-size: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  
+  .characteristics-list li {
+    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-6);
+    font-size: 14px;
+  }
+}
+
+/* Animacja pojawiania się modala */
+.modal-overlay {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.drug-characteristics-modal {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

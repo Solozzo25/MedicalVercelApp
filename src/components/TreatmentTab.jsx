@@ -17,6 +17,9 @@ export default function TreatmentTab({
   
   // NOWY STATE dla zakładki "Wyszukaj ręcznie"
   const [isManualSearchActive, setIsManualSearchActive] = useState(false);
+  const [selectedDrugForCharacteristics, setSelectedDrugForCharacteristics] = useState(null);
+  const [characteristicsLoading, setCharacteristicsLoading] = useState(false);
+  const [characteristicsData, setCharacteristicsData] = useState(null);
   
   // State dla rozwijanych sekcji (usunięte ChPL, zostaje tylko refundacja)
   const [expandedSections, setExpandedSections] = useState({});
@@ -60,18 +63,63 @@ export default function TreatmentTab({
     return 'badge-secondary';
   };
 
+// NOWA FUNKCJA: Obsługa kliknięcia w przycisk charakterystyk
+  const handleCharacteristicsClick = async (drugName) => {
+    console.log(`🔍 Pobieranie charakterystyki dla: ${drugName}`);
+    setSelectedDrugForCharacteristics(drugName);
+    setCharacteristicsLoading(true);
+    setCharacteristicsData(null);
+
+    try {
+      const response = await fetch('/api/single-drug-characteristics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ drugName })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Błąd API: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(`✅ Otrzymano charakterystykę dla ${drugName}:`, data);
+      setCharacteristicsData(data);
+
+    } catch (error) {
+      console.error(`❌ Błąd pobierania charakterystyki dla ${drugName}:`, error);
+      setCharacteristicsData({
+        error: true,
+        message: error.message || 'Wystąpił błąd podczas pobierania charakterystyki'
+      });
+    } finally {
+      setCharacteristicsLoading(false);
+    }
+  };
+
+  // NOWA FUNKCJA: Zamknięcie modala
+  const handleCloseCharacteristicsModal = () => {
+    setSelectedDrugForCharacteristics(null);
+    setCharacteristicsData(null);
+    setCharacteristicsLoading(false);
+  };
+
   // UPROSZCZONA funkcja renderowania charakterystyk - TYLKO REFUNDACJA
   const renderDrugInfo = (drugName, isAlternative = false, diagnosisIndex = activeTreatmentIndex) => {
     const characteristics = findDrugCharacteristics(drugName, diagnosisIndex);
     
     if (!characteristics || characteristics.status !== 'dostępny') {
       return (
-        <div className="drug-card-section">
-          <button className="btn btn-secondary btn-sm" disabled>
-            <i className="fas fa-file-medical"></i> Pobierz charakterystykę
+		<div className="drug-card-section">
+          <button 
+            className="btn btn-primary btn-sm" 
+            onClick={() => handleCharacteristicsClick(drugName)}
+          >
+            <i className="fas fa-file-medical"></i> Zobacz charakterystykę
           </button>
           <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
-            Brak danych o leku
+            Wskazania, przeciwwskazania, uwagi specjalne
           </p>
         </div>
       );
@@ -485,6 +533,109 @@ export default function TreatmentTab({
               {renderTreatmentSchemas(treatmentDiagnoses[activeTreatmentIndex], activeTreatmentIndex)}
             </div>
           )}
+        </div>
+      )}
+    /* MODAL CHARAKTERYSTYK LEKU */
+      {selectedDrugForCharacteristics && (
+        <div className="modal-overlay" onClick={handleCloseCharacteristicsModal}>
+          <div className="modal-content drug-characteristics-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">
+                <i className="fas fa-pills"></i>
+                Charakterystyka leku: {selectedDrugForCharacteristics}
+              </div>
+              <button 
+                className="modal-close-btn"
+                onClick={handleCloseCharacteristicsModal}
+                aria-label="Zamknij"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              {characteristicsLoading && (
+                <div className="loading-state">
+                  <div className="loading-spinner"></div>
+                  <p>Pobieranie charakterystyki leku...</p>
+                </div>
+              )}
+
+              {characteristicsData && characteristicsData.error && (
+                <div className="alert alert-error">
+                  <i className="fas fa-exclamation-circle"></i>
+                  <div>
+                    <strong>Błąd pobierania charakterystyki:</strong>
+                    <p>{characteristicsData.message}</p>
+                  </div>
+                </div>
+              )}
+
+              {characteristicsData && !characteristicsData.error && (
+                <div className="characteristics-content">
+                  {/* Wskazania */}
+                  {characteristicsData.wskazania && characteristicsData.wskazania.length > 0 && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title">
+                        <i className="fas fa-check-circle"></i> Wskazania do stosowania
+                      </h4>
+                      <ul className="characteristics-list">
+                        {characteristicsData.wskazania.map((wskazanie, index) => (
+                          <li key={index}>{wskazanie}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Przeciwwskazania */}
+                  {characteristicsData.przeciwwskazania && characteristicsData.przeciwwskazania.length > 0 && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title danger">
+                        <i className="fas fa-exclamation-triangle"></i> Przeciwwskazania
+                      </h4>
+                      <ul className="characteristics-list">
+                        {characteristicsData.przeciwwskazania.map((przeciwwskazanie, index) => (
+                          <li key={index}>{przeciwwskazanie}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Uwagi specjalne */}
+                  {characteristicsData.uwagi_specjalne && characteristicsData.uwagi_specjalne.length > 0 && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title warning">
+                        <i className="fas fa-shield-alt"></i> Uwagi specjalne i środki ostrożności
+                      </h4>
+                      <ul className="characteristics-list">
+                        {characteristicsData.uwagi_specjalne.map((uwaga, index) => (
+                          <li key={index}>{uwaga}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+{/* Link do pełnej ChPL */}
+                  {characteristicsData.pdf_link && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title">
+                        <i className="fas fa-file-pdf"></i> Pełna charakterystyka
+                      </h4>
+                      <a 
+                        href={characteristicsData.pdf_link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="pdf-link-btn"
+                      >
+                        <i className="fas fa-external-link-alt"></i>
+                        Otwórz pełną ChPL (PDF)
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
