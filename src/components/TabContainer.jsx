@@ -190,6 +190,7 @@ export default function TabContainer() {
           console.log("💰 Oszczędność API:", refundationData.summary?.oszczędność || "brak danych");
           characteristicsResult = refundationData.refundations;
         }
+	  }
 
       // NOWA LOGIKA: Dodaj diagnozę do tablicy zamiast nadpisywać
       const newDiagnosis = {
@@ -304,6 +305,7 @@ export default function TabContainer() {
           console.log("✅ Otrzymano refundacje leków (bezpośrednie):", refundationData);
           characteristicsResult = refundationData.refundations;
         }
+	  }
 
       // NOWA LOGIKA: Dodaj bezpośrednią diagnozę do tablicy
       const newDiagnosis = {
