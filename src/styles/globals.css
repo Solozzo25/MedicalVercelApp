@@ -7,47 +7,50 @@
     --font-headings: var(--font-lato);     /* Lato dla nagłówków */
     
     /* === NOWA PALETA - MEDICAL PROFESSIONAL === */
-    /* Primary - Professional Medical Blue */
-	--primary: #1e40af;
-    --primary-dark: #1e3a8a;
-    --primary-light: #3b82f6;
-    --primary-50: #eff6ff;
-    --primary-100: #dbeafe;
-    --primary-200: #bfdbfe;
+        /* === TWOJA PALETA - PROFESJONALNA I ŚWIEŻA === */
+    --primary: #00b4d8;           /* Główny turkus z palety */
+    --primary-dark: #03045e;      /* Najciemniejszy niebieski */
+    --primary-light: #90e0ef;     /* Najjaśniejszy turkus */
+    --primary-50: #caf0f8;        /* Bardzo jasny */
+    --primary-100: #90e0ef;       /* Jasny turkus */
+    --primary-200: #00b4d8;       /* Średni turkus */
+    --primary-600: #0077b6;       /* Ciemniejszy niebieski */
+    --primary-700: #03045e;       /* Najciemniejszy */
     
-   /* === SUCCESS - ŻYWY ZIELONY === */
-    --success: #16a34a;
-    --success-dark: #15803d;
-    --success-light: #22c55e;
-    --success-50: #f0fdf4;
-    --success-100: #dcfce7;
+    /* === SUCCESS - DOPASOWANY DO PALETY === */
+    --success: #00b4d8;           /* Używamy turkusu zamiast zielonego */
+    --success-dark: #0077b6;      
+    --success-light: #90e0ef;     
+    --success-50: #caf0f8;        
+    --success-100: #90e0ef;       
     
-    /* === SECONDARY - ENERGICZNY TEAL === */
-    --secondary: #0891b2;
-    --secondary-dark: #0e7490;
-    --secondary-light: #06b6d4;
+    /* === SECONDARY - WARIANTY Z PALETY === */
+    --secondary: #0077b6;         /* Średni niebieski */
+    --secondary-dark: #03045e;    
+    --secondary-light: #00b4d8;   
     
-    /* === ACCENT - ŻYWY FIOLET === */
-    --accent: #7c3aed;
-    --accent-light: #a855f7;
+    /* === ACCENT - KONTRASTOWY === */
+    --accent: #03045e;            /* Najciemniejszy jako accent */
+    --accent-light: #0077b6;      
     
-    /* === GRAYS - CIEPLEJSZE ALE KONTRASTOWE === */
+    /* === GRAYS - CIEPLEJSZE === */
     --white: #ffffff;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
+    --gray-50: #f8fafc;           
+    --gray-100: #f1f5f9;          
+    --gray-200: #e2e8f0;          
+    --gray-300: #cbd5e1;          
+    --gray-400: #94a3b8;          
+    --gray-500: #64748b;          
+    --gray-600: #475569;          
+    --gray-700: #334155;          
+    --gray-800: #1e293b;          
+    --gray-900: #0f172a;          
     
-    /* === SEMANTIC - ŻYWSZE KOLORY === */
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --info: #3b82f6;
+    /* === SEMANTIC === */
+    --warning: #f59e0b;           
+    --error: #ef4444;             
+    --info: #00b4d8;              /* Turkus jako info */
+}
     
     /* === SHADOWS - SUBTLE === */
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -216,9 +219,9 @@ html {
 }
 
 .badge-primary { 
-    background-color: var(--primary-100); /* Zmienione - subtelniejsze */
-    color: var(--primary-700);            /* Zmienione */
-    border-color: var(--primary-200);     /* Nowe */
+    background-color: linear-gradient(135deg, #90e0ef 0%, #caf0f8 100%);
+    color: var(--primary-dark);
+    border-color: 1px solid #00b4d8;   /* Nowe */
 }
 
 .badge-success { 
@@ -292,7 +295,7 @@ html {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: var(--white);
+    background: linear-gradient(90deg, #00b4d8 0%, #90e0ef 100%);
     text-align: center;
     white-space: nowrap;
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* Ulepszona transition */
@@ -321,7 +324,7 @@ html {
 /* Sidebar - ULEPSZONE */
 .sidebar {
     width: 260px;
-    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(180deg, #03045e 0%, #0077b6 50%, #00b4d8 100%);
     color: var(--white);
     height: 100vh;
     position: fixed;
@@ -335,13 +338,13 @@ html {
     align-items: center;
     gap: var(--space-3);                  /* Zmienione z 12px */
     padding: var(--space-6);              /* Zmienione z 24px */
-    background-color: rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(144, 224, 239, 0.2) 0%, rgba(0, 180, 216, 0.1) 100%);
     backdrop-filter: blur(10px);          /* Nowe */
 }
 
 .sidebar-brand .logo-icon {
     font-size: 24px;
-    background: linear-gradient(135deg, var(--white) 0%, var(--gray-100) 100%); /* Gradient */
+    background: linear-gradient(135deg, #caf0f8 0%, #90e0ef 100%);
     color: var(--primary);
     width: 40px;
     height: 40px;
@@ -424,13 +427,16 @@ html {
 .page-title h1 {
     font-size: 24px;
     font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: var(--space-1);        /* Zmienione z 4px */
+    background: linear-gradient(135deg, #03045e 0%, #0077b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-1);
 }
 
 .page-title p {
     font-size: 14px;
-    color: var(--gray-500);
+    color: var(--primary-600); /* Zamiast szarego */
 }
 
 .user-actions {
@@ -519,13 +525,14 @@ html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--gray-50);     /* Nowe */
+    background: linear-gradient(135deg, #caf0f8 0%, #90e0ef 30%, #ffffff 100%);
+    border-bottom: 1px solid #90e0ef;
 }
 
 .card-title {
     font-size: 18px;
     font-weight: 600;
-    color: var(--gray-900);
+    color: var(--primary-dark);
     display: flex;
     align-items: center;
     gap: var(--space-2);                  /* Zmienione z 8px */
@@ -571,8 +578,8 @@ html {
 
 .tab.active {
     color: var(--primary);
-    background-color: var(--white);       /* Nowe */
-    border-bottom: 2px solid var(--primary); /* Nowe */
+    background: linear-gradient(135deg, #caf0f8 0%, #ffffff 100%);
+    border-bottom: 3px solid var(--primary);
 }
 
 .tab.active::before {                    /* Nowe */
@@ -624,7 +631,8 @@ html {
 }
 
 .result-card.diagnosis { 
-    border-top: 3px solid var(--primary); /* Zmienione z 4px */
+    border-top: 3px solid var(--primary);
+    background: linear-gradient(135deg, #ffffff 0%, #caf0f8 100%);
 }
 
 .result-card.diagnosis.selected-diagnosis {
@@ -634,7 +642,8 @@ html {
 }
 
 .result-card.treatment { 
-    border-top: 3px solid var(--success); /* Zmienione z 4px */
+    border-top: 3px solid var(--secondary);
+    background: linear-gradient(135deg, #ffffff 0%, #90e0ef 100%);
 }
 
 .result-card.info { 
@@ -646,8 +655,8 @@ html {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--gray-100);
-    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%); /* Gradient */
+    background: linear-gradient(135deg, #caf0f8 0%, #90e0ef 20%, #ffffff 100%);
+    border-bottom: 1px solid #90e
 }
 
 .result-title {
@@ -656,7 +665,7 @@ html {
     display: flex;
     align-items: center;
     gap: var(--space-2);                  /* Zmienione z 8px */
-    color: var(--gray-900);               /* Ciemniejszy */
+    color: var(--primary-dark);;               /* Ciemniejszy */
 }
 
 .result-body {
@@ -734,11 +743,12 @@ html {
 /* Label formularza - ULEPSZONE */
 .form-label {
     display: flex;
+	background: linear-gradient(135deg, #caf0f8 0%, transparent 100%);
     justify-content: space-between;
     align-items: baseline;
     font-size: 15px;                      /* Zmienione z 16px */
     font-weight: 600;
-    color: var(--gray-900);               /* Zmienione z var(--primary-dark) */
+    color: var(--primary-700);              /* Zmienione z var(--primary-dark) */
     margin-bottom: var(--space-2);        /* Zmienione z 4px */
 }
 
@@ -787,7 +797,7 @@ html {
 .form-textarea:focus {
    outline: none;
    border-color: var(--primary);
-   box-shadow: 0 0 0 3px var(--primary-100); /* Zmienione */
+   box-shadow: 0 0 0 3px rgba(202, 240, 248, 0.5);
    transform: translateY(-1px);
 }
 
@@ -953,7 +963,7 @@ html {
 }
 
 .diagnosis-subtab.active {
-   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); /* Zmienione */
+   background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
    color: var(--white);
    border-color: var(--primary);         /* Zmienione */
    box-shadow: var(--shadow-md);         /* Zmienione */
@@ -967,7 +977,7 @@ html {
 .diagnosis-header {
    margin-bottom: var(--space-4);        /* Zmienione z 32px */
    padding: var(--space-4);              /* Zmienione z 24px */
-   background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+   background: linear-gradient(135deg, #00b4d8 0%, #0077b6 50%, #03045e 100%);
    color: var(--white);
    border-radius: var(--radius-lg);
    box-shadow: var(--shadow-md);
@@ -1357,7 +1367,7 @@ html {
    align-items: center;
    gap: var(--space-1);                   /* Zmienione z 6px */
    padding: var(--space-1) var(--space-3); /* Zmienione z 6px 12px */
-   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+   background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
    color: var(--white);
    text-decoration: none;
    border-radius: var(--radius);
@@ -1887,11 +1897,12 @@ html {
    margin-bottom: var(--space-2);
    font-size: 20px;
    font-weight: 600;
-   color: var(--gray-900);
+   color: var(--primary-dark);
+   background: linear-gradient(135deg, #caf0f8 20%, transparent 100%);
 }
 
 .section-title i {
-   color: var(--secondary);
+   color: var(--primary);
    font-size: 18px;
 }
 
