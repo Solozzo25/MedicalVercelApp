@@ -84,52 +84,23 @@ WAŻNE: Odpowiedź MUSI być poprawnym JSON bez markdown ani komentarzy!`;
     console.log("📊 Status:", responseData.status);
     console.log("📊 Output type:", typeof responseData.output);
     
-    // Wyciągnij content z output (Responses API ma inną strukturę)
-    let responseContent;
-    if (responseData.output && Array.isArray(responseData.output)) {
-      const messageOutput = responseData.output.find(item => item.type === 'message');
-      if (messageOutput && messageOutput.content && Array.isArray(messageOutput.content)) {
-        const textContent = messageOutput.content.find(item => item.type === 'output_text');
-        responseContent = textContent?.text || '';
-      }
-    }
-    
-    if (!responseContent) {
-      console.error("❌ Nie można wyekstraktować treści z odpowiedzi OpenAI");
-      throw new Error("Nie można wyekstraktować treści z odpowiedzi OpenAI");
-    }
+// Wyciągnij content z output - UPROSZCZONE
+let responseContent;
+if (responseData.output && Array.isArray(responseData.output)) {
+  const messageOutput = responseData.output.find(item => item.type === 'message');
+  if (messageOutput?.content?.[0]?.text) {
+    responseContent = messageOutput.content[0].text;
+  }
+}
 
-    console.log(`📏 Długość odpowiedzi: ${responseContent.length}`);
-    console.log(`📝 Pierwsze 200 znaków:`, responseContent.substring(0, 200));
-    
-    // ULEPSZONE parsowanie JSON
-    let cleanedContent = responseContent.trim();
+console.log("📝 Extracted content:", responseContent?.substring(0, 200) || "NO CONTENT");
 
-    // Usuń markdown jeśli istnieje
-    if (cleanedContent.includes('```')) {
-      cleanedContent = cleanedContent
-        .replace(/^```json\s*\n?/m, '')
-        .replace(/\n?```\s*$/m, '')
-        .trim();
-    }
+if (!responseContent) {
+  throw new Error("Brak treści w odpowiedzi OpenAI");
+}
 
-    // Znajdź JSON w odpowiedzi
-    const jsonStart = cleanedContent.indexOf('{');
-    const jsonEnd = cleanedContent.lastIndexOf('}') + 1;
-
-    if (jsonStart !== -1 && jsonEnd > jsonStart) {
-      cleanedContent = cleanedContent.substring(jsonStart, jsonEnd);
-    }
-
-    // Usuń komentarze
-    cleanedContent = cleanedContent
-      .replace(/\/\*[\s\S]*?\*\//g, '') // Usuń /* komentarze */
-      .replace(/\/\/.*$/gm, '')           // Usuń // komentarze
-      .trim();
-
-    console.log(`🔧 Wyczyszczony JSON (${cleanedContent.length} znaków)`);
-
-    return JSON.parse(cleanedContent);
+// Treść jest już czystym JSON - parsuj bezpośrednio
+return JSON.parse(responseContent.trim());
 
   } catch (error) {
     console.error(`❌ Błąd dla grupy ${drugChunk.join(', ')}:`, error.message);
