@@ -141,6 +141,7 @@ WYMAGANIA:
 KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie tym formacie:
 {
   "choroba": "${diagnosis}",
+  "uwagi": "Opcjonalne uwagi dotyczące wyszukiwania lub ograniczeń w dostępnych danych",
   "linie_leczenia": [
     {
       "numer_linii": "1",

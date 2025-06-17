@@ -17,6 +17,10 @@ export default function TreatmentTab({
   
   // NOWY STATE dla zakładki "Wyszukaj ręcznie"
   const [isManualSearchActive, setIsManualSearchActive] = useState(false);
+  const [selectedDrugForCharacteristics, setSelectedDrugForCharacteristics] = useState(null);
+  const [characteristicsLoading, setCharacteristicsLoading] = useState(false);
+  const [characteristicsData, setCharacteristicsData] = useState(null);
+  const [characteristicsCache, setCharacteristicsCache] = useState(new Map());
   
   // State dla rozwijanych sekcji (usunięte ChPL, zostaje tylko refundacja)
   const [expandedSections, setExpandedSections] = useState({});
@@ -60,86 +64,167 @@ export default function TreatmentTab({
     return 'badge-secondary';
   };
 
+  // NOWA FUNKCJA: Obsługa kliknięcia w przycisk charakterystyk
+  const handleCharacteristicsClick = async (drugName) => {
+    console.log(`🔍 Sprawdzanie charakterystyki dla: ${drugName}`);
+    setSelectedDrugForCharacteristics(drugName);
+    
+    // SPRAWDŹ CACHE NAJPIERW
+    if (characteristicsCache.has(drugName)) {
+      console.log(`💾 Ładowanie z cache: ${drugName}`);
+      const cachedData = characteristicsCache.get(drugName);
+      setCharacteristicsData(cachedData);
+      setCharacteristicsLoading(false);
+      return; // Zakończ - dane z cache
+    }
+
+    // BRAK W CACHE - POBIERZ Z API
+    console.log(`🌐 Pobieranie z API: ${drugName}`);
+    setCharacteristicsLoading(true);
+    setCharacteristicsData(null);
+
+    try {
+      const response = await fetch('/api/single-drug-characteristics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ drugName })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Błąd API: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(`✅ Otrzymano charakterystykę dla ${drugName}:`, data);
+      
+      // ZAPISZ DO CACHE
+      setCharacteristicsCache(prev => {
+        const newCache = new Map(prev);
+        newCache.set(drugName, data);
+        console.log(`💾 Zapisano do cache: ${drugName} (rozmiar cache: ${newCache.size})`);
+        return newCache;
+      });
+      
+      setCharacteristicsData(data);
+
+    } catch (error) {
+      console.error(`❌ Błąd pobierania charakterystyki dla ${drugName}:`, error);
+      
+      const errorData = {
+        error: true,
+        message: error.message || 'Wystąpił błąd podczas pobierania charakterystyki'
+      };
+      
+      // ZAPISZ BŁĄD DO CACHE (na 5 minut)
+      setCharacteristicsCache(prev => {
+        const newCache = new Map(prev);
+        newCache.set(drugName, { ...errorData, cachedAt: Date.now(), expiry: Date.now() + 5 * 60 * 1000 });
+        return newCache;
+      });
+      
+      setCharacteristicsData(errorData);
+    } finally {
+      setCharacteristicsLoading(false);
+    }
+  };
+
+  // NOWA FUNKCJA: Zamknięcie modala
+  const handleCloseCharacteristicsModal = () => {
+    setSelectedDrugForCharacteristics(null);
+    setCharacteristicsData(null);
+    setCharacteristicsLoading(false);
+  };
+
   // UPROSZCZONA funkcja renderowania charakterystyk - TYLKO REFUNDACJA
   const renderDrugInfo = (drugName, isAlternative = false, diagnosisIndex = activeTreatmentIndex) => {
     const characteristics = findDrugCharacteristics(drugName, diagnosisIndex);
     
-    if (!characteristics || characteristics.status !== 'dostępny') {
-      return (
-        <div className="drug-card-section">
-          <button className="btn btn-secondary btn-sm" disabled>
-            <i className="fas fa-file-medical"></i> Pobierz charakterystykę
-          </button>
-          <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
-            Brak danych o leku
-          </p>
-        </div>
-      );
-    }
-
     return (
       <>
-        {/* Przycisk do pobrania charakterystyki - PLACEHOLDER */}
+        {/* Przycisk charakterystyki - ZAWSZE DOSTĘPNY */}
         <div className="drug-card-section">
-          <button className="btn btn-secondary btn-sm" disabled>
-            <i className="fas fa-file-medical"></i> Pobierz charakterystykę
+          <button 
+            className="btn btn-primary btn-sm" 
+            onClick={() => handleCharacteristicsClick(drugName)}
+          >
+            <i className="fas fa-file-medical"></i> Zobacz charakterystykę
           </button>
           <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
-            Funkcja dostępna wkrótce
+            Wskazania, przeciwwskazania, uwagi specjalne
           </p>
         </div>
 
-        {/* TYLKO Refundacja - bez ChPL */}
-        {characteristics.refundacja && (
-          <div className="drug-card-section refundation-section">
+        {/* Sekcja refundacji - z obsługą braku danych */}
+        {!characteristics || characteristics.status !== 'dostępny' ? (
+          <div className="drug-card-section refundation-section no-refundation">
             <h5 className="drug-section-title">
-              <i className="fas fa-credit-card"></i> Refundacja NFZ
+              <i className="fas fa-info-circle"></i> Refundacja NFZ
             </h5>
-            
-            <div className="refundation-status">
-              <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
-                <i className="fas fa-shield-alt"></i>
-                {getRefundationStatusText(characteristics.refundacja.refundowany)}
+            <div className="no-refundation-info">
+              <span className="badge badge-secondary">
+                <i className="fas fa-question-circle"></i>
+                Brak danych o refundacji
               </span>
+              <p className="drug-section-content" style={{marginTop: '8px'}}>
+                {characteristics?.uwagi || 'Nie znaleziono informacji o refundacji dla tego leku'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          // ISTNIEJĄCA SEKCJA REFUNDACJI
+          characteristics.refundacja && (
+            <div className="drug-card-section refundation-section">
+              <h5 className="drug-section-title">
+                <i className="fas fa-credit-card"></i> Refundacja NFZ
+              </h5>
               
-              {characteristics.refundacja.odplatnosc && (
-                <span className="copayment-badge">
-                  Odpłatność: {characteristics.refundacja.odplatnosc}
+              <div className="refundation-status">
+                <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
+                  <i className="fas fa-shield-alt"></i>
+                  {getRefundationStatusText(characteristics.refundacja.refundowany)}
                 </span>
+                
+                {characteristics.refundacja.odplatnosc && (
+                  <span className="copayment-badge">
+                    Odpłatność: {characteristics.refundacja.odplatnosc}
+                  </span>
+                )}
+              </div>
+
+              {/* Grupy pacjentów */}
+              {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
+                <div className="refundation-groups">
+                  <strong>Refundacja dla:</strong>
+                  <ul className="drug-section-list">
+                    {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
+                      <li key={idx}>{group}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Przykładowe preparaty */}
+              {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
+                <div className="refundation-groups">
+                  <strong>Przykładowe preparaty:</strong>
+                  <p className="drug-section-content">
+                    {characteristics.refundacja.przykladowy_preparat.join(', ')}
+                  </p>
+                </div>
+              )}
+
+              {/* Link do refundacji */}
+              {characteristics.refundacja.link && (
+                <div className="drug-card-footer">
+                  <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                    <i className="fas fa-info-circle"></i> Sprawdź refundację
+                  </a>
+                </div>
               )}
             </div>
-
-            {/* Grupy pacjentów */}
-            {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
-              <div className="refundation-groups">
-                <strong>Refundacja dla:</strong>
-                <ul className="drug-section-list">
-                  {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
-                    <li key={idx}>{group}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Przykładowe preparaty */}
-            {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
-              <div className="refundation-groups">
-                <strong>Przykładowe preparaty:</strong>
-                <p className="drug-section-content">
-                  {characteristics.refundacja.przykladowy_preparat.join(', ')}
-                </p>
-              </div>
-            )}
-
-            {/* Link do refundacji */}
-            {characteristics.refundacja.link && (
-              <div className="drug-card-footer">
-                <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
-                  <i className="fas fa-info-circle"></i> Sprawdź refundację
-                </a>
-              </div>
-            )}
-          </div>
+          )
         )}
       </>
     );
@@ -485,6 +570,110 @@ export default function TreatmentTab({
               {renderTreatmentSchemas(treatmentDiagnoses[activeTreatmentIndex], activeTreatmentIndex)}
             </div>
           )}
+        </div>
+      )}
+
+      {/* MODAL CHARAKTERYSTYK LEKU */}
+      {selectedDrugForCharacteristics && (
+        <div className="modal-overlay" onClick={handleCloseCharacteristicsModal}>
+          <div className="modal-content drug-characteristics-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">
+                <i className="fas fa-pills"></i>
+                Charakterystyka leku: {selectedDrugForCharacteristics}
+              </div>
+              <button 
+                className="modal-close-btn"
+                onClick={handleCloseCharacteristicsModal}
+                aria-label="Zamknij"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              {characteristicsLoading && (
+                <div className="loading-state">
+                  <div className="loading-spinner"></div>
+                  <p>Pobieranie charakterystyki leku...</p>
+                </div>
+              )}
+
+              {characteristicsData && characteristicsData.error && (
+                <div className="alert alert-error">
+                  <i className="fas fa-exclamation-circle"></i>
+                  <div>
+                    <strong>Błąd pobierania charakterystyki:</strong>
+                    <p>{characteristicsData.message}</p>
+                  </div>
+                </div>
+              )}
+
+              {characteristicsData && !characteristicsData.error && (
+                <div className="characteristics-content">
+                  {/* Wskazania */}
+                  {characteristicsData.wskazania && characteristicsData.wskazania.length > 0 && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title">
+                        <i className="fas fa-check-circle"></i> Wskazania do stosowania
+                      </h4>
+                      <ul className="characteristics-list">
+                        {characteristicsData.wskazania.map((wskazanie, index) => (
+                          <li key={index}>{wskazanie}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Przeciwwskazania */}
+                  {characteristicsData.przeciwwskazania && characteristicsData.przeciwwskazania.length > 0 && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title danger">
+                        <i className="fas fa-exclamation-triangle"></i> Przeciwwskazania
+                      </h4>
+                      <ul className="characteristics-list">
+                        {characteristicsData.przeciwwskazania.map((przeciwwskazanie, index) => (
+                          <li key={index}>{przeciwwskazanie}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Uwagi specjalne */}
+                  {characteristicsData.uwagi_specjalne && characteristicsData.uwagi_specjalne.length > 0 && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title warning">
+                        <i className="fas fa-shield-alt"></i> Uwagi specjalne i środki ostrożności
+                      </h4>
+                      <ul className="characteristics-list">
+                        {characteristicsData.uwagi_specjalne.map((uwaga, index) => (
+                          <li key={index}>{uwaga}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Link do pełnej ChPL */}
+                  {characteristicsData.pdf_link && (
+                    <div className="characteristics-section">
+                      <h4 className="section-title">
+                        <i className="fas fa-file-pdf"></i> Pełna charakterystyka
+                      </h4>
+                      <a 
+                        href={characteristicsData.pdf_link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="pdf-link-btn"
+                      >
+                        <i className="fas fa-external-link-alt"></i>
+                        Otwórz pełną ChPL (PDF)
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
