@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export const maxDuration = 60; // 60 sekund
 export const dynamic = 'force-dynamic';
 
-// Funkcja do czyszczenia i walidacji JSON - pozostaje bez zmian
+// Funkcja do czyszczenia i walidacji JSON
 function cleanAndParseJSON(rawResponse) {
   try {
     // Krok 1: Usuń markdown wrapping jeśli istnieje
@@ -54,7 +54,7 @@ function cleanAndParseJSON(rawResponse) {
   }
 }
 
-// Funkcja do walidacji struktury odpowiedzi - pozostaje bez zmian
+// Funkcja do walidacji struktury odpowiedzi
 function validateTreatmentResponse(parsedResponse) {
   const errors = [];
   
@@ -110,10 +110,8 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    
-
     // Klucz API OpenAI z zmiennych środowiskowych
-    const apiKey = process.env.OPENROUTER_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     
     if (!apiKey) {
       console.log("❌ Błąd: Brak klucza API OpenAI w zmiennych środowiskowych");
@@ -122,10 +120,9 @@ export async function POST(request) {
       }, { status: 500 });
     }
 
-    // Uproszczony prompt - web search będzie automatyczny
+    // Prompt dla GPT-4.1 z web search
     const userPrompt = `Wyszukaj najnowsze wytyczne leczenia dla choroby: ${diagnosis}
 						Preferuj wytyczne z: ${medicalSociety}
-
 
 WYMAGANIA:
 - Znajdź oficjalne wytyczne medyczne z wiarygodnych źródeł (towarzystwa medyczne, Medycyna Praktyczna, PubMed)
@@ -186,56 +183,54 @@ KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie 
   }
 }`;
 
-    console.log("📤 Wysyłanie zapytania do OpenRouter API..");
+    console.log("📤 Wysyłanie zapytania do OpenAI Responses API z GPT-4.1...");
     
-    // Wywołanie OpenRouter Responses API z web_search tool
-    const openRouterResponse = await fetch('https://openrouter.ai/api/v1/responses', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${apiKey}`,
-    'Content-Type': 'application/json',
-    'HTTP-Referer': 'http://localhost:3000',
-    'X-Title': 'MedDiagnosis App'
-  },
-  body: JSON.stringify({
-    model: "openai/gpt-4.1", // GPT-4.1 przez OpenRouter
-    input: userPrompt,
-    tools: [{ 
-      "type": "web_search_preview",
-      "search_context_size": "high",
-      "user_location": {
-        "type": "approximate",
-        "country": "PL",
-        "city": "Warsaw",
-        "region": "Mazowieckie", 
-        "timezone": "Europe/Warsaw"
-      }
-    }],
-    temperature: 0.2,
-    max_output_tokens: 8000
-  })
-});
+    // Wywołanie OpenAI Responses API z GPT-4.1 i web search
+    const openAIResponse = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1", // Zmieniono z "gpt-4o" na "gpt-4.1"
+        input: userPrompt,
+        tools: [{ 
+		  "type": "web_search_preview",
+		  "search_context_size": "high",  // Maksymalna głębokość dla medycyny
+		  "user_location": {
+			"type": "approximate",
+			"country": "PL",
+			"city": "Warsaw",
+			"region": "Mazowieckie", 
+			"timezone": "Europe/Warsaw"
+		  }
+		}],
+        temperature: 0.2,
+        max_output_tokens: 8000
+      })
+    });
     
-    console.log("✅ Odpowiedź od OpenRouter otrzymana, status:", openRouterResponse.status);
+    console.log("✅ Odpowiedź od OpenAI otrzymana, status:", openAIResponse.status);
 
     // Sprawdzenie czy odpowiedź jest OK
-	if (!openRouterResponse.ok) {
-	  const errorText = await openRouterResponse.text();
-	  console.error("❌ Błąd OpenRouter API:", openRouterResponse.status, errorText);
-	  return NextResponse.json({ 
-	    error: `Błąd OpenRouter API: ${openRouterResponse.status} - ${errorText}` 
-	  }, { status: 500 });
-	}
+    if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text();
+      console.error("❌ Błąd OpenAI API:", openAIResponse.status, errorText);
+      return NextResponse.json({ 
+        error: `Błąd OpenAI API: ${openAIResponse.status} - ${errorText}` 
+      }, { status: 500 });
+    }
 
     // Parsowanie odpowiedzi JSON
-    const responseData = await openRouterResponse.json();
+    const responseData = await openAIResponse.json();
     
-    console.log("🔍 DIAGNOSTYKA ODPOWIEDZI:");
+    console.log("🔍 DIAGNOSTYKA ODPOWIEDZI GPT-4.1:");
     console.log("📊 Status:", responseData.status);
     console.log("📊 Output type:", typeof responseData.output);
     console.log("📊 Output length:", responseData.output?.length || 0);
     
-	   // Wyciągnij content z output (Responses API ma inną strukturę)
+	// Wyciągnij content z output (Responses API ma strukturę array)
 	let responseContent;
 	if (responseData.output && Array.isArray(responseData.output)) {
 	  // Znajdź message w output
@@ -248,10 +243,10 @@ KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie 
 	}
     
     if (!responseContent) {
-      console.error("❌ Nie można wyekstraktować treści z odpowiedzi");
+      console.error("❌ Nie można wyekstraktować treści z odpowiedzi GPT-4.1");
       console.log("📋 Cała odpowiedź:", JSON.stringify(responseData, null, 2));
       return NextResponse.json({ 
-        error: "Nie można wyekstraktować treści z odpowiedzi OpenAI",
+        error: "Nie można wyekstraktować treści z odpowiedzi OpenAI GPT-4.1",
         rawResponse: responseData
       }, { status: 500 });
     }
@@ -264,12 +259,12 @@ KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie 
     let parsedResponse;
     try {
       parsedResponse = cleanAndParseJSON(responseContent);
-      console.log("✅ Pomyślnie sparsowano JSON");
+      console.log("✅ Pomyślnie sparsowano JSON z GPT-4.1");
     } catch (parseError) {
       console.error("❌ Błąd parsowania JSON po wszystkich próbach naprawy:", parseError);
       
       return NextResponse.json({ 
-        error: "Nie udało się przetworzyć odpowiedzi AI. Spróbuj ponownie z prostszą diagnozą.",
+        error: "Nie udało się przetworzyć odpowiedzi GPT-4.1. Spróbuj ponownie z prostszą diagnozą.",
         details: parseError.message,
         rawResponse: responseContent.substring(0, 1000) // Pierwsze 1000 znaków do debugowania
       }, { status: 500 });
@@ -280,13 +275,13 @@ KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie 
     if (validationErrors.length > 0) {
       console.log("⚠️ Błędy walidacji:", validationErrors);
       return NextResponse.json({ 
-        error: "Niekompletna odpowiedź AI",
+        error: "Niekompletna odpowiedź GPT-4.1",
         validationErrors,
         data: parsedResponse
       }, { status: 207 });
     }
 
-    console.log("✅ Struktura odpowiedzi poprawna");
+    console.log("✅ Struktura odpowiedzi GPT-4.1 poprawna");
     console.log("📊 Liczba linii leczenia:", parsedResponse.linie_leczenia.length);
     
     // Logowanie statystyk
@@ -305,30 +300,30 @@ KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie 
       }
     });
     
-    // Logowanie źródeł
-    console.log("🔗 Źródła z web search:");
+    // Logowanie źródeł z web search
+    console.log("🔗 Źródła z GPT-4.1 web search:");
     if (parsedResponse.leczenie_niefarmakologiczne?.źródło) {
       console.log(`   - Niefarmakologiczne: ${parsedResponse.leczenie_niefarmakologiczne.źródło}`);
     }
 
     // Sprawdzenie uwag
     if (parsedResponse.uwagi) {
-      console.log("📝 Uwagi:", parsedResponse.uwagi);
+      console.log("📝 Uwagi GPT-4.1:", parsedResponse.uwagi);
     }
 
     return NextResponse.json(parsedResponse, { status: 200 });
 
   } catch (error) {
-    console.error("❌ Błąd podczas komunikacji z API:", error);
+    console.error("❌ Błąd podczas komunikacji z OpenAI GPT-4.1:", error);
     
-    let errorMessage = 'Wystąpił błąd podczas przetwarzania zapytania';
+    let errorMessage = 'Wystąpił błąd podczas przetwarzania zapytania z GPT-4.1';
     let errorDetails = {};
     
     if (error.name === 'TimeoutError') {
-      errorMessage = 'Przekroczono limit czasu oczekiwania na odpowiedź z API';
+      errorMessage = 'Przekroczono limit czasu oczekiwania na odpowiedź z OpenAI GPT-4.1';
       errorDetails = { timeout: true };
     } else if (error.cause && error.cause.code === 'FETCH_ERROR') {
-      errorMessage = 'Błąd połączenia z OpenAI API';
+      errorMessage = 'Błąd połączenia z OpenAI API (GPT-4.1)';
       errorDetails = { networkError: true };
     } else {
       errorDetails = { message: error.message };
