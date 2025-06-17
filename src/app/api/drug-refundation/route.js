@@ -10,16 +10,17 @@ async function fetchGroupRefundation(drugChunk, apiKey) {
   
   const systemPrompt = `Jesteś ekspertem od wyszukiwania danych refundacyjnych z oficjalnych źródeł polskich`;
 
-  const userPrompt = `Sprawdź refundację NFZ dla następujących leków: ${drugChunk.join(', ')} lub jego łacińskich odmian np.(Flutikazon i Fluticasone) w przypadk braku wyników.
+  const userPrompt = `Sprawdź refundację NFZ dla następujących leków: ${drugChunk.join(', ')} 
 
-WAŻNE: Wyszukuj TYLKO dane refundacyjne z serwisu lekinfo24.pl lub oficjalnych źródeł NFZ
+WAŻNE: Wyszukuj TYLKO dane refundacyjne z serwisu lekinfo24.pl lub oficjalnych źródeł NFZ.
+
 
 Dla każdego leku sprawdź:
 - czy jest refundowany (true/false)
 - poziom odpłatności (bezpłatny, 30%, 50%, 100%)
 - grupy pacjentów uprawnione do refundacji
 - przykładowe preparaty handlowe dostępne w Polsce
-- dokładny link do strony z refundacją (jeśli dostępny)
+- link do strony z refundacją (najczęściej spotykana struktura URL:https://www.lekinfo24.pl/opis-leku/l,fluticasone-flutykazon,dp,wziewna,mnid,780.html)
 
 
 Zwróć dane w dokładnie tym formacie JSON:
