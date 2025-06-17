@@ -10,7 +10,7 @@ async function fetchGroupRefundation(drugChunk, apiKey) {
   
   const systemPrompt = `Jesteś ekspertem od wyszukiwania danych refundacyjnych z oficjalnych źródeł polskich`;
 
-  const userPrompt = `Sprawdź refundację NFZ dla następujących leków: ${drugChunk.join(', ')}
+  const userPrompt = `Sprawdź refundację NFZ dla następujących leków: ${drugChunk.join(', ')} lub jego łacińskich odmian np.(Flutikazon i Fluticasone) w przypadk braku wyników.
 
 WAŻNE: Wyszukuj TYLKO dane refundacyjne z serwisu lekinfo24.pl lub oficjalnych źródeł NFZ
 
@@ -19,7 +19,8 @@ Dla każdego leku sprawdź:
 - poziom odpłatności (bezpłatny, 30%, 50%, 100%)
 - grupy pacjentów uprawnione do refundacji
 - przykładowe preparaty handlowe dostępne w Polsce
-- link do strony z refundacją (jeśli dostępny)
+- dokładny link do strony z refundacją (jeśli dostępny)
+
 
 Zwróć dane w dokładnie tym formacie JSON:
 {
