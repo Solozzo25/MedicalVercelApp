@@ -70,6 +70,11 @@ WAŻNE: Odpowiedź MUSI być poprawnym JSON bez markdown ani komentarzy!`;
       throw new Error(`OpenAI API Error: ${response.status} - ${errorText}`);
     }
 
+	console.log("🔍 PEŁNA ODPOWIEDŹ OPENAI:");
+	console.log("=====================================");
+	console.log(JSON.stringify(responseData, null, 2));
+	console.log("=====================================");
+
     // Parsowanie odpowiedzi OpenAI Responses API
     const responseData = await response.json();
     
