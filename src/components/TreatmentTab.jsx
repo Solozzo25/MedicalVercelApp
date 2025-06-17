@@ -641,7 +641,7 @@ export default function TreatmentTab({
           )}
         </div>
       )}
-    /* MODAL CHARAKTERYSTYK LEKU */
+	  {/* MODAL CHARAKTERYSTYK LEKU */}
       {selectedDrugForCharacteristics && (
         <div className="modal-overlay" onClick={handleCloseCharacteristicsModal}>
           <div className="modal-content drug-characteristics-modal" onClick={(e) => e.stopPropagation()}>
