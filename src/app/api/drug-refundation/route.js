@@ -11,8 +11,8 @@ async function fetchGroupRefundation(drugChunk, apiKey) {
   const userPrompt = `Jesteś specjalistą od wyszukiwania informacji o refundacji leków i zawsze dostarczasz użytkownikom działające i otwierające linki wskazujące na źródło informacji.
 Dla każdego z listy leków: ${drugChunk.join(', ')} znajdź link URL, który przeniesie użytkownika na stronę ze wszystkimi preparatami, które zawierają ten lek i pokażą refundację tych leków.
 Korzystaj z portalu lekinfo24.pl jako pierwszego źródła informacji. 
-Przykładowy link: https://www.lekinfo24.pl/opis-leku/l,formoterol-formoterol,dp,wziewna,mnid,792.html, który poprawnie przekierowuje użytkownika na stronę z preparatami.
-Do każdego linku z listy podawaj kod refundacji NFZ.
+Przykładowy link: https://www.lekinfo24.pl/opis-leku/l,formoterol-formoterol,dp,wziewna,mnid,792.html, dla leku formoterol który poprawnie przekierowuje użytkownika na stronę z preparatami.
+Do każdego linku z listy podawaj kod refundacji NFZ oraz dwa przykładowe preparaty, które widoczne są na stronie z refundacją.
 
 
 STRUKTURA ODPOWIEDZI - TYLKO i wyłącznie w JSON:
