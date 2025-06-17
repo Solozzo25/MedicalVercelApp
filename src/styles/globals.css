@@ -2513,3 +2513,60 @@ th {
     transform: translateY(0) scale(1);
   }
 }
+
+/* ===============================
+  SEKCJA BRAKU REFUNDACJI
+  =============================== */
+
+/* Sekcja dla braku danych o refundacji */
+.refundation-section.no-refundation {
+  border-left-color: var(--gray-400);
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+}
+
+.no-refundation-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.no-refundation-info .badge {
+  align-self: flex-start;
+  background-color: var(--gray-200);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.no-refundation-info .badge i {
+  color: var(--gray-500);
+}
+
+.no-refundation-info .drug-section-content {
+  color: var(--gray-600);
+  font-style: italic;
+  font-size: 13px;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--gray-100);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--gray-300);
+}
+
+/* Hover effect dla sekcji bez refundacji */
+.refundation-section.no-refundation:hover {
+  border-left-color: var(--gray-500);
+  background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
+}
+
+.refundation-section.no-refundation:hover .no-refundation-info .badge {
+  background-color: var(--gray-300);
+  border-color: var(--gray-400);
+}
+
+/* Responsywność dla sekcji braku refundacji */
+@media (max-width: 768px) {
+  .no-refundation-info .drug-section-content {
+    font-size: 12px;
+    padding: var(--space-2);
+  }
+}

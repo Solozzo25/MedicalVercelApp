@@ -20,6 +20,7 @@ export default function TreatmentTab({
   const [selectedDrugForCharacteristics, setSelectedDrugForCharacteristics] = useState(null);
   const [characteristicsLoading, setCharacteristicsLoading] = useState(false);
   const [characteristicsData, setCharacteristicsData] = useState(null);
+  const [characteristicsCache, setCharacteristicsCache] = useState(new Map());
   
   // State dla rozwijanych sekcji (usunięte ChPL, zostaje tylko refundacja)
   const [expandedSections, setExpandedSections] = useState({});
@@ -64,10 +65,23 @@ export default function TreatmentTab({
   };
 
 // NOWA FUNKCJA: Obsługa kliknięcia w przycisk charakterystyk
-  const handleCharacteristicsClick = async (drugName) => {
-    console.log(`🔍 Pobieranie charakterystyki dla: ${drugName}`);
+	const handleCharacteristicsClick = async (drugName) => {
+    console.log(`🔍 Sprawdzanie charakterystyki dla: ${drugName}`);
     setSelectedDrugForCharacteristics(drugName);
+    
+    // SPRAWDŹ CACHE NAJPIERW
+    if (characteristicsCache.has(drugName)) {
+      console.log(`💾 Ładowanie z cache: ${drugName}`);
+      const cachedData = characteristicsCache.get(drugName);
+      setCharacteristicsData(cachedData);
+      setCharacteristicsLoading(false);
+      return; // Zakończ - dane z cache
+    }
+
+    // BRAK W CACHE - POBIERZ Z API
+    console.log(`🌐 Pobieranie z API: ${drugName}`);
     setCharacteristicsLoading(true);
+    setCharacteristicsData(null);;
     setCharacteristicsData(null);
 
     try {
@@ -85,14 +99,33 @@ export default function TreatmentTab({
 
       const data = await response.json();
       console.log(`✅ Otrzymano charakterystykę dla ${drugName}:`, data);
+      
+      // ZAPISZ DO CACHE
+      setCharacteristicsCache(prev => {
+        const newCache = new Map(prev);
+        newCache.set(drugName, data);
+        console.log(`💾 Zapisano do cache: ${drugName} (rozmiar cache: ${newCache.size})`);
+        return newCache;
+      });
+      
       setCharacteristicsData(data);
 
-    } catch (error) {
+	} catch (error) {
       console.error(`❌ Błąd pobierania charakterystyki dla ${drugName}:`, error);
-      setCharacteristicsData({
+      
+      const errorData = {
         error: true,
         message: error.message || 'Wystąpił błąd podczas pobierania charakterystyki'
+      };
+      
+      // ZAPISZ BŁĄD DO CACHE (na 5 minut)
+      setCharacteristicsCache(prev => {
+        const newCache = new Map(prev);
+        newCache.set(drugName, { ...errorData, cachedAt: Date.now(), expiry: Date.now() + 5 * 60 * 1000 });
+        return newCache;
       });
+      
+      setCharacteristicsData(errorData);
     } finally {
       setCharacteristicsLoading(false);
     }
@@ -107,23 +140,96 @@ export default function TreatmentTab({
 
   // UPROSZCZONA funkcja renderowania charakterystyk - TYLKO REFUNDACJA
   const renderDrugInfo = (drugName, isAlternative = false, diagnosisIndex = activeTreatmentIndex) => {
-    const characteristics = findDrugCharacteristics(drugName, diagnosisIndex);
-    
-    if (!characteristics || characteristics.status !== 'dostępny') {
-      return (
-		<div className="drug-card-section">
-          <button 
-            className="btn btn-primary btn-sm" 
-            onClick={() => handleCharacteristicsClick(drugName)}
-          >
-            <i className="fas fa-file-medical"></i> Zobacz charakterystykę
-          </button>
-          <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
-            Wskazania, przeciwwskazania, uwagi specjalne
-          </p>
+  const characteristics = findDrugCharacteristics(drugName, diagnosisIndex);
+  
+  return (
+    <>
+      {/* Przycisk charakterystyki - ZAWSZE DOSTĘPNY */}
+      <div className="drug-card-section">
+        <button 
+          className="btn btn-primary btn-sm" 
+          onClick={() => handleCharacteristicsClick(drugName)}
+        >
+          <i className="fas fa-file-medical"></i> Zobacz charakterystykę
+        </button>
+        <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
+          Wskazania, przeciwwskazania, uwagi specjalne
+        </p>
+      </div>
+
+      {/* Sekcja refundacji - z obsługą braku danych */}
+      {!characteristics || characteristics.status !== 'dostępny' ? (
+        <div className="drug-card-section refundation-section no-refundation">
+          <h5 className="drug-section-title">
+            <i className="fas fa-info-circle"></i> Refundacja NFZ
+          </h5>
+          <div className="no-refundation-info">
+            <span className="badge badge-secondary">
+              <i className="fas fa-question-circle"></i>
+              Brak danych o refundacji
+            </span>
+            <p className="drug-section-content" style={{marginTop: '8px'}}>
+              {characteristics?.uwagi || 'Nie znaleziono informacji o refundacji dla tego leku'}
+            </p>
+          </div>
         </div>
-      );
-    }
+      ) : (
+        // ISTNIEJĄCA SEKCJA REFUNDACJI
+        characteristics.refundacja && (
+          <div className="drug-card-section refundation-section">
+            <h5 className="drug-section-title">
+              <i className="fas fa-credit-card"></i> Refundacja NFZ
+            </h5>
+            
+            <div className="refundation-status">
+              <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
+                <i className="fas fa-shield-alt"></i>
+                {getRefundationStatusText(characteristics.refundacja.refundowany)}
+              </span>
+              
+              {characteristics.refundacja.odplatnosc && (
+                <span className="copayment-badge">
+                  Odpłatność: {characteristics.refundacja.odplatnosc}
+                </span>
+              )}
+            </div>
+
+            {/* Grupy pacjentów */}
+            {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
+              <div className="refundation-groups">
+                <strong>Refundacja dla:</strong>
+                <ul className="drug-section-list">
+                  {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
+                    <li key={idx}>{group}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Przykładowe preparaty */}
+            {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
+              <div className="refundation-groups">
+                <strong>Przykładowe preparaty:</strong>
+                <p className="drug-section-content">
+                  {characteristics.refundacja.przykladowy_preparat.join(', ')}
+                </p>
+              </div>
+            )}
+
+            {/* Link do refundacji */}
+            {characteristics.refundacja.link && (
+              <div className="drug-card-footer">
+                <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                  <i className="fas fa-info-circle"></i> Sprawdź refundację
+                </a>
+              </div>
+            )}
+          </div>
+        )
+      )}
+    </>
+  );
+};
 
     return (
       <>
