@@ -8,7 +8,8 @@ export const dynamic = 'force-dynamic';
 async function fetchGroupRefundation(drugChunk, apiKey) {
   console.log(`🔍 Pobieranie refundacji dla grupy: ${drugChunk.join(', ')}`);
   
-  const userPrompt = `Wyszukaj refundację NFZ dla następujących leków: ${drugChunk.join(', ')}
+  const userPrompt = `Jesteś specjalistą od wyszukiwania informacji o refundacji leków i zawsze dostarczasz użytkownikom działające i otwierające linki wskazujące na źródło informacji.
+Wyszukaj refundację NFZ dla następujących leków: ${drugChunk.join(', ')}
 
 ZADANIE: Znajdź aktualne dane refundacyjne z oficjalnych źródeł polskich (lekinfo24.pl, nfz.gov.pl).
 
@@ -29,7 +30,7 @@ STRUKTURA ODPOWIEDZI - TYLKO JSON:
         "odplatnosc": "bezpłatny",
         "grupy_pacjentow": ["Wszystkie wskazania rejestracyjne"],
         "przykladowy_preparat": ["Nazwa 500mg", "Nazwa 1000mg"],
-        "link": "https://lekinfo24.pl/..."
+        "link": "pełny link URL ze wskazaniem na refundowany lek"
       }
     }
   ]
@@ -46,7 +47,7 @@ WAŻNE: Odpowiedź MUSI być poprawnym JSON bez markdown ani komentarzy!`;
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "gpt-4o",
+        model: "gpt-4.1",
         input: userPrompt,
         tools: [{ 
           "type": "web_search_preview",
@@ -60,7 +61,7 @@ WAŻNE: Odpowiedź MUSI być poprawnym JSON bez markdown ani komentarzy!`;
           }
         }],
         temperature: 0.1,
-        max_output_tokens: 3000
+        max_output_tokens: 5000
       })
     });
 
