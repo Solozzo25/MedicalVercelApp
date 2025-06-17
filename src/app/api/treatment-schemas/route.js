@@ -113,7 +113,7 @@ export async function POST(request) {
     
 
     // Klucz API OpenAI z zmiennych środowiskowych
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     
     if (!apiKey) {
       console.log("❌ Błąd: Brak klucza API OpenAI w zmiennych środowiskowych");
@@ -186,47 +186,49 @@ KRYTYCZNE: Odpowiedź MUSI być TYLKO i WYŁĄCZNIE poprawnym JSON w dokładnie 
   }
 }`;
 
-    console.log("📤 Wysyłanie zapytania do OpenAI Responses API...");
+    console.log("📤 Wysyłanie zapytania do OpenRouter API..");
     
-    // Wywołanie OpenAI Responses API z web_search tool
-    const openAIResponse = await fetch('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        input: userPrompt,
-        tools: [{ 
-		  "type": "web_search_preview",
-		  "search_context_size": "high",  // Maksymalna głębokość dla medycyny
-		  "user_location": {
-			"type": "approximate",
-			"country": "PL",
-			"city": "Warsaw",
-			"region": "Mazowieckie", 
-			"timezone": "Europe/Warsaw"
-		  }
-		}],
-        temperature: 0.2,
-        max_output_tokens: 8000
-      })
-    });
+    // Wywołanie OpenRouter Responses API z web_search tool
+    const openRouterResponse = await fetch('https://openrouter.ai/api/v1/responses', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${apiKey}`,
+    'Content-Type': 'application/json',
+    'HTTP-Referer': 'http://localhost:3000',
+    'X-Title': 'MedDiagnosis App'
+  },
+  body: JSON.stringify({
+    model: "openai/gpt-4.1", // GPT-4.1 przez OpenRouter
+    input: userPrompt,
+    tools: [{ 
+      "type": "web_search_preview",
+      "search_context_size": "high",
+      "user_location": {
+        "type": "approximate",
+        "country": "PL",
+        "city": "Warsaw",
+        "region": "Mazowieckie", 
+        "timezone": "Europe/Warsaw"
+      }
+    }],
+    temperature: 0.2,
+    max_output_tokens: 8000
+  })
+});
     
-    console.log("✅ Odpowiedź od OpenAI otrzymana, status:", openAIResponse.status);
+    console.log("✅ Odpowiedź od OpenRouter otrzymana, status:", openRouterResponse.status);
 
     // Sprawdzenie czy odpowiedź jest OK
-    if (!openAIResponse.ok) {
-      const errorText = await openAIResponse.text();
-      console.error("❌ Błąd OpenAI API:", openAIResponse.status, errorText);
-      return NextResponse.json({ 
-        error: `Błąd OpenAI API: ${openAIResponse.status} - ${errorText}` 
-      }, { status: 500 });
-    }
+	if (!openRouterResponse.ok) {
+	  const errorText = await openRouterResponse.text();
+	  console.error("❌ Błąd OpenRouter API:", openRouterResponse.status, errorText);
+	  return NextResponse.json({ 
+	    error: `Błąd OpenRouter API: ${openRouterResponse.status} - ${errorText}` 
+	  }, { status: 500 });
+	}
 
     // Parsowanie odpowiedzi JSON
-    const responseData = await openAIResponse.json();
+    const responseData = await openRouterResponse.json();
     
     console.log("🔍 DIAGNOSTYKA ODPOWIEDZI:");
     console.log("📊 Status:", responseData.status);
