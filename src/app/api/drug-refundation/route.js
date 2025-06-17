@@ -9,17 +9,13 @@ async function fetchGroupRefundation(drugChunk, apiKey) {
   console.log(`🔍 Pobieranie refundacji dla grupy: ${drugChunk.join(', ')}`);
   
   const userPrompt = `Jesteś specjalistą od wyszukiwania informacji o refundacji leków i zawsze dostarczasz użytkownikom działające i otwierające linki wskazujące na źródło informacji.
-Wyszukaj refundację NFZ dla następujących leków: ${drugChunk.join(', ')}
+Dla każdego z listy leków: ${drugChunk.join(', ')} znajdź link URL, który przeniesie użytkownika na stronę ze wszystkimi preparatami, które zawierają ten lek i pokażą refundację tych leków.
+Korzystaj z portalu lekinfo24.pl jako pierwszego źródła informacji. 
+Przykładowy link: https://www.lekinfo24.pl/opis-leku/l,formoterol-formoterol,dp,wziewna,mnid,792.html, który poprawnie przekierowuje użytkownika na stronę z preparatami.
+Do każdego linku z listy podawaj kod refundacji NFZ.
 
-ZADANIE: Znajdź aktualne dane refundacyjne z oficjalnych źródeł polskich (lekinfo24.pl, nfz.gov.pl).
 
-WYMAGANIA:
-- Sprawdź każdy lek osobno w polskich bazach refundacji
-- Preferuj lekinfo24.pl jako główne źródło
-- Podaj konkretne kody refundacyjne NFZ jeśli dostępne
-- Sprawdź preparaty dostępne w Polsce
-
-STRUKTURA ODPOWIEDZI - TYLKO JSON:
+STRUKTURA ODPOWIEDZI - TYLKO i wyłącznie w JSON:
 {
   "leki": [
     {
