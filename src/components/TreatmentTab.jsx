@@ -64,8 +64,8 @@ export default function TreatmentTab({
     return 'badge-secondary';
   };
 
-// NOWA FUNKCJA: Obsługa kliknięcia w przycisk charakterystyk
-	const handleCharacteristicsClick = async (drugName) => {
+  // NOWA FUNKCJA: Obsługa kliknięcia w przycisk charakterystyk
+  const handleCharacteristicsClick = async (drugName) => {
     console.log(`🔍 Sprawdzanie charakterystyki dla: ${drugName}`);
     setSelectedDrugForCharacteristics(drugName);
     
@@ -82,7 +82,6 @@ export default function TreatmentTab({
     console.log(`🌐 Pobieranie z API: ${drugName}`);
     setCharacteristicsLoading(true);
     setCharacteristicsData(null);
-   
 
     try {
       const response = await fetch('/api/single-drug-characteristics', {
@@ -110,7 +109,7 @@ export default function TreatmentTab({
       
       setCharacteristicsData(data);
 
-	} catch (error) {
+    } catch (error) {
       console.error(`❌ Błąd pobierania charakterystyki dla ${drugName}:`, error);
       
       const errorData = {
@@ -140,98 +139,96 @@ export default function TreatmentTab({
 
   // UPROSZCZONA funkcja renderowania charakterystyk - TYLKO REFUNDACJA
   const renderDrugInfo = (drugName, isAlternative = false, diagnosisIndex = activeTreatmentIndex) => {
-  const characteristics = findDrugCharacteristics(drugName, diagnosisIndex);
-  
-  return (
-    <>
-      {/* Przycisk charakterystyki - ZAWSZE DOSTĘPNY */}
-      <div className="drug-card-section">
-        <button 
-          className="btn btn-primary btn-sm" 
-          onClick={() => handleCharacteristicsClick(drugName)}
-        >
-          <i className="fas fa-file-medical"></i> Zobacz charakterystykę
-        </button>
-        <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
-          Wskazania, przeciwwskazania, uwagi specjalne
-        </p>
-      </div>
-
-      {/* Sekcja refundacji - z obsługą braku danych */}
-      {!characteristics || characteristics.status !== 'dostępny' ? (
-        <div className="drug-card-section refundation-section no-refundation">
-          <h5 className="drug-section-title">
-            <i className="fas fa-info-circle"></i> Refundacja NFZ
-          </h5>
-          <div className="no-refundation-info">
-            <span className="badge badge-secondary">
-              <i className="fas fa-question-circle"></i>
-              Brak danych o refundacji
-            </span>
-            <p className="drug-section-content" style={{marginTop: '8px'}}>
-              {characteristics?.uwagi || 'Nie znaleziono informacji o refundacji dla tego leku'}
-            </p>
-          </div>
+    const characteristics = findDrugCharacteristics(drugName, diagnosisIndex);
+    
+    return (
+      <>
+        {/* Przycisk charakterystyki - ZAWSZE DOSTĘPNY */}
+        <div className="drug-card-section">
+          <button 
+            className="btn btn-primary btn-sm" 
+            onClick={() => handleCharacteristicsClick(drugName)}
+          >
+            <i className="fas fa-file-medical"></i> Zobacz charakterystykę
+          </button>
+          <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
+            Wskazania, przeciwwskazania, uwagi specjalne
+          </p>
         </div>
-      ) : (
-        // ISTNIEJĄCA SEKCJA REFUNDACJI
-        characteristics.refundacja && (
-          <div className="drug-card-section refundation-section">
+
+        {/* Sekcja refundacji - z obsługą braku danych */}
+        {!characteristics || characteristics.status !== 'dostępny' ? (
+          <div className="drug-card-section refundation-section no-refundation">
             <h5 className="drug-section-title">
-              <i className="fas fa-credit-card"></i> Refundacja NFZ
+              <i className="fas fa-info-circle"></i> Refundacja NFZ
             </h5>
-            
-            <div className="refundation-status">
-              <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
-                <i className="fas fa-shield-alt"></i>
-                {getRefundationStatusText(characteristics.refundacja.refundowany)}
+            <div className="no-refundation-info">
+              <span className="badge badge-secondary">
+                <i className="fas fa-question-circle"></i>
+                Brak danych o refundacji
               </span>
+              <p className="drug-section-content" style={{marginTop: '8px'}}>
+                {characteristics?.uwagi || 'Nie znaleziono informacji o refundacji dla tego leku'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          // ISTNIEJĄCA SEKCJA REFUNDACJI
+          characteristics.refundacja && (
+            <div className="drug-card-section refundation-section">
+              <h5 className="drug-section-title">
+                <i className="fas fa-credit-card"></i> Refundacja NFZ
+              </h5>
               
-              {characteristics.refundacja.odplatnosc && (
-                <span className="copayment-badge">
-                  Odpłatność: {characteristics.refundacja.odplatnosc}
+              <div className="refundation-status">
+                <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
+                  <i className="fas fa-shield-alt"></i>
+                  {getRefundationStatusText(characteristics.refundacja.refundowany)}
                 </span>
+                
+                {characteristics.refundacja.odplatnosc && (
+                  <span className="copayment-badge">
+                    Odpłatność: {characteristics.refundacja.odplatnosc}
+                  </span>
+                )}
+              </div>
+
+              {/* Grupy pacjentów */}
+              {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
+                <div className="refundation-groups">
+                  <strong>Refundacja dla:</strong>
+                  <ul className="drug-section-list">
+                    {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
+                      <li key={idx}>{group}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Przykładowe preparaty */}
+              {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
+                <div className="refundation-groups">
+                  <strong>Przykładowe preparaty:</strong>
+                  <p className="drug-section-content">
+                    {characteristics.refundacja.przykladowy_preparat.join(', ')}
+                  </p>
+                </div>
+              )}
+
+              {/* Link do refundacji */}
+              {characteristics.refundacja.link && (
+                <div className="drug-card-footer">
+                  <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
+                    <i className="fas fa-info-circle"></i> Sprawdź refundację
+                  </a>
+                </div>
               )}
             </div>
-
-            {/* Grupy pacjentów */}
-            {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
-              <div className="refundation-groups">
-                <strong>Refundacja dla:</strong>
-                <ul className="drug-section-list">
-                  {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
-                    <li key={idx}>{group}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Przykładowe preparaty */}
-            {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
-              <div className="refundation-groups">
-                <strong>Przykładowe preparaty:</strong>
-                <p className="drug-section-content">
-                  {characteristics.refundacja.przykladowy_preparat.join(', ')}
-                </p>
-              </div>
-            )}
-
-            {/* Link do refundacji */}
-            {characteristics.refundacja.link && (
-              <div className="drug-card-footer">
-                <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
-                  <i className="fas fa-info-circle"></i> Sprawdź refundację
-                </a>
-              </div>
-            )}
-          </div>
-        )
-      )}
-    </>
-  );
-};
-
-    
+          )
+        )}
+      </>
+    );
+  };
 
   // Funkcja renderowania źródła z obsługą linków
   const renderSource = (sourceText) => {
@@ -572,11 +569,11 @@ export default function TreatmentTab({
               {/* Schematy leczenia dla aktywnej diagnozy */}
               {renderTreatmentSchemas(treatmentDiagnoses[activeTreatmentIndex], activeTreatmentIndex)}
             </div>
-            </div>
           )}
         </div>
       )}
-	  {/* MODAL CHARAKTERYSTYK LEKU */}
+
+      {/* MODAL CHARAKTERYSTYK LEKU */}
       {selectedDrugForCharacteristics && (
         <div className="modal-overlay" onClick={handleCloseCharacteristicsModal}>
           <div className="modal-content drug-characteristics-modal" onClick={(e) => e.stopPropagation()}>
@@ -656,7 +653,7 @@ export default function TreatmentTab({
                     </div>
                   )}
 
-{/* Link do pełnej ChPL */}
+                  {/* Link do pełnej ChPL */}
                   {characteristicsData.pdf_link && (
                     <div className="characteristics-section">
                       <h4 className="section-title">
