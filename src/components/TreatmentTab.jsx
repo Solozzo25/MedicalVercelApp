@@ -81,8 +81,8 @@ export default function TreatmentTab({
     // BRAK W CACHE - POBIERZ Z API
     console.log(`🌐 Pobieranie z API: ${drugName}`);
     setCharacteristicsLoading(true);
-    setCharacteristicsData(null);;
     setCharacteristicsData(null);
+   
 
     try {
       const response = await fetch('/api/single-drug-characteristics', {
@@ -231,73 +231,7 @@ export default function TreatmentTab({
   );
 };
 
-    return (
-      <>
-        {/* Przycisk do pobrania charakterystyki - PLACEHOLDER */}
-        <div className="drug-card-section">
-          <button className="btn btn-secondary btn-sm" disabled>
-            <i className="fas fa-file-medical"></i> Pobierz charakterystykę
-          </button>
-          <p className="drug-section-content" style={{fontSize: '12px', color: 'var(--gray-500)', marginTop: '8px'}}>
-            Funkcja dostępna wkrótce
-          </p>
-        </div>
-
-        {/* TYLKO Refundacja - bez ChPL */}
-        {characteristics.refundacja && (
-          <div className="drug-card-section refundation-section">
-            <h5 className="drug-section-title">
-              <i className="fas fa-credit-card"></i> Refundacja NFZ
-            </h5>
-            
-            <div className="refundation-status">
-              <span className={`badge ${getRefundationBadgeClass(characteristics.refundacja.refundowany)}`}>
-                <i className="fas fa-shield-alt"></i>
-                {getRefundationStatusText(characteristics.refundacja.refundowany)}
-              </span>
-              
-              {characteristics.refundacja.odplatnosc && (
-                <span className="copayment-badge">
-                  Odpłatność: {characteristics.refundacja.odplatnosc}
-                </span>
-              )}
-            </div>
-
-            {/* Grupy pacjentów */}
-            {characteristics.refundacja.grupy_pacjentow && characteristics.refundacja.grupy_pacjentow.length > 0 && (
-              <div className="refundation-groups">
-                <strong>Refundacja dla:</strong>
-                <ul className="drug-section-list">
-                  {characteristics.refundacja.grupy_pacjentow.map((group, idx) => (
-                    <li key={idx}>{group}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Przykładowe preparaty */}
-            {characteristics.refundacja.przykladowy_preparat && characteristics.refundacja.przykladowy_preparat.length > 0 && (
-              <div className="refundation-groups">
-                <strong>Przykładowe preparaty:</strong>
-                <p className="drug-section-content">
-                  {characteristics.refundacja.przykladowy_preparat.join(', ')}
-                </p>
-              </div>
-            )}
-
-            {/* Link do refundacji */}
-            {characteristics.refundacja.link && (
-              <div className="drug-card-footer">
-                <a href={characteristics.refundacja.link} target="_blank" rel="noopener noreferrer" className="drug-link">
-                  <i className="fas fa-info-circle"></i> Sprawdź refundację
-                </a>
-              </div>
-            )}
-          </div>
-        )}
-      </>
-    );
-  };
+    
 
   // Funkcja renderowania źródła z obsługą linków
   const renderSource = (sourceText) => {
@@ -637,6 +571,7 @@ export default function TreatmentTab({
 
               {/* Schematy leczenia dla aktywnej diagnozy */}
               {renderTreatmentSchemas(treatmentDiagnoses[activeTreatmentIndex], activeTreatmentIndex)}
+            </div>
             </div>
           )}
         </div>
